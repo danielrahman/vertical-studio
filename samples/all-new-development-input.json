@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "companyName": "All New Development",
+    "brandSlug": "and-development",
+    "locale": "cs-CZ",
+    "industry": "boutique_developer",
+    "primaryColor": { "hex": "#222d51", "name": "Navy" },
+    "secondaryColor": { "hex": "#C9A962", "name": "Gold" },
+    "fontPrimary": { "family": "Playfair Display", "weights": [400, 500, 600, 700], "googleFontsId": "playfair-display" },
+    "fontSecondary": { "family": "Inter", "weights": [300, 400, 500, 600], "googleFontsId": "inter" }
+  },
+  "brand": {
+    "tagline": "Butiková developerská společnost",
+    "description": "Vytváříme prémiové bydlení s důrazem na kvalitu, lokalitu a individualitu.",
+    "valueProps": [
+      { "id": "vp-1", "icon": "location", "title": "Lokalita", "description": "Pečlivě vybíráme místa, která jsou sama o sobě unikátní.", "order": 1 },
+      { "id": "vp-2", "icon": "quality", "title": "Kvalita", "description": "Prémiové materiály a řemeslné zpracování.", "order": 2 },
+      { "id": "vp-3", "icon": "originality", "title": "Originalita", "description": "Řešení na míru pro každého klienta.", "order": 3 },
+      { "id": "vp-4", "icon": "experience", "title": "Zkušenosti", "description": "10 let na trhu, 50+ dokončených projektů.", "order": 4 }
+    ],
+    "personality": { "tone": "professional", "keywords": ["premium", "luxury", "quality", "trust", "family"], "emotions": ["prestiž", "jistota", "hrdost", "bezpečí"] }
+  },
+  "navigation": {
+    "sticky": true,
+    "items": [
+      { "label": "O nás", "href": "#about", "order": 1 },
+      { "label": "Projekty", "href": "#projects", "order": 2 },
+      { "label": "Tým", "href": "#team", "order": 3 },
+      { "label": "Kontakt", "href": "#contact", "order": 4 }
+    ],
+    "cta": { "label": "Konzultace", "action": "scroll", "href": "#contact", "variant": "primary" }
+  },
+  "sections": [
+    { "id": "hero", "type": "hero", "title": "Vytváříme domovy, na které jste hrdí", "subtitle": "Prémiové bydlení v srdci Prahy", "order": 1 },
+    { "id": "value-props", "type": "value-props", "title": "Proč zvolit AND Development", "order": 2 },
+    { "id": "portfolio-preview", "type": "portfolio-preview", "title": "Naše realizované projekty", "order": 3 },
+    { "id": "process", "type": "process", "title": "Jak probíhá cesta k vysněnému domovu", "order": 4 },
+    { "id": "team", "type": "team", "title": "Lidé za projekty AND", "order": 5 },
+    { "id": "testimonials", "type": "testimonials", "title": "Co říkají naši klienti", "order": 6 },
+    { "id": "stats", "type": "stats", "title": "Čísla hovoří za nás", "order": 7 },
+    { "id": "cta-form", "type": "cta-form", "title": "Přijďte na osobní konzultaci", "order": 8 },
+    { "id": "contact", "type": "contact", "title": "Kontaktujte nás", "order": 9 }
+  ],
+  "projects": [
+    { "id": "vila-roque", "name": "Vila ROQUE", "slug": "vila-roque", "tagline": "Sebevědomé bydlení na neopakovatelném místě", "status": "completed", "location": { "city": "Praha", "region": "Malá Strana" }, "type": "villa", "units": 12, "completionYear": 2025 },
+    { "id": "villa-gallery", "name": "Villa GALLERY", "slug": "villa-gallery", "tagline": "Moderní bydlení v srdci Vinohrad", "status": "completed", "location": { "city": "Praha", "region": "Vinohrady" }, "type": "apartment", "units": 24, "completionYear": 2024 },
+    { "id": "vila-epoque", "name": "Vila ÉPOQUE", "slug": "vila-epoque", "tagline": "Klasická elegance v Bubenci", "status": "completed", "location": { "city": "Praha", "region": "Bubeneč" }, "type": "villa", "units": 8, "completionYear": 2023 }
+  ],
+  "team": [
+    { "id": "jiri-salda", "name": "Jiří Šalda", "role": "CEO & Founder", "bio": "20+ let zkušeností v realitním a developerském trhu.", "order": 1 },
+    { "id": "jana-saldova", "name": "Jana Šaldová", "role": "COO", "bio": "Zodpovědná za provoz a řízení projektů.", "order": 2 },
+    { "id": "martin-novak", "name": "Martin Novák", "role": "Architekt", "bio": "Hlavní architekt projektů.", "order": 3 }
+  ],
+  "testimonials": [
+    { "id": "t-1", "quote": "Spolupráce s AND byla vynikající. Profesionalita, pozornost k detailům.", "author": "Jan Novák", "project": "Vila ROQUE", "rating": 5 },
+    { "id": "t-2", "quote": "Od první konzultace jsme věděli, že jsme v dobrých rukou.", "author": "Marie Svobodová", "project": "Villa GALLERY", "rating": 5 }
+  ],
+  "contact": {
+    "email": "info@and-development.cz",
+    "phone": "+420 220 515 199",
+    "address": { "street": "Zlatnická 1582/10", "city": "Praha", "postalCode": "110 00", "country": "Czech Republic" },
+    "form": { "title": "Zanechte nám zprávu", "fields": [
+      { "name": "name", "label": "Jméno", "type": "text", "required": true },
+      { "name": "email", "label": "Email", "type": "email", "required": true },
+      { "name": "phone", "label": "Telefon", "type": "tel" },
+      { "name": "message", "label": "Zpráva", "type": "textarea" }
+    ], "submitLabel": "Odeslat dotaz" }
+  },
+  "footer": {
+    "columns": [
+      { "title": "Kontakt", "links": [{ "label": "info@and-development.cz", "href": "mailto:info@and-development.cz" }] },
+      { "title": "Navigace", "links": [{ "label": "O nás", "href": "#about" }, { "label": "Projekty", "href": "#projects" }] }
+    ],
+    "social": [{ "platform": "instagram", "url": "https://instagram.com/anddevelopment" }, { "platform": "linkedin", "url": "https://linkedin.com/company/anddevelopment" }]
+  }
+}
