@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { createHash } = require('crypto');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -70,6 +71,11 @@ const INTERNAL_ADMIN_HEADERS = {
   'x-user-role': 'internal_admin'
 };
 
+function stableId(seed) {
+  const digest = createHash('sha256').update(seed).digest('hex').slice(0, 32);
+  return `${digest.slice(0, 8)}-${digest.slice(8, 12)}-${digest.slice(12, 16)}-${digest.slice(16, 20)}-${digest.slice(20, 32)}`;
+}
+
 test('vertical research build enforces competitor minimum and exposes latest output', async () => {
   const { server, baseUrl } = await startServer();
 
@@ -137,6 +143,55 @@ test('compose propose returns deterministic three-variant envelope', async () =>
       payload.variants.map((variant) => variant.variantKey),
       ['A', 'B', 'C']
     );
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('copy selection writes audit trail event for provenance', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-copy-audit-1';
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-audit/copy/generate`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US']
+      })
+    });
+    assert.equal(generateRes.status, 200);
+
+    const candidateId = stableId(`${draftId}|hero.h1|cs-CZ|B`);
+    const selectRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-audit/copy/select`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId,
+        selections: [
+          {
+            candidateId
+          }
+        ]
+      })
+    });
+    assert.equal(selectRes.status, 200);
+
+    const auditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=ops_copy_selected&siteId=site-copy-audit&limit=10`,
+      {
+        headers: {
+          'x-user-role': 'internal_admin'
+        }
+      }
+    );
+    assert.equal(auditRes.status, 200);
+    const auditBody = await auditRes.json();
+    assert.equal(auditBody.count >= 1, true);
+    assert.equal(auditBody.items[0].action, 'ops_copy_selected');
+    assert.equal(auditBody.items[0].entityId, draftId);
+    assert.equal(auditBody.items[0].selectedCount, 1);
   } finally {
     await stopServer(server);
   }

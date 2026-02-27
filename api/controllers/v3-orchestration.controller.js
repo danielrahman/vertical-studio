@@ -688,6 +688,15 @@ function postCopySelect(req, res, next) {
     }
 
     state.copySelectionsByDraft.set(req.body.draftId, req.body.selections);
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'ops_copy_selected',
+      occurredAt: new Date().toISOString(),
+      entityType: 'draft',
+      entityId: req.body.draftId,
+      siteId: req.params.siteId,
+      selectedCount: req.body.selections.length
+    });
 
     res.status(200).json({
       draftId: req.body.draftId,
