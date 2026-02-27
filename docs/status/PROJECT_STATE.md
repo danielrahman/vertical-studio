@@ -65,6 +65,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 44. Copy-generate request contract enforcement implemented (`VS3-IMP-037`): copy generation now rejects any provided `highImpactOnlyThreeVariants` value other than `true`, with API and WS-D acceptance coverage enforcing the bounded high-impact mode contract.
 45. Copy-select request contract hardening implemented (`VS3-IMP-038`): copy selection now enforces required selection tuple fields (`slotId`, `locale`, `candidateId`) and rejects slot/locale mismatches against generated candidates, with API and acceptance harness coverage.
 46. Copy-generate locale contract hardening implemented (`VS3-IMP-039`): copy generation now accepts only `cs-CZ` and `en-US` locales, rejects unsupported locale values with validation details, and de-duplicates locale input before candidate generation.
+47. Copy-select tuple uniqueness enforcement implemented (`VS3-IMP-040`): copy selection now rejects duplicate `slotId`+`locale` tuples in a single request to preserve one final recommendation per slot-locale pair.
 
 ## In Progress
 

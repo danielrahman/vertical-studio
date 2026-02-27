@@ -1162,6 +1162,24 @@ function postCopySelect(req, res, next) {
       });
     }
 
+    const seenSelectionTuples = new Set();
+    const duplicateSelectionTuple = req.body.selections.find((selection) => {
+      const tupleKey = `${selection.slotId}|${selection.locale}`;
+      if (seenSelectionTuples.has(tupleKey)) {
+        return true;
+      }
+      seenSelectionTuples.add(tupleKey);
+      return false;
+    });
+
+    if (duplicateSelectionTuple) {
+      throw createError('selection tuple must be unique per slotId and locale', 400, 'validation_error', {
+        field: 'selections',
+        slotId: duplicateSelectionTuple.slotId,
+        locale: duplicateSelectionTuple.locale
+      });
+    }
+
     state.copySelectionsByDraft.set(req.body.draftId, req.body.selections);
     state.auditEvents.push({
       id: randomUUID(),

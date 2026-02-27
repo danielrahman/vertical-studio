@@ -709,6 +709,45 @@ test('copy select rejects slotId/locale mismatch for an existing candidate', asy
   }
 });
 
+test('copy select rejects duplicate slotId/locale selections in one request', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-copy-select-duplicate';
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-select-duplicate/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US']
+      })
+    });
+    assert.equal(generateRes.status, 200);
+
+    const candidateAId = stableId(`${draftId}|hero.h1|cs-CZ|A`);
+    const candidateBId = stableId(`${draftId}|hero.h1|cs-CZ|B`);
+    const duplicateRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-select-duplicate/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [
+          { slotId: 'hero.h1', locale: 'cs-CZ', candidateId: candidateAId },
+          { slotId: 'hero.h1', locale: 'cs-CZ', candidateId: candidateBId }
+        ]
+      })
+    });
+    assert.equal(duplicateRes.status, 400);
+    const duplicateBody = await duplicateRes.json();
+    assert.equal(duplicateBody.code, 'validation_error');
+    assert.equal(duplicateBody.message, 'selection tuple must be unique per slotId and locale');
+    assert.equal(duplicateBody.details.slotId, 'hero.h1');
+    assert.equal(duplicateBody.details.locale, 'cs-CZ');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select allows owner only when site policy enables draft copy edits', async () => {
   const { server, baseUrl } = await startServer();
 

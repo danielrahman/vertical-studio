@@ -505,6 +505,52 @@ test('WS-D contract: copy generation accepts only supported locales and de-dupli
   }
 });
 
+test('WS-D contract: copy selection enforces unique slot-locale tuples per request', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-wsd-select-unique-1';
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-unique/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US']
+      })
+    });
+    assert.equal(generateRes.status, 200);
+    const generatedCandidates = app.locals.v3State.copyCandidatesByDraft.get(draftId);
+    const candidateA = generatedCandidates.find(
+      (candidate) => candidate.slotId === 'hero.h1' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'A'
+    );
+    const candidateB = generatedCandidates.find(
+      (candidate) => candidate.slotId === 'hero.h1' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
+    );
+    assert.equal(Boolean(candidateA), true);
+    assert.equal(Boolean(candidateB), true);
+
+    const duplicateRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-unique/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [
+          { slotId: 'hero.h1', locale: 'cs-CZ', candidateId: candidateA.candidateId },
+          { slotId: 'hero.h1', locale: 'cs-CZ', candidateId: candidateB.candidateId }
+        ]
+      })
+    });
+    assert.equal(duplicateRes.status, 400);
+    const duplicatePayload = await duplicateRes.json();
+    assert.equal(duplicatePayload.code, 'validation_error');
+    assert.equal(duplicatePayload.message, 'selection tuple must be unique per slotId and locale');
+    assert.equal(duplicatePayload.details.slotId, 'hero.h1');
+    assert.equal(duplicatePayload.details.locale, 'cs-CZ');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 
