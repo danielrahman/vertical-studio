@@ -863,6 +863,7 @@ function getLatestSecurityReport(req, res, next) {
       versionId,
       generatedAt: new Date().toISOString(),
       status: 'pending',
+      findings: [],
       unresolvedFindings: [],
       severityCounts: {
         critical: 0,

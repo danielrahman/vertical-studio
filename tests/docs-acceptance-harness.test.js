@@ -514,6 +514,12 @@ test('WS-F contract: security report exposes JSON+markdown artifacts and gate de
     assert.equal(response.status, 200);
     const payload = await response.json();
 
+    assert.equal(payload.siteId, 'site-wsf-security');
+    assert.equal(typeof payload.releaseId, 'string');
+    assert.equal(typeof payload.versionId, 'string');
+    assert.equal(typeof payload.generatedAt, 'string');
+    assert.equal(Array.isArray(payload.findings), true);
+    assert.equal(payload.findings.length, 0);
     assert.equal(payload.gateDecision.reasonCode, 'security_pass_non_blocking_only');
     assert.equal(payload.gateDecision.blocked, false);
     assert.equal(typeof payload.artifacts.findingsJsonPath, 'string');
