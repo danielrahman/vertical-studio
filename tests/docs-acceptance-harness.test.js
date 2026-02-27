@@ -540,6 +540,54 @@ test('WS-F contract: quality report exposes COPY/LAYOUT/MEDIA/LEGAL gate outcome
   }
 });
 
+test('WS-F contract: quality latest reflects deterministic gate outcomes from publish attempts', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const blockedPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality-latest/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsf-quality-latest-1',
+        proposalId: 'proposal-wsf-quality-latest-1',
+        simulateQualityP0Fail: true
+      })
+    });
+    assert.equal(blockedPublishRes.status, 409);
+
+    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality-latest/quality/latest`);
+    assert.equal(blockedLatestRes.status, 200);
+    const blockedLatest = await blockedLatestRes.json();
+    assert.equal(blockedLatest.status, 'completed');
+    assert.equal(blockedLatest.versionId, 'version-pending');
+    assert.equal(blockedLatest.blockingFailures.length, 1);
+
+    const passPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality-latest/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsf-quality-latest-2',
+        proposalId: 'proposal-wsf-quality-latest-2',
+        qualityFindings: [{ severity: 'P1', ruleId: 'UX-P1-001' }],
+        securityFindings: [{ severity: 'medium', status: 'open' }]
+      })
+    });
+    assert.equal(passPublishRes.status, 200);
+    const passPublish = await passPublishRes.json();
+
+    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality-latest/quality/latest`);
+    assert.equal(passLatestRes.status, 200);
+    const passLatest = await passLatestRes.json();
+    assert.equal(passLatest.versionId, passPublish.versionId);
+    assert.equal(passLatest.blockingFailures.length, 0);
+    const layoutOutcome = passLatest.gateOutcomes.find((outcome) => outcome.family === 'LAYOUT');
+    assert.equal(layoutOutcome.status, 'warnings');
+    assert.equal(layoutOutcome.nonBlockingFindings, 1);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-F contract: security report exposes JSON+markdown artifacts and gate decision reason code', async () => {
   const { server, baseUrl } = await startServer();
 

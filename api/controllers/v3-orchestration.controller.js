@@ -1,10 +1,11 @@
 const { randomUUID } = require('crypto');
 const { ReviewTransitionGuardService } = require('../../services/review-transition-guard-service');
 const { ComposeCopyService } = require('../../services/compose-copy-service');
-const { PublishGateService } = require('../../services/publish-gate-service');
+const { PublishGateService, isQualityP0Finding } = require('../../services/publish-gate-service');
 
 const SUPPORTED_RESEARCH_SOURCES = new Set(['public_web', 'legal_pages', 'selected_listings']);
 const QUALITY_GATE_FAMILIES = ['COPY', 'LAYOUT', 'MEDIA', 'LEGAL'];
+const QUALITY_SEVERITY_LEVELS = new Set(['P0', 'P1', 'P2']);
 const SECURITY_SEVERITY_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
 const SECRET_REF_PATTERN = /^tenant\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+)$/;
 const SECRET_REF_SEGMENT_PATTERN = /^[a-z0-9-]+$/;
@@ -48,6 +49,7 @@ function getState(req) {
       copyCandidatesByDraft: new Map(),
       overridesByDraft: new Map(),
       copySelectionsByDraft: new Map(),
+      qualityReportsBySite: new Map(),
       securityReportsBySite: new Map(),
       secretRefs: new Map(),
       auditEvents: []
@@ -271,6 +273,131 @@ function buildSecurityReport({
       findingsJsonPath: `docs/security/findings/${releaseId}.json`,
       reportMarkdownPath: `docs/security/reports/${releaseId}.md`,
       gateResultJsonPath: `docs/security/gates/${releaseId}.json`
+    }
+  };
+}
+
+function normalizeQualityFindingSeverity(finding) {
+  const rawSeverity = typeof finding?.severity === 'string' ? finding.severity.trim().toUpperCase() : '';
+  if (QUALITY_SEVERITY_LEVELS.has(rawSeverity)) {
+    return rawSeverity;
+  }
+
+  if (finding?.blocking === true) {
+    return 'P0';
+  }
+
+  return 'P2';
+}
+
+function normalizeQualityFindingFamily(finding) {
+  const explicitFamily = typeof finding?.family === 'string' ? finding.family.trim().toUpperCase() : '';
+  if (QUALITY_GATE_FAMILIES.includes(explicitFamily)) {
+    return explicitFamily;
+  }
+
+  const ruleId = typeof finding?.ruleId === 'string' ? finding.ruleId.trim().toUpperCase() : '';
+  if (ruleId.startsWith('COPY-')) {
+    return 'COPY';
+  }
+  if (ruleId.startsWith('LAYOUT-') || ruleId.startsWith('UX-') || ruleId.startsWith('SEO-')) {
+    return 'LAYOUT';
+  }
+  if (ruleId.startsWith('MEDIA-')) {
+    return 'MEDIA';
+  }
+  if (ruleId.startsWith('LEGAL-')) {
+    return 'LEGAL';
+  }
+
+  return 'LAYOUT';
+}
+
+function normalizeQualityFinding(finding, index) {
+  const severity = normalizeQualityFindingSeverity(finding);
+  const ruleId =
+    typeof finding?.ruleId === 'string' && finding.ruleId.trim()
+      ? finding.ruleId.trim()
+      : `${normalizeQualityFindingFamily(finding)}-${severity}-${String(index + 1).padStart(3, '0')}`;
+  const message =
+    typeof finding?.message === 'string' && finding.message.trim()
+      ? finding.message.trim()
+      : 'Quality finding reported.';
+
+  return {
+    findingId:
+      typeof finding?.findingId === 'string' && finding.findingId.trim()
+        ? finding.findingId.trim()
+        : `QLT-${String(index + 1).padStart(3, '0')}`,
+    family: normalizeQualityFindingFamily(finding),
+    severity,
+    ruleId,
+    blocking: isQualityP0Finding({
+      ...finding,
+      severity,
+      ruleId
+    }),
+    message
+  };
+}
+
+function buildQualityGateOutcomes(findings) {
+  const outcomes = QUALITY_GATE_FAMILIES.map((family) => ({
+    family,
+    status: 'pass',
+    blockingFailures: 0,
+    nonBlockingFindings: 0
+  }));
+
+  for (const finding of findings) {
+    const outcome = outcomes.find((item) => item.family === finding.family);
+    if (!outcome) {
+      continue;
+    }
+
+    if (finding.blocking) {
+      outcome.blockingFailures += 1;
+      continue;
+    }
+
+    outcome.nonBlockingFindings += 1;
+  }
+
+  for (const outcome of outcomes) {
+    if (outcome.blockingFailures > 0) {
+      outcome.status = 'failed';
+      continue;
+    }
+    if (outcome.nonBlockingFindings > 0) {
+      outcome.status = 'warnings';
+    }
+  }
+
+  return outcomes;
+}
+
+function buildQualityReport({
+  siteId,
+  versionId,
+  generatedAt,
+  qualityFindings
+}) {
+  const findings = qualityFindings.map((finding, index) => normalizeQualityFinding(finding, index));
+  const blockingFailures = findings.filter((finding) => finding.blocking);
+  const releaseId = `${siteId}-${versionId}`;
+
+  return {
+    siteId,
+    releaseId,
+    versionId,
+    generatedAt,
+    status: 'completed',
+    findings,
+    blockingFailures,
+    gateOutcomes: buildQualityGateOutcomes(findings),
+    artifacts: {
+      findingsJsonPath: `docs/quality/findings/${releaseId}.json`,
+      reportMarkdownPath: `docs/quality/reports/${releaseId}.md`
     }
   };
 }
@@ -855,6 +982,15 @@ function postPublishSite(req, res, next) {
     const reportGeneratedAt = new Date().toISOString();
 
     if (gate.blocked) {
+      state.qualityReportsBySite.set(
+        req.params.siteId,
+        buildQualityReport({
+          siteId: req.params.siteId,
+          versionId: 'version-pending',
+          generatedAt: reportGeneratedAt,
+          qualityFindings
+        })
+      );
       state.securityReportsBySite.set(
         req.params.siteId,
         buildSecurityReport({
@@ -915,6 +1051,15 @@ function postPublishSite(req, res, next) {
         versionId,
         draftId: req.body.draftId,
         proposalId: req.body.proposalId
+      })
+    );
+    state.qualityReportsBySite.set(
+      req.params.siteId,
+      buildQualityReport({
+        siteId: req.params.siteId,
+        versionId,
+        generatedAt: reportGeneratedAt,
+        qualityFindings
       })
     );
     state.securityReportsBySite.set(
@@ -1010,6 +1155,13 @@ function getSiteVersions(req, res, next) {
 
 function getLatestQualityReport(req, res, next) {
   try {
+    const state = getState(req);
+    const latest = state.qualityReportsBySite.get(req.params.siteId);
+    if (latest) {
+      res.status(200).json(latest);
+      return;
+    }
+
     const gateOutcomes = QUALITY_GATE_FAMILIES.map((family) => ({
       family,
       status: 'pending',

@@ -679,6 +679,61 @@ test('quality latest endpoint returns required COPY/LAYOUT/MEDIA/LEGAL gate outc
   }
 });
 
+test('quality latest endpoint reflects latest publish-attempt gate outcome', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const blockedPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-quality-latest/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-quality-latest-1',
+        proposalId: 'proposal-quality-latest-1',
+        simulateQualityP0Fail: true
+      })
+    });
+    assert.equal(blockedPublishRes.status, 409);
+
+    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-quality-latest/quality/latest`);
+    assert.equal(blockedLatestRes.status, 200);
+    const blockedLatest = await blockedLatestRes.json();
+    assert.equal(blockedLatest.status, 'completed');
+    assert.equal(blockedLatest.versionId, 'version-pending');
+    assert.equal(Array.isArray(blockedLatest.blockingFailures), true);
+    assert.equal(blockedLatest.blockingFailures.length, 1);
+    const blockedCopyOutcome = blockedLatest.gateOutcomes.find((item) => item.family === 'COPY');
+    assert.equal(blockedCopyOutcome.status, 'failed');
+    assert.equal(blockedCopyOutcome.blockingFailures, 1);
+
+    const passPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-quality-latest/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-quality-latest-2',
+        proposalId: 'proposal-quality-latest-2',
+        qualityFindings: [{ severity: 'P1', ruleId: 'UX-P1-001' }],
+        securityFindings: [{ severity: 'medium', status: 'open' }]
+      })
+    });
+    assert.equal(passPublishRes.status, 200);
+    const passPublish = await passPublishRes.json();
+
+    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-quality-latest/quality/latest`);
+    assert.equal(passLatestRes.status, 200);
+    const passLatest = await passLatestRes.json();
+    assert.equal(passLatest.status, 'completed');
+    assert.equal(passLatest.versionId, passPublish.versionId);
+    assert.equal(passLatest.blockingFailures.length, 0);
+    const passLayoutOutcome = passLatest.gateOutcomes.find((item) => item.family === 'LAYOUT');
+    assert.equal(passLayoutOutcome.status, 'warnings');
+    assert.equal(passLayoutOutcome.nonBlockingFindings, 1);
+    assert.equal(typeof passLatest.artifacts.findingsJsonPath, 'string');
+    assert.equal(typeof passLatest.artifacts.reportMarkdownPath, 'string');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('security latest endpoint returns artifact references and deterministic gate decision fields', async () => {
   const { server, baseUrl } = await startServer();
 

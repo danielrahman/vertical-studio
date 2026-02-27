@@ -51,6 +51,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 30. Latest security gate report persistence implemented (`VS3-IMP-023`): publish attempts now store normalized security findings/severity summaries and deterministic gate decisions so `/security/latest` reflects real blocked or non-blocking outcomes.
 31. Publish audit event hardening implemented (`VS3-IMP-024`): privileged publish attempts now emit explicit blocked/success audit events and acceptance coverage validates audit trail presence for WS-F publish scenarios.
 32. Copy selection audit provenance implemented (`VS3-IMP-025`): copy selection mutations now emit explicit audit events and acceptance/API coverage confirms privileged trail visibility for review traceability.
+33. Latest quality gate report persistence implemented (`VS3-IMP-026`): publish attempts now store normalized quality findings and deterministic gate-family outcomes so `/quality/latest` reflects real blocked or non-blocking gate states.
 
 ## In Progress
 
