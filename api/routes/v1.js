@@ -41,6 +41,7 @@ const {
   getSiteVersions,
   getLatestQualityReport,
   getLatestSecurityReport,
+  getAuditEvents,
   getPublicRuntimeResolve,
   getPublicRuntimeSnapshot,
   getPublicRuntimeSnapshotByStorageKey,
@@ -99,6 +100,7 @@ router.post('/sites/:siteId/rollback/:versionId', postRollbackVersion);
 router.get('/sites/:siteId/versions', getSiteVersions);
 router.get('/sites/:siteId/quality/latest', getLatestQualityReport);
 router.get('/sites/:siteId/security/latest', getLatestSecurityReport);
+router.get('/audit/events', getAuditEvents);
 router.get('/public/runtime/resolve', getPublicRuntimeResolve);
 router.get('/public/runtime/snapshot', getPublicRuntimeSnapshot);
 router.get('/public/runtime/snapshot/by-storage-key', getPublicRuntimeSnapshotByStorageKey);

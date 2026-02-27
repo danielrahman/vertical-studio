@@ -605,6 +605,44 @@ test('public runtime snapshot by storage key returns immutable payload and 404 f
   }
 });
 
+test('audit events endpoint is internal-admin scoped and returns privileged action trail', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const forbiddenRes = await fetch(`${baseUrl}/api/v1/audit/events`);
+    assert.equal(forbiddenRes.status, 403);
+
+    const createSecretRefRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-audit',
+        tenantSlug: 'tenant-audit',
+        ref: 'tenant.tenant-audit.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(createSecretRefRes.status, 201);
+
+    const auditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=secret_ref_created&limit=20`,
+      {
+        headers: {
+          'x-user-role': 'internal_admin'
+        }
+      }
+    );
+    assert.equal(auditRes.status, 200);
+    const auditPayload = await auditRes.json();
+    assert.equal(auditPayload.count >= 1, true);
+    assert.equal(auditPayload.items[0].action, 'secret_ref_created');
+    assert.equal(auditPayload.items[0].entityType, 'secret_ref');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('secret refs endpoint enforces internal_admin ACL, naming policy, and metadata-only payloads', async () => {
   const { server, baseUrl } = await startServer();
 

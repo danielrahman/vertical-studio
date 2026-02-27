@@ -42,6 +42,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 21. WS-E immutable-live invariant coverage implemented (`VS3-IMP-014`): post-publish draft edits are regression-tested to ensure active runtime resolution and live snapshot content remain pinned to published versions.
 22. Storage-key runtime fetch path implemented (`VS3-IMP-015`): added storage-key-only snapshot endpoint and updated public runtime client/tests to resolve host then fetch immutable snapshot by storage key.
 23. WS-E local latency baseline check implemented (`VS3-IMP-016`): acceptance harness now measures resolve+snapshot runtime path under a local threshold to establish a repeatable baseline.
+24. Audit trail read API implemented (`VS3-IMP-017`): internal-admin endpoint exposes privileged action events with filters/limits to support release/security verification workflows.
 
 ## In Progress
 

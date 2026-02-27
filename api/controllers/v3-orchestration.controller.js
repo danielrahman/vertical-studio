@@ -851,6 +851,48 @@ function getLatestSecurityReport(req, res, next) {
   }
 }
 
+function getAuditEvents(req, res, next) {
+  try {
+    assertInternalAdmin(req);
+
+    const state = getState(req);
+    const actionFilter = normalizeOptionalString(req.query.action);
+    const siteIdFilter = normalizeOptionalString(req.query.siteId);
+    const entityTypeFilter = normalizeOptionalString(req.query.entityType);
+    const entityIdFilter = normalizeOptionalString(req.query.entityId);
+
+    const parsedLimit = Number(req.query.limit);
+    const limit = Number.isInteger(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 500) : 100;
+
+    const items = state.auditEvents
+      .filter((event) => {
+        if (actionFilter && event.action !== actionFilter) {
+          return false;
+        }
+        if (siteIdFilter && event.siteId !== siteIdFilter) {
+          return false;
+        }
+        if (entityTypeFilter && event.entityType !== entityTypeFilter) {
+          return false;
+        }
+        if (entityIdFilter && event.entityId !== entityIdFilter) {
+          return false;
+        }
+        return true;
+      })
+      .slice(-limit)
+      .reverse();
+
+    res.status(200).json({
+      count: items.length,
+      limit,
+      items
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 function getPublicRuntimeResolve(req, res, next) {
   try {
     const host = normalizeHost(req.query.host) || normalizeHost(req.headers.host);
@@ -1027,6 +1069,7 @@ module.exports = {
   getSiteVersions,
   getLatestQualityReport,
   getLatestSecurityReport,
+  getAuditEvents,
   getPublicRuntimeResolve,
   getPublicRuntimeSnapshot,
   getPublicRuntimeSnapshotByStorageKey,
