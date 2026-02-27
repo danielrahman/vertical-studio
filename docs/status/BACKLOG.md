@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-056 | Reject unknown `review/transition` payload fields                     | done        | codex | `POST /review/transition` now rejects unknown top-level keys with deterministic `validation_error` details to enforce deterministic request shape; API/WS-D coverage added |
 | VS3-IMP-055 | Reject unknown `compose/select` payload fields                        | done        | codex | `POST /compose/select` now rejects unknown top-level keys with deterministic `validation_error` details to enforce deterministic request shape; API/WS-D coverage added |
 | VS3-IMP-054 | Reject unknown `compose/propose` payload fields                       | done        | codex | `POST /compose/propose` now rejects unknown top-level keys with deterministic `validation_error` details to enforce deterministic prompt-contract request shape; API/WS-D coverage added |
 | VS3-IMP-053 | Reject unknown `copy/generate` payload fields                         | done        | codex | `POST /copy/generate` now rejects unknown top-level keys with deterministic `validation_error` details to enforce deterministic request shape; API/WS-D coverage added |

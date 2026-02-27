@@ -19,6 +19,14 @@ const COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'actorRole'
 ]);
 const COMPOSE_SELECT_ALLOWED_TOP_LEVEL_FIELDS = new Set(['draftId', 'proposalId', 'actorRole']);
+const REVIEW_TRANSITION_ALLOWED_TOP_LEVEL_FIELDS = new Set([
+  'draftId',
+  'fromState',
+  'toState',
+  'event',
+  'reason',
+  'actorRole'
+]);
 const COPY_GENERATE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'draftId',
   'locales',
@@ -1597,6 +1605,14 @@ function postReviewTransition(req, res, next) {
     assertString(req.body?.fromState, 'fromState');
     assertString(req.body?.toState, 'toState');
     assertString(req.body?.event, 'event');
+    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
+      return !REVIEW_TRANSITION_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+    });
+    if (unknownTopLevelFields.length > 0) {
+      throw createError('review transition payload contains unknown top-level fields', 400, 'validation_error', {
+        unknownFields: unknownTopLevelFields
+      });
+    }
 
     const state = getState(req);
     const currentState = state.reviewStatesByDraft.get(req.body.draftId);

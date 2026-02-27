@@ -548,6 +548,30 @@ test('WS-D contract: compose select rejects unknown top-level payload fields', a
   }
 });
 
+test('WS-D contract: review transition rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsd-review-unknown/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-review-unknown-1',
+        fromState: 'draft',
+        toState: 'proposal_generated',
+        event: 'PROPOSALS_READY',
+        dryRun: true
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.deepEqual(payload.details.unknownFields, ['dryRun']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: overrides requiredComponents must reference loaded component contracts', async () => {
   const { server, baseUrl } = await startServer();
 
