@@ -599,6 +599,51 @@ test('WS-D contract: copy selection rejects empty selection arrays', async () =>
   }
 });
 
+test('WS-D contract: copy selection selectedBy must match authenticated actor', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-wsd-selected-by';
+    const draftId = 'draft-wsd-selected-by-1';
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(generateRes.status, 200);
+    const candidateId = app.locals.v3State.copyCandidatesByDraft.get(draftId)[0].candidateId;
+
+    const mismatchRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId, selectedBy: 'owner' }]
+      })
+    });
+    assert.equal(mismatchRes.status, 400);
+    const mismatchPayload = await mismatchRes.json();
+    assert.equal(mismatchPayload.code, 'validation_error');
+    assert.equal(mismatchPayload.message, 'selection selectedBy must match authenticated actor role');
+
+    const matchingRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId, selectedBy: 'internal_admin' }]
+      })
+    });
+    assert.equal(matchingRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 

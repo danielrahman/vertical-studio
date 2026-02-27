@@ -341,6 +341,7 @@ Rules:
 3. Selected candidate `slotId` and `locale` must match the request tuple.
 4. A request must not contain duplicate `slotId`+`locale` tuples.
 5. `selections` must contain at least one item.
+6. If `selectedBy` is provided, it must match the authenticated actor role; server-side actor identity remains source of truth.
 
 ### 4.6 Manual Override Lifecycle
 

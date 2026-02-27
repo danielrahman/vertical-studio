@@ -10,6 +10,7 @@ const SECURITY_SEVERITY_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
 const TENANT_MEMBER_ROLES = new Set(['internal_admin', 'owner', 'editor', 'viewer']);
 const EXTRACTION_METHODS = new Set(['dom', 'ocr', 'inference', 'manual']);
 const COPY_LOCALES = new Set(['cs-CZ', 'en-US']);
+const COPY_SELECT_ACTOR_ROLES = new Set(['internal_admin', 'owner']);
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
 const OVERRIDE_ARRAY_KEYS = [
   'tone',
@@ -202,6 +203,12 @@ function assertCopySelectionShape(selection, index) {
   if (typeof selection.candidateId !== 'string' || !selection.candidateId.trim()) {
     throw createError('selection candidateId is required', 400, 'validation_error', {
       field: `selections[${index}].candidateId`
+    });
+  }
+
+  if (typeof selection.selectedBy !== 'undefined' && !COPY_SELECT_ACTOR_ROLES.has(selection.selectedBy)) {
+    throw createError('selection selectedBy must be one of internal_admin or owner', 400, 'validation_error', {
+      field: `selections[${index}].selectedBy`
     });
   }
 }
@@ -1185,7 +1192,27 @@ function postCopySelect(req, res, next) {
       });
     }
 
-    state.copySelectionsByDraft.set(req.body.draftId, req.body.selections);
+    const selectedByMismatch = req.body.selections.find((selection) => {
+      return typeof selection.selectedBy === 'string' && selection.selectedBy !== selectedByRole;
+    });
+    if (selectedByMismatch) {
+      throw createError('selection selectedBy must match authenticated actor role', 400, 'validation_error', {
+        field: 'selections',
+        slotId: selectedByMismatch.slotId,
+        locale: selectedByMismatch.locale,
+        selectedBy: selectedByMismatch.selectedBy,
+        actorRole: selectedByRole
+      });
+    }
+
+    const normalizedSelections = req.body.selections.map((selection) => ({
+      slotId: selection.slotId,
+      locale: selection.locale,
+      candidateId: selection.candidateId,
+      selectedBy: selectedByRole
+    }));
+
+    state.copySelectionsByDraft.set(req.body.draftId, normalizedSelections);
     state.auditEvents.push({
       id: randomUUID(),
       action: 'ops_copy_selected',

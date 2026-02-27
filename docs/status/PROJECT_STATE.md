@@ -68,6 +68,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 47. Copy-select tuple uniqueness enforcement implemented (`VS3-IMP-040`): copy selection now rejects duplicate `slotId`+`locale` tuples in a single request to preserve one final recommendation per slot-locale pair.
 48. Copy-generate prompt-version requirement implemented (`VS3-IMP-041`): copy generation now requires explicit `verticalStandardVersion`, tightening prompt/audit reproducibility and aligning WS-D copy contract coverage.
 49. Copy-select non-empty request enforcement implemented (`VS3-IMP-042`): copy selection now rejects empty selection arrays, preserving deterministic non-noop selection semantics and maintaining unauthorized-first auth response behavior.
+50. Copy-select actor provenance enforcement implemented (`VS3-IMP-043`): copy selection now validates optional request `selectedBy` against authenticated actor role and persists server-derived selector identity for deterministic auditability.
 
 ## In Progress
 

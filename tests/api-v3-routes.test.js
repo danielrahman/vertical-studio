@@ -799,6 +799,53 @@ test('copy select rejects empty selections array for internal_admin requests', a
   }
 });
 
+test('copy select selectedBy must match authenticated actor role', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-copy-select-selected-by';
+    const draftId = 'draft-copy-select-selected-by';
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(generateRes.status, 200);
+
+    const candidateId = stableId(`${draftId}|hero.h1|cs-CZ|B`);
+    const mismatchRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId, selectedBy: 'owner' }]
+      })
+    });
+    assert.equal(mismatchRes.status, 400);
+    const mismatchBody = await mismatchRes.json();
+    assert.equal(mismatchBody.code, 'validation_error');
+    assert.equal(mismatchBody.message, 'selection selectedBy must match authenticated actor role');
+
+    const matchingRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId, selectedBy: 'internal_admin' }]
+      })
+    });
+    assert.equal(matchingRes.status, 200);
+    const matchingBody = await matchingRes.json();
+    assert.equal(matchingBody.selectedByRole, 'internal_admin');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select allows owner only when site policy enables draft copy edits', async () => {
   const { server, baseUrl } = await startServer();
 
