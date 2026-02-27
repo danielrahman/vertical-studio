@@ -1012,7 +1012,15 @@ function postVerticalResearchBuild(req, res, next) {
         invalidSourceDomains
       });
     }
-    const sourceDomains = Array.from(new Set(normalizedSourceDomains));
+    const duplicateSourceDomains = Array.from(
+      new Set(normalizedSourceDomains.filter((domain, index) => normalizedSourceDomains.indexOf(domain) !== index))
+    );
+    if (duplicateSourceDomains.length > 0) {
+      throw createError('sourceDomains must not contain duplicate values', 400, 'validation_error', {
+        duplicateSourceDomains
+      });
+    }
+    const sourceDomains = normalizedSourceDomains;
 
     const state = getState(req);
     const verticalKey = req.params.verticalKey;

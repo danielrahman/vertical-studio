@@ -194,7 +194,7 @@ Response `202`:
 Validation:
 1. `targetCompetitorCount` must be `>= 15`.
 2. `sources` must be non-empty, contain only `public_web`, `legal_pages`, and `selected_listings`, and must not include duplicates.
-3. If `sourceDomains` is provided, every entry must be a valid domain hostname (values are trim-normalized, lowercased, and de-duplicated before persistence).
+3. If `sourceDomains` is provided, every entry must be a valid domain hostname and duplicate values are rejected after trim/lowercase normalization.
 4. Pattern extraction scope is limited to `IA + CTA + trust + tone`.
 5. Unknown top-level payload fields are rejected with `400 validation_error`.
 

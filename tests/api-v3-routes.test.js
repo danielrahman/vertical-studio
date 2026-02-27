@@ -230,7 +230,7 @@ test('vertical research build rejects duplicate source classes with deterministi
   }
 });
 
-test('vertical research build validates sourceDomains entries and persists normalized unique values', async () => {
+test('vertical research build validates sourceDomains entries and persists normalized values', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -264,13 +264,28 @@ test('vertical research build validates sourceDomains entries and persists norma
     assert.equal(malformedDomainsPayload.message, 'sourceDomains must contain valid domain hostnames when provided');
     assert.deepEqual(malformedDomainsPayload.details.invalidSourceDomains, ['https://example-1.com', 'example']);
 
+    const duplicateDomainsRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings'],
+        sourceDomains: [' EXAMPLE-1.com ', 'example-1.com']
+      })
+    });
+    assert.equal(duplicateDomainsRes.status, 400);
+    const duplicateDomainsPayload = await duplicateDomainsRes.json();
+    assert.equal(duplicateDomainsPayload.code, 'validation_error');
+    assert.equal(duplicateDomainsPayload.message, 'sourceDomains must not contain duplicate values');
+    assert.deepEqual(duplicateDomainsPayload.details.duplicateSourceDomains, ['example-1.com']);
+
     const validDomainsRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         targetCompetitorCount: 15,
         sources: ['public_web', 'legal_pages', 'selected_listings'],
-        sourceDomains: [' EXAMPLE-1.com ', 'example-1.com', 'example-2.com', 'EXAMPLE-2.COM']
+        sourceDomains: [' EXAMPLE-1.com ', 'example-2.com']
       })
     });
     assert.equal(validDomainsRes.status, 202);

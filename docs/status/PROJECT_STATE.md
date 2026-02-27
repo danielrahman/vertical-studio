@@ -93,6 +93,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 72. Vertical research `sourceDomains` payload-shape validation implemented (`VS3-IMP-065`): vertical research build now rejects non-string/blank `sourceDomains` entries with deterministic `validation_error` details and persists trim-normalized unique domain values.
 73. Vertical research `sourceDomains` domain-format validation implemented (`VS3-IMP-066`): vertical research build now rejects malformed/non-domain `sourceDomains` values with deterministic `validation_error` details and lowercases valid hostnames before de-duplication.
 74. Vertical research duplicate-source validation implemented (`VS3-IMP-067`): vertical research build now rejects duplicate `sources` class values with deterministic `validation_error` details (`duplicateSources`), enforcing unambiguous source-policy input shape.
+75. Vertical research duplicate-sourceDomain validation implemented (`VS3-IMP-068`): vertical research build now rejects duplicate `sourceDomains` values after trim/lowercase normalization with deterministic `validation_error` details (`duplicateSourceDomains`), enforcing unambiguous competitor-domain sampling inputs.
 
 ## In Progress
 

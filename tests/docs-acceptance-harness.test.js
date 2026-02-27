@@ -477,13 +477,28 @@ test('WS-B contract: vertical research build validates and normalizes sourceDoma
     assert.equal(malformedPayload.message, 'sourceDomains must contain valid domain hostnames when provided');
     assert.deepEqual(malformedPayload.details.invalidSourceDomains, ['https://example-1.com', 'example']);
 
+    const duplicateResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings'],
+        sourceDomains: [' EXAMPLE-1.com ', 'example-1.com']
+      })
+    });
+    assert.equal(duplicateResponse.status, 400);
+    const duplicatePayload = await duplicateResponse.json();
+    assert.equal(duplicatePayload.code, 'validation_error');
+    assert.equal(duplicatePayload.message, 'sourceDomains must not contain duplicate values');
+    assert.deepEqual(duplicatePayload.details.duplicateSourceDomains, ['example-1.com']);
+
     const validResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         targetCompetitorCount: 15,
         sources: ['public_web', 'legal_pages', 'selected_listings'],
-        sourceDomains: [' EXAMPLE-1.com ', 'example-1.com', 'example-2.com', 'EXAMPLE-2.COM']
+        sourceDomains: [' EXAMPLE-1.com ', 'example-2.com']
       })
     });
     assert.equal(validResponse.status, 202);
