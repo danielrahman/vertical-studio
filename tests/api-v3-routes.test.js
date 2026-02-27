@@ -335,7 +335,7 @@ test('public runtime resolves active site version by host and serves immutable s
     assert.equal(firstResolveBody.storageKey, firstPublishBody.storageKey);
 
     const firstSnapshotRes = await fetch(
-      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-runtime-1&versionId=${firstPublishBody.versionId}`
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(firstResolveBody.storageKey)}`
     );
     assert.equal(firstSnapshotRes.status, 200);
     const firstSnapshotBody = await firstSnapshotRes.json();
@@ -363,14 +363,14 @@ test('public runtime resolves active site version by host and serves immutable s
     assert.notEqual(secondResolveBody.versionId, firstPublishBody.versionId);
 
     const immutableFirstSnapshotRes = await fetch(
-      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-runtime-1&versionId=${firstPublishBody.versionId}`
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(firstPublishBody.storageKey)}`
     );
     assert.equal(immutableFirstSnapshotRes.status, 200);
     const immutableFirstSnapshotBody = await immutableFirstSnapshotRes.json();
     assert.equal(immutableFirstSnapshotBody.snapshot.proposalId, 'proposal-runtime-a');
 
     const latestSnapshotRes = await fetch(
-      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-runtime-1&versionId=${secondPublishBody.versionId}`
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(secondResolveBody.storageKey)}`
     );
     assert.equal(latestSnapshotRes.status, 200);
     const latestSnapshotBody = await latestSnapshotRes.json();
@@ -471,7 +471,7 @@ test('post-publish draft edits do not affect live runtime snapshot pointer', asy
     assert.equal(beforeResolve.versionId, publishBody.versionId);
 
     const beforeSnapshotRes = await fetch(
-      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-live-immutable&versionId=${beforeResolve.versionId}`
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(beforeResolve.storageKey)}`
     );
     assert.equal(beforeSnapshotRes.status, 200);
     const beforeSnapshot = await beforeSnapshotRes.json();
@@ -517,7 +517,7 @@ test('post-publish draft edits do not affect live runtime snapshot pointer', asy
     assert.equal(afterResolve.versionId, beforeResolve.versionId);
 
     const afterSnapshotRes = await fetch(
-      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-live-immutable&versionId=${afterResolve.versionId}`
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(afterResolve.storageKey)}`
     );
     assert.equal(afterSnapshotRes.status, 200);
     const afterSnapshot = await afterSnapshotRes.json();
@@ -564,6 +564,42 @@ test('publish and rollback endpoints require internal_admin role', async () => {
     assert.equal(rollbackForbiddenRes.status, 403);
     const rollbackForbiddenBody = await rollbackForbiddenRes.json();
     assert.equal(rollbackForbiddenBody.code, 'forbidden');
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('public runtime snapshot by storage key returns immutable payload and 404 for unknown key', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-storage-key/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-storage-key-1',
+        proposalId: 'proposal-storage-key-1',
+        host: 'storage-key.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const snapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(publishBody.storageKey)}`
+    );
+    assert.equal(snapshotRes.status, 200);
+    const snapshotBody = await snapshotRes.json();
+    assert.equal(snapshotBody.storageKey, publishBody.storageKey);
+    assert.equal(snapshotBody.immutable, true);
+    assert.equal(snapshotBody.snapshot.proposalId, 'proposal-storage-key-1');
+
+    const missingRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent('site-versions/site-storage-key/missing.json')}`
+    );
+    assert.equal(missingRes.status, 404);
+    const missingBody = await missingRes.json();
+    assert.equal(missingBody.code, 'runtime_snapshot_not_found');
   } finally {
     await stopServer(server);
   }

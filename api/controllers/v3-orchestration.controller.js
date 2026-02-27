@@ -179,6 +179,22 @@ function buildRuntimeSnapshot({ siteId, versionId, draftId, proposalId }) {
   };
 }
 
+function loadRuntimeSnapshotByStorageKey(req, storageKey) {
+  const state = getState(req);
+  const snapshot = state.runtimeSnapshotsByStorageKey.get(storageKey);
+  if (!snapshot) {
+    throw createError('Runtime snapshot not found', 404, 'runtime_snapshot_not_found');
+  }
+
+  return {
+    siteId: snapshot.siteId,
+    versionId: snapshot.versionId,
+    storageKey,
+    immutable: true,
+    snapshot
+  };
+}
+
 function postCreateTenant(req, res, next) {
   try {
     const state = getState(req);
@@ -885,18 +901,18 @@ function getPublicRuntimeSnapshot(req, res, next) {
       throw createError('Runtime version not found', 404, 'runtime_version_not_found');
     }
 
-    const snapshot = state.runtimeSnapshotsByStorageKey.get(version.storageKey);
-    if (!snapshot) {
-      throw createError('Runtime snapshot not found', 404, 'runtime_snapshot_not_found');
-    }
+    const response = loadRuntimeSnapshotByStorageKey(req, version.storageKey);
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+}
 
-    res.status(200).json({
-      siteId: req.query.siteId,
-      versionId: req.query.versionId,
-      storageKey: version.storageKey,
-      immutable: true,
-      snapshot
-    });
+function getPublicRuntimeSnapshotByStorageKey(req, res, next) {
+  try {
+    assertString(req.query.storageKey, 'storageKey');
+    const response = loadRuntimeSnapshotByStorageKey(req, req.query.storageKey);
+    res.status(200).json(response);
   } catch (error) {
     next(error);
   }
@@ -1013,6 +1029,7 @@ module.exports = {
   getLatestSecurityReport,
   getPublicRuntimeResolve,
   getPublicRuntimeSnapshot,
+  getPublicRuntimeSnapshotByStorageKey,
   postCmsPublishWebhook,
   postSecretRef
 };

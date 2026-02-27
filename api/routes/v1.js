@@ -43,6 +43,7 @@ const {
   getLatestSecurityReport,
   getPublicRuntimeResolve,
   getPublicRuntimeSnapshot,
+  getPublicRuntimeSnapshotByStorageKey,
   postCmsPublishWebhook,
   postSecretRef
 } = require('../controllers/v3-orchestration.controller');
@@ -100,6 +101,7 @@ router.get('/sites/:siteId/quality/latest', getLatestQualityReport);
 router.get('/sites/:siteId/security/latest', getLatestSecurityReport);
 router.get('/public/runtime/resolve', getPublicRuntimeResolve);
 router.get('/public/runtime/snapshot', getPublicRuntimeSnapshot);
+router.get('/public/runtime/snapshot/by-storage-key', getPublicRuntimeSnapshotByStorageKey);
 
 router.post('/cms/webhooks/publish', postCmsPublishWebhook);
 router.post('/secrets/refs', postSecretRef);

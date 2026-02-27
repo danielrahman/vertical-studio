@@ -401,6 +401,13 @@ test('WS-E invariant: post-publish draft edits do not alter live immutable runti
     const preEditResolve = await preEditResolveRes.json();
     assert.equal(preEditResolve.versionId, publishBody.versionId);
 
+    const preEditSnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(preEditResolve.storageKey)}`
+    );
+    assert.equal(preEditSnapshotRes.status, 200);
+    const preEditSnapshot = await preEditSnapshotRes.json();
+    assert.equal(preEditSnapshot.snapshot.proposalId, 'proposal-wse-v1');
+
     const draftEditRes = await fetch(`${baseUrl}/api/v1/sites/site-wse-live/compose/propose`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -417,6 +424,13 @@ test('WS-E invariant: post-publish draft edits do not alter live immutable runti
     assert.equal(postEditResolveRes.status, 200);
     const postEditResolve = await postEditResolveRes.json();
     assert.equal(postEditResolve.versionId, publishBody.versionId);
+
+    const postEditSnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(postEditResolve.storageKey)}`
+    );
+    assert.equal(postEditSnapshotRes.status, 200);
+    const postEditSnapshot = await postEditSnapshotRes.json();
+    assert.equal(postEditSnapshot.snapshot.proposalId, 'proposal-wse-v1');
   } finally {
     await stopServer(server);
   }

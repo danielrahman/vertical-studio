@@ -5,7 +5,7 @@ Public runtime skeleton for v3 immutable snapshot rendering.
 ## Runtime Flow
 
 1. Resolve active version by host via `GET /api/v1/public/runtime/resolve?host=<host>`.
-2. Fetch immutable snapshot by `{siteId, versionId}` via `GET /api/v1/public/runtime/snapshot`.
+2. Fetch immutable snapshot by `storageKey` via `GET /api/v1/public/runtime/snapshot/by-storage-key`.
 3. Render snapshot payload into runtime HTML.
 
 ## Local Module

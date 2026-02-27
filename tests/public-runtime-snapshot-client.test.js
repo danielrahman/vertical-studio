@@ -91,6 +91,10 @@ test('renderSiteFromRuntime resolves active version, fetches immutable snapshot,
   });
 
   assert.equal(calls.length, 2);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-1%2Fversion-2.json'
+  );
   assert.equal(result.resolved.versionId, 'version-2');
   assert.equal(result.snapshot.immutable, true);
   assert.equal(result.html.includes('Premium projects'), true);
@@ -112,8 +116,7 @@ test('fetchRuntimeSnapshot surfaces API error metadata', async () => {
   await assert.rejects(
     fetchRuntimeSnapshot({
       apiBaseUrl: 'http://localhost:3000',
-      siteId: 'site-1',
-      versionId: 'missing-version',
+      storageKey: 'site-versions/site-1/missing-version.json',
       fetchImpl
     }),
     (error) => {

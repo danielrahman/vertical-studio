@@ -31,14 +31,22 @@ async function resolveRuntimeVersion({ apiBaseUrl, host, fetchImpl = fetch }) {
   return readJson(response);
 }
 
-async function fetchRuntimeSnapshot({ apiBaseUrl, siteId, versionId, fetchImpl = fetch }) {
+async function fetchRuntimeSnapshot({ apiBaseUrl, storageKey, siteId, versionId, fetchImpl = fetch }) {
   assertNonEmptyString(apiBaseUrl, 'apiBaseUrl');
-  assertNonEmptyString(siteId, 'siteId');
-  assertNonEmptyString(versionId, 'versionId');
 
   const baseUrl = trimTrailingSlash(apiBaseUrl.trim());
-  const query = `siteId=${encodeURIComponent(siteId)}&versionId=${encodeURIComponent(versionId)}`;
-  const response = await fetchImpl(`${baseUrl}/api/v1/public/runtime/snapshot?${query}`);
+  let endpoint;
+  if (typeof storageKey === 'string' && storageKey.trim()) {
+    const query = `storageKey=${encodeURIComponent(storageKey)}`;
+    endpoint = `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?${query}`;
+  } else {
+    assertNonEmptyString(siteId, 'siteId');
+    assertNonEmptyString(versionId, 'versionId');
+    const query = `siteId=${encodeURIComponent(siteId)}&versionId=${encodeURIComponent(versionId)}`;
+    endpoint = `${baseUrl}/api/v1/public/runtime/snapshot?${query}`;
+  }
+
+  const response = await fetchImpl(endpoint);
   return readJson(response);
 }
 
@@ -69,8 +77,7 @@ async function renderSiteFromRuntime({ apiBaseUrl, host, fetchImpl = fetch }) {
   const resolved = await resolveRuntimeVersion({ apiBaseUrl, host, fetchImpl });
   const snapshot = await fetchRuntimeSnapshot({
     apiBaseUrl,
-    siteId: resolved.siteId,
-    versionId: resolved.versionId,
+    storageKey: resolved.storageKey,
     fetchImpl
   });
 
