@@ -4,6 +4,7 @@ const { ComposeCopyService } = require('../../services/compose-copy-service');
 const { PublishGateService, isQualityP0Finding } = require('../../services/publish-gate-service');
 
 const SUPPORTED_RESEARCH_SOURCES = new Set(['public_web', 'legal_pages', 'selected_listings']);
+const SOURCE_DOMAIN_PATTERN = /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
 const QUALITY_GATE_FAMILIES = ['COPY', 'LAYOUT', 'MEDIA', 'LEGAL'];
 const QUALITY_SEVERITY_LEVELS = new Set(['P0', 'P1', 'P2']);
 const SECURITY_SEVERITY_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
@@ -706,6 +707,10 @@ function getContractCatalogVersion(contract) {
   return '';
 }
 
+function isValidSourceDomain(value) {
+  return SOURCE_DOMAIN_PATTERN.test(value);
+}
+
 function resolveComponentContractsForCatalogVersion(state, catalogVersion) {
   return Array.from(state.componentContracts.values()).filter((contract) => {
     return getContractCatalogVersion(contract) === catalogVersion;
@@ -990,15 +995,18 @@ function postVerticalResearchBuild(req, res, next) {
         allowedSources: Array.from(SUPPORTED_RESEARCH_SOURCES).sort()
       });
     }
-    const invalidSourceDomains = rawSourceDomains.filter((domain) => {
-      return typeof domain !== 'string' || !domain.trim();
+    const normalizedSourceDomains = rawSourceDomains.map((domain) => {
+      return typeof domain === 'string' ? domain.trim().toLowerCase() : domain;
+    });
+    const invalidSourceDomains = normalizedSourceDomains.filter((domain) => {
+      return typeof domain !== 'string' || !domain || !isValidSourceDomain(domain);
     });
     if (invalidSourceDomains.length > 0) {
-      throw createError('sourceDomains must contain non-empty strings when provided', 400, 'validation_error', {
+      throw createError('sourceDomains must contain valid domain hostnames when provided', 400, 'validation_error', {
         invalidSourceDomains
       });
     }
-    const sourceDomains = Array.from(new Set(rawSourceDomains.map((domain) => domain.trim())));
+    const sourceDomains = Array.from(new Set(normalizedSourceDomains));
 
     const state = getState(req);
     const verticalKey = req.params.verticalKey;

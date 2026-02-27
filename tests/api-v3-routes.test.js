@@ -224,8 +224,23 @@ test('vertical research build validates sourceDomains entries and persists norma
     assert.equal(invalidDomainsRes.status, 400);
     const invalidDomainsPayload = await invalidDomainsRes.json();
     assert.equal(invalidDomainsPayload.code, 'validation_error');
-    assert.equal(invalidDomainsPayload.message, 'sourceDomains must contain non-empty strings when provided');
-    assert.deepEqual(invalidDomainsPayload.details.invalidSourceDomains, [' ', 123]);
+    assert.equal(invalidDomainsPayload.message, 'sourceDomains must contain valid domain hostnames when provided');
+    assert.deepEqual(invalidDomainsPayload.details.invalidSourceDomains, ['', 123]);
+
+    const malformedDomainsRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings'],
+        sourceDomains: ['https://example-1.com', 'example']
+      })
+    });
+    assert.equal(malformedDomainsRes.status, 400);
+    const malformedDomainsPayload = await malformedDomainsRes.json();
+    assert.equal(malformedDomainsPayload.code, 'validation_error');
+    assert.equal(malformedDomainsPayload.message, 'sourceDomains must contain valid domain hostnames when provided');
+    assert.deepEqual(malformedDomainsPayload.details.invalidSourceDomains, ['https://example-1.com', 'example']);
 
     const validDomainsRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
@@ -233,7 +248,7 @@ test('vertical research build validates sourceDomains entries and persists norma
       body: JSON.stringify({
         targetCompetitorCount: 15,
         sources: ['public_web', 'legal_pages', 'selected_listings'],
-        sourceDomains: [' example-1.com ', 'example-1.com', 'example-2.com']
+        sourceDomains: [' EXAMPLE-1.com ', 'example-1.com', 'example-2.com', 'EXAMPLE-2.COM']
       })
     });
     assert.equal(validDomainsRes.status, 202);

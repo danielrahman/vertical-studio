@@ -437,8 +437,23 @@ test('WS-B contract: vertical research build validates and normalizes sourceDoma
     assert.equal(invalidResponse.status, 400);
     const invalidPayload = await invalidResponse.json();
     assert.equal(invalidPayload.code, 'validation_error');
-    assert.equal(invalidPayload.message, 'sourceDomains must contain non-empty strings when provided');
+    assert.equal(invalidPayload.message, 'sourceDomains must contain valid domain hostnames when provided');
     assert.deepEqual(invalidPayload.details.invalidSourceDomains, ['', 123]);
+
+    const malformedResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings'],
+        sourceDomains: ['https://example-1.com', 'example']
+      })
+    });
+    assert.equal(malformedResponse.status, 400);
+    const malformedPayload = await malformedResponse.json();
+    assert.equal(malformedPayload.code, 'validation_error');
+    assert.equal(malformedPayload.message, 'sourceDomains must contain valid domain hostnames when provided');
+    assert.deepEqual(malformedPayload.details.invalidSourceDomains, ['https://example-1.com', 'example']);
 
     const validResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
@@ -446,7 +461,7 @@ test('WS-B contract: vertical research build validates and normalizes sourceDoma
       body: JSON.stringify({
         targetCompetitorCount: 15,
         sources: ['public_web', 'legal_pages', 'selected_listings'],
-        sourceDomains: [' example-1.com ', 'example-1.com', 'example-2.com']
+        sourceDomains: [' EXAMPLE-1.com ', 'example-1.com', 'example-2.com', 'EXAMPLE-2.COM']
       })
     });
     assert.equal(validResponse.status, 202);
