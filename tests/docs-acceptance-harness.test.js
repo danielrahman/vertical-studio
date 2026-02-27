@@ -435,6 +435,28 @@ test('WS-B contract: publish is blocked when required low-confidence extraction 
   }
 });
 
+test('WS-F contract: publish rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-publish-unknown/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsf-publish-unknown-1',
+        proposalId: 'proposal-wsf-publish-unknown-1',
+        dryRun: true
+      })
+    });
+    assert.equal(publishRes.status, 400);
+    const payload = await publishRes.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.deepEqual(payload.details.unknownFields, ['dryRun']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: compose requires loaded component contracts for requested catalogVersion', async () => {
   const { server, baseUrl } = await startServer();
 

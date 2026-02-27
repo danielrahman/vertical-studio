@@ -2347,6 +2347,29 @@ test('publish is blocked with low_confidence_review_required when required extra
   }
 });
 
+test('publish rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-publish-unknown/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-publish-unknown-1',
+        proposalId: 'proposal-publish-unknown-1',
+        dryRun: true
+      })
+    });
+    assert.equal(publishRes.status, 400);
+    const payload = await publishRes.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'publish payload contains unknown top-level fields');
+    assert.deepEqual(payload.details.unknownFields, ['dryRun']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('publish attempts emit privileged audit events for blocked and successful outcomes', async () => {
   const { server, baseUrl } = await startServer();
 

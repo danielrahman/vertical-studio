@@ -428,6 +428,9 @@ Blocking rules:
 1. Block on any quality `P0` fail.
 2. Block on any unresolved security `critical/high` finding.
 
+Validation:
+1. Unknown top-level payload fields are rejected with `400 validation_error`.
+
 Response `200`:
 ```json
 {
