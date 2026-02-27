@@ -190,25 +190,11 @@ test('review transition validates allowed state movement and returns invalid_tra
   }
 });
 
-test('secret refs endpoint enforces naming policy and stores metadata only', async () => {
+test('secret refs endpoint enforces internal_admin ACL, naming policy, and metadata-only payloads', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
-    const invalidRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        tenantId: 'tenant-1',
-        ref: 'captcha.2captcha',
-        value: 'top-secret'
-      })
-    });
-
-    assert.equal(invalidRes.status, 400);
-    const invalidBody = await invalidRes.json();
-    assert.equal(invalidBody.code, 'validation_error');
-
-    const validRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+    const nonAdminRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
@@ -219,10 +205,105 @@ test('secret refs endpoint enforces naming policy and stores metadata only', asy
       })
     });
 
+    assert.equal(nonAdminRes.status, 403);
+    const nonAdminBody = await nonAdminRes.json();
+    assert.equal(nonAdminBody.code, 'forbidden');
+
+    const internalAdminHeaders = {
+      'content-type': 'application/json',
+      'x-user-role': 'internal_admin'
+    };
+
+    const invalidRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: internalAdminHeaders,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        ref: 'captcha.2captcha',
+        provider: '2captcha',
+        key: 'api'
+      })
+    });
+
+    assert.equal(invalidRes.status, 400);
+    const invalidBody = await invalidRes.json();
+    assert.equal(invalidBody.code, 'validation_error');
+
+    const plaintextRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: internalAdminHeaders,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'openai',
+        key: 'api',
+        value: 'top-secret'
+      })
+    });
+
+    assert.equal(plaintextRes.status, 400);
+    const plaintextBody = await plaintextRes.json();
+    assert.equal(plaintextBody.code, 'validation_error');
+    assert.equal(plaintextBody.details.field, 'value');
+
+    const mismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: internalAdminHeaders,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        tenantSlug: 'tenant-1',
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'openai',
+        key: 'other'
+      })
+    });
+
+    assert.equal(mismatchRes.status, 400);
+    const mismatchBody = await mismatchRes.json();
+    assert.equal(mismatchBody.code, 'validation_error');
+    assert.equal(mismatchBody.details.field, 'key');
+
+    const validRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: internalAdminHeaders,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        tenantSlug: 'tenant-1',
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'openai',
+        key: 'api',
+        label: 'OpenAI API Key'
+      })
+    });
+
     assert.equal(validRes.status, 201);
     const payload = await validRes.json();
+    assert.equal(payload.secretRefId.length > 0, true);
+    assert.equal(payload.tenantSlug, 'tenant-1');
     assert.equal(payload.ref, 'tenant.tenant-1.openai.api');
+    assert.equal(payload.label, 'OpenAI API Key');
     assert.equal('value' in payload, false);
+
+    const updatedRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: internalAdminHeaders,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        tenantSlug: 'tenant-1',
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'openai',
+        key: 'api',
+        description: 'Primary OpenAI tenant key'
+      })
+    });
+
+    assert.equal(updatedRes.status, 200);
+    const updatedPayload = await updatedRes.json();
+    assert.equal(updatedPayload.secretRefId, payload.secretRefId);
+    assert.equal(updatedPayload.description, 'Primary OpenAI tenant key');
+    assert.equal(updatedPayload.tenantId, 'tenant-1');
+    assert.equal(updatedPayload.provider, 'openai');
+    assert.equal(updatedPayload.key, 'api');
   } finally {
     await stopServer(server);
   }

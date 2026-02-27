@@ -4,7 +4,9 @@ const { ComposeCopyService } = require('../../services/compose-copy-service');
 const { PublishGateService } = require('../../services/publish-gate-service');
 
 const SUPPORTED_RESEARCH_SOURCES = new Set(['public_web', 'legal_pages', 'selected_listings']);
-const SECRET_REF_PATTERN = /^tenant\.[a-z0-9-]+\.[a-z0-9-]+\.[a-z0-9-]+$/;
+const SECRET_REF_PATTERN = /^tenant\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+)$/;
+const SECRET_REF_SEGMENT_PATTERN = /^[a-z0-9-]+$/;
+const SECRET_VALUE_KEYS = ['value', 'secret', 'secretValue', 'plaintext', 'token', 'apiKey', 'privateKey'];
 const reviewTransitionGuard = new ReviewTransitionGuardService();
 const composeCopyService = new ComposeCopyService();
 const publishGateService = new PublishGateService();
@@ -19,6 +21,15 @@ function createError(message, statusCode, code, details) {
   return error;
 }
 
+function normalizeOptionalString(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const normalized = value.trim();
+  return normalized || null;
+}
+
 function getState(req) {
   if (!req.app.locals.v3State) {
     req.app.locals.v3State = {
@@ -31,7 +42,8 @@ function getState(req) {
       copyCandidatesByDraft: new Map(),
       overridesByDraft: new Map(),
       copySelectionsByDraft: new Map(),
-      secretRefs: new Map()
+      secretRefs: new Map(),
+      auditEvents: []
     };
 
     const heroContract = {
@@ -68,6 +80,53 @@ function getState(req) {
 function assertString(value, fieldName) {
   if (!value || typeof value !== 'string') {
     throw createError(`${fieldName} is required`, 400, 'validation_error');
+  }
+}
+
+function assertSegment(value, fieldName) {
+  if (typeof value !== 'string' || !SECRET_REF_SEGMENT_PATTERN.test(value)) {
+    throw createError(`${fieldName} must contain only lowercase letters, numbers, and hyphen`, 400, 'validation_error', {
+      field: fieldName
+    });
+  }
+
+  return value;
+}
+
+function parseSecretRef(ref) {
+  const match = SECRET_REF_PATTERN.exec(ref);
+  if (!match) {
+    throw createError('ref must match tenant.<slug>.<provider>.<key>', 400, 'validation_error', { field: 'ref' });
+  }
+
+  return {
+    tenantSlug: match[1],
+    provider: match[2],
+    key: match[3]
+  };
+}
+
+function assertInternalAdmin(req) {
+  const headerRole =
+    typeof req.headers['x-user-role'] === 'string' ? req.headers['x-user-role'].trim() : null;
+  const bodyRole = typeof req.body?.actorRole === 'string' ? req.body.actorRole.trim() : null;
+  const role = headerRole || bodyRole;
+
+  if (role !== 'internal_admin') {
+    throw createError('internal_admin role required', 403, 'forbidden', {
+      requiredRole: 'internal_admin'
+    });
+  }
+}
+
+function assertNoPlaintextSecretPayload(body) {
+  const payload = body && typeof body === 'object' ? body : {};
+  const forbiddenField = SECRET_VALUE_KEYS.find((field) => Object.hasOwn(payload, field));
+
+  if (forbiddenField) {
+    throw createError('plaintext secret values are not allowed in metadata payloads', 400, 'validation_error', {
+      field: forbiddenField
+    });
   }
 }
 
@@ -590,28 +649,76 @@ function postCmsPublishWebhook(req, res, next) {
 
 function postSecretRef(req, res, next) {
   try {
-    const ref = req.body?.ref;
-    if (typeof ref !== 'string' || !SECRET_REF_PATTERN.test(ref)) {
-      throw createError(
-        'ref must match tenant.<slug>.<provider>.<key>',
-        400,
-        'validation_error',
-        { field: 'ref' }
-      );
+    assertInternalAdmin(req);
+    assertNoPlaintextSecretPayload(req.body);
+
+    const ref = normalizeOptionalString(req.body?.ref);
+    if (!ref) {
+      throw createError('ref is required', 400, 'validation_error', { field: 'ref' });
+    }
+
+    const refParts = parseSecretRef(ref);
+    const tenantId = normalizeOptionalString(req.body?.tenantId);
+    if (!tenantId) {
+      throw createError('tenantId is required', 400, 'validation_error', { field: 'tenantId' });
+    }
+
+    const provider = assertSegment(normalizeOptionalString(req.body?.provider), 'provider');
+    const key = assertSegment(normalizeOptionalString(req.body?.key), 'key');
+
+    if (provider !== refParts.provider) {
+      throw createError('provider must match ref segment', 400, 'validation_error', {
+        field: 'provider'
+      });
+    }
+
+    if (key !== refParts.key) {
+      throw createError('key must match ref segment', 400, 'validation_error', {
+        field: 'key'
+      });
+    }
+
+    const providedTenantSlug = normalizeOptionalString(req.body?.tenantSlug);
+    if (providedTenantSlug !== null && assertSegment(providedTenantSlug, 'tenantSlug') !== refParts.tenantSlug) {
+      throw createError('tenantSlug must match ref segment', 400, 'validation_error', {
+        field: 'tenantSlug'
+      });
     }
 
     const state = getState(req);
+    const now = new Date().toISOString();
+    const existingMetadata = state.secretRefs.get(ref);
+    if (existingMetadata && existingMetadata.tenantId !== tenantId) {
+      throw createError('tenantId cannot change for an existing secret ref', 409, 'secret_ref_conflict', {
+        field: 'tenantId'
+      });
+    }
+
     const metadata = {
-      tenantId: typeof req.body?.tenantId === 'string' ? req.body.tenantId : null,
+      secretRefId: existingMetadata?.secretRefId || randomUUID(),
+      tenantId,
+      tenantSlug: refParts.tenantSlug,
       ref,
-      provider: typeof req.body?.provider === 'string' ? req.body.provider : null,
-      key: typeof req.body?.key === 'string' ? req.body.key : null,
-      updatedAt: new Date().toISOString()
+      provider,
+      key,
+      label: normalizeOptionalString(req.body?.label),
+      description: normalizeOptionalString(req.body?.description),
+      createdAt: existingMetadata?.createdAt || now,
+      updatedAt: now
     };
 
     state.secretRefs.set(ref, metadata);
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: existingMetadata ? 'secret_ref_updated' : 'secret_ref_created',
+      occurredAt: now,
+      entityType: 'secret_ref',
+      entityId: metadata.secretRefId,
+      tenantId,
+      ref
+    });
 
-    res.status(201).json(metadata);
+    res.status(existingMetadata ? 200 : 201).json(metadata);
   } catch (error) {
     next(error);
   }

@@ -20,7 +20,6 @@
 | VS3-IMP-005 | Implement review state transition guard service                       | done        | codex | Added dedicated guard service with reason codes (`state_mismatch`, `event_mismatch`, `reason_required`) |
 | VS3-IMP-006 | Implement compose/copy skeleton with bounded slot validation          | done        | codex | Added deterministic compose IDs, slot model, and bounded candidate generation (`A/B/C` vs `SINGLE`) |
 | VS3-IMP-007 | Implement publish gate skeleton (quality/security blockers)           | done        | codex | Added publish gate evaluator for quality `P0` and unresolved security `critical/high` |
-| VS3-IMP-008 | Implement secret-ref metadata model and ACL (`internal_admin`)        | todo        | codex | Ref naming `tenant.<slug>.<provider>.<key>`                                             |
-| VS3-IMP-009 | Implement ops review flow for variant selection and overrides         | todo        | codex | Internal admin only transitions                                                         |
+| VS3-IMP-008 | Implement secret-ref metadata model and ACL (`internal_admin`)        | done        | codex | Added strict secret metadata validation, `internal_admin` ACL, and no-plaintext payload guard |
+| VS3-IMP-009 | Implement ops review flow for variant selection and overrides         | in_progress | codex | Internal admin only transitions                                                         |
 | VS3-IMP-010 | Implement public runtime snapshot rendering skeleton                  | todo        | codex | Dynamic immutable version fetch                                                         |
-

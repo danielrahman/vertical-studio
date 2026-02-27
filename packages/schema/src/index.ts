@@ -153,6 +153,64 @@ export const ReviewTransitionRequestSchema = z.object({
 });
 export type ReviewTransitionRequest = z.infer<typeof ReviewTransitionRequestSchema>;
 
+export const SECRET_REF_PATTERN = /^tenant\.[a-z0-9-]+\.[a-z0-9-]+\.[a-z0-9-]+$/;
+export const SECRET_REF_SEGMENT_PATTERN = /^[a-z0-9-]+$/;
+
+function getSecretRefSegments(ref: string) {
+  const segments = ref.split('.');
+  if (segments.length !== 4 || segments[0] !== 'tenant') {
+    return null;
+  }
+
+  const [_, tenantSlug, provider, key] = segments;
+  return { tenantSlug, provider, key };
+}
+
+export const SecretRefMetadataSchema = z
+  .object({
+    secretRefId: z.string().min(1),
+    tenantId: z.string().min(1),
+    tenantSlug: z.string().regex(SECRET_REF_SEGMENT_PATTERN),
+    ref: z.string().regex(SECRET_REF_PATTERN),
+    provider: z.string().regex(SECRET_REF_SEGMENT_PATTERN),
+    key: z.string().regex(SECRET_REF_SEGMENT_PATTERN),
+    label: z.string().min(1).nullable(),
+    description: z.string().min(1).nullable(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime()
+  })
+  .superRefine((payload, ctx) => {
+    const segments = getSecretRefSegments(payload.ref);
+    if (!segments) {
+      return;
+    }
+
+    if (segments.tenantSlug !== payload.tenantSlug) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['tenantSlug'],
+        message: 'tenantSlug must match ref segment'
+      });
+    }
+
+    if (segments.provider !== payload.provider) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['provider'],
+        message: 'provider must match ref segment'
+      });
+    }
+
+    if (segments.key !== payload.key) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['key'],
+        message: 'key must match ref segment'
+      });
+    }
+  });
+export type SecretRefMetadata = z.infer<typeof SecretRefMetadataSchema>;
+
 export const ManualOverrideSchema = z.object({
   draftId: z.string().min(1),
   tone: z.array(z.string()).default([]),

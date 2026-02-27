@@ -5,6 +5,7 @@ import {
   CopyCandidateSchema,
   ExtractedUnknownFieldSchema,
   ReviewTransitionRequestSchema,
+  SecretRefMetadataSchema,
   VerticalResearchBuildRequestSchema,
   VerticalStandardSchema
 } from '../../packages/schema/src/index';
@@ -111,5 +112,36 @@ describe('schema contracts', () => {
 
     expect(invalid.success).toBe(false);
     expect(valid.success).toBe(true);
+  });
+
+  it('enforces secret ref naming and metadata segment consistency', () => {
+    const valid = SecretRefMetadataSchema.safeParse({
+      secretRefId: 'secret-ref-1',
+      tenantId: 'tenant-1',
+      tenantSlug: 'tenant-1',
+      ref: 'tenant.tenant-1.openai.api',
+      provider: 'openai',
+      key: 'api',
+      label: 'OpenAI key',
+      description: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+
+    const invalid = SecretRefMetadataSchema.safeParse({
+      secretRefId: 'secret-ref-1',
+      tenantId: 'tenant-1',
+      tenantSlug: 'tenant-1',
+      ref: 'tenant.tenant-1.openai.api',
+      provider: 'openai',
+      key: 'service',
+      label: 'OpenAI key',
+      description: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+
+    expect(valid.success).toBe(true);
+    expect(invalid.success).toBe(false);
   });
 });
