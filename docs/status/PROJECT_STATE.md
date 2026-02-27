@@ -80,6 +80,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 59. Copy-select unknown-field payload guard implemented (`VS3-IMP-052`): copy selection now rejects unknown top-level request keys and unknown per-selection object fields with deterministic `validation_error` details, enforcing strict request-shape integrity for selection provenance workflows.
 60. Copy-generate unknown-field payload guard implemented (`VS3-IMP-053`): copy generation now rejects unknown top-level request keys with deterministic `validation_error` details, enforcing strict prompt-contract input shape before slot generation.
 61. Compose-propose unknown-field payload guard implemented (`VS3-IMP-054`): compose proposal generation now rejects unknown top-level request keys with deterministic `validation_error` details, enforcing strict prompt-contract input shape before deterministic variant composition.
+62. Compose-select unknown-field payload guard implemented (`VS3-IMP-055`): compose proposal selection now rejects unknown top-level request keys with deterministic `validation_error` details, enforcing strict request-shape integrity for internal-admin final variant selection.
 
 ## In Progress
 

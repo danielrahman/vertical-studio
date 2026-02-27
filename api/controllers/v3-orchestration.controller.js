@@ -18,6 +18,7 @@ const COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'verticalStandardVersion',
   'actorRole'
 ]);
+const COMPOSE_SELECT_ALLOWED_TOP_LEVEL_FIELDS = new Set(['draftId', 'proposalId', 'actorRole']);
 const COPY_GENERATE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'draftId',
   'locales',
@@ -1138,6 +1139,14 @@ function postComposeSelect(req, res, next) {
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
     assertString(req.body?.proposalId, 'proposalId');
+    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
+      return !COMPOSE_SELECT_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+    });
+    if (unknownTopLevelFields.length > 0) {
+      throw createError('compose select payload contains unknown top-level fields', 400, 'validation_error', {
+        unknownFields: unknownTopLevelFields
+      });
+    }
 
     const state = getState(req);
     const currentState = state.reviewStatesByDraft.get(req.body.draftId);

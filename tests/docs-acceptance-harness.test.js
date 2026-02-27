@@ -498,6 +498,56 @@ test('WS-D contract: compose rejects unknown top-level payload fields', async ()
   }
 });
 
+test('WS-D contract: compose select rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-wsd-compose-select-unknown';
+    const draftId = 'draft-wsd-compose-select-unknown-1';
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+    const proposePayload = await proposeRes.json();
+    const proposalId = proposePayload.variants[0].proposalId;
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const selectRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/compose/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        proposalId,
+        unknownField: true
+      })
+    });
+    assert.equal(selectRes.status, 400);
+    const selectPayload = await selectRes.json();
+    assert.equal(selectPayload.code, 'validation_error');
+    assert.deepEqual(selectPayload.details.unknownFields, ['unknownField']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: overrides requiredComponents must reference loaded component contracts', async () => {
   const { server, baseUrl } = await startServer();
 

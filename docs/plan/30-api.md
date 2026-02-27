@@ -270,6 +270,17 @@ Select one proposal as final composition.
 Auth:
 1. `internal_admin`
 
+Request:
+```json
+{
+  "draftId": "uuid",
+  "proposalId": "uuid"
+}
+```
+
+Rules:
+1. Unknown top-level payload fields are rejected with `400 validation_error`.
+
 ### 4.5 Copy Lifecycle
 
 #### `POST /api/v1/sites/:siteId/copy/generate`

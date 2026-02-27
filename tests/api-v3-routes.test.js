@@ -636,6 +636,57 @@ test('compose propose audit event persists structured prompt payload contract fi
   }
 });
 
+test('compose select rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-compose-select-unknown-fields';
+    const siteId = 'site-compose-select-unknown-fields';
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+    const proposeBody = await proposeRes.json();
+    const proposalId = proposeBody.variants[0].proposalId;
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const response = await fetch(`${baseUrl}/api/v1/sites/${siteId}/compose/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        proposalId,
+        overrideMode: 'manual'
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'compose select payload contains unknown top-level fields');
+    assert.deepEqual(payload.details.unknownFields, ['overrideMode']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('compose/copy mutation endpoints require internal_admin role', async () => {
   const { server, baseUrl } = await startServer();
 
