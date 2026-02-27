@@ -514,6 +514,23 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(nonBooleanLowConfidencePayload.message, 'lowConfidence must be a boolean when provided');
     assert.equal(nonBooleanLowConfidencePayload.details.invalidField, 'lowConfidence');
 
+    const nonObjectSitePolicyResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          sitePolicy: 'not-an-object'
+        })
+      }
+    );
+    assert.equal(nonObjectSitePolicyResponse.status, 400);
+    const nonObjectSitePolicyPayload = await nonObjectSitePolicyResponse.json();
+    assert.equal(nonObjectSitePolicyPayload.code, 'validation_error');
+    assert.equal(nonObjectSitePolicyPayload.message, 'sitePolicy must be an object when provided');
+    assert.equal(nonObjectSitePolicyPayload.details.invalidField, 'sitePolicy');
+
     const nonArrayFieldsResponse = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

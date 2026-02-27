@@ -100,6 +100,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 79. Vertical research competitor-minimum validation details implemented (`VS3-IMP-072`): vertical research build now returns deterministic `insufficient_competitor_sample` details (`minimumTargetCompetitorCount`, `receivedTargetCompetitorCount`) when `targetCompetitorCount` violates the `>= 15` contract.
 80. Bootstrap `extractedFields` array-type enforcement implemented (`VS3-IMP-073`): bootstrap-from-extraction now rejects non-array `extractedFields` payload values with deterministic `validation_error` details (`invalidField`) instead of coercing to empty arrays.
 81. Bootstrap `lowConfidence` boolean-type enforcement implemented (`VS3-IMP-074`): bootstrap-from-extraction now rejects non-boolean `lowConfidence` payload values with deterministic `validation_error` details (`invalidField`) instead of coercing truthy/falsy values.
+82. Bootstrap `sitePolicy` object-type enforcement implemented (`VS3-IMP-075`): bootstrap-from-extraction now rejects non-object `sitePolicy` payload values with deterministic `validation_error` details (`invalidField`) when provided.
 
 ## In Progress
 

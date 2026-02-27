@@ -929,6 +929,15 @@ function postBootstrapFromExtraction(req, res, next) {
         invalidField: 'lowConfidence'
       });
     }
+    const sitePolicyProvided = Object.prototype.hasOwnProperty.call(req.body || {}, 'sitePolicy');
+    if (
+      sitePolicyProvided &&
+      (typeof req.body?.sitePolicy !== 'object' || req.body?.sitePolicy === null || Array.isArray(req.body?.sitePolicy))
+    ) {
+      throw createError('sitePolicy must be an object when provided', 400, 'validation_error', {
+        invalidField: 'sitePolicy'
+      });
+    }
     const lowConfidence = req.body?.lowConfidence === true || requiredTodoCount > 0;
     const hasSitePolicyValue = typeof req.body?.sitePolicy?.allowOwnerDraftCopyEdits !== 'undefined';
     if (hasSitePolicyValue && typeof req.body?.sitePolicy?.allowOwnerDraftCopyEdits !== 'boolean') {
