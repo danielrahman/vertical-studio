@@ -419,7 +419,8 @@ test('non-public read endpoints require tenant-member or internal_admin role', a
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        locales: ['cs-CZ', 'en-US']
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(copyGenerateRes.status, 200);
@@ -582,7 +583,8 @@ test('compose/copy mutation endpoints require internal_admin role', async () => 
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         draftId: 'draft-acl-compose',
-        locales: ['cs-CZ', 'en-US']
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(copyGenerateForbiddenRes.status, 403);
@@ -611,6 +613,7 @@ test('copy generate rejects unsupported highImpactOnlyThreeVariants mode when pr
       body: JSON.stringify({
         draftId: 'draft-copy-mode',
         locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02',
         highImpactOnlyThreeVariants: false
       })
     });
@@ -627,6 +630,7 @@ test('copy generate rejects unsupported highImpactOnlyThreeVariants mode when pr
       body: JSON.stringify({
         draftId: 'draft-copy-mode',
         locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02',
         highImpactOnlyThreeVariants: true
       })
     });
@@ -645,7 +649,8 @@ test('copy generate enforces locale allow-list and normalizes duplicate locales'
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-copy-locales',
-        locales: ['cs-CZ', 'en-US', 'de-DE']
+        locales: ['cs-CZ', 'en-US', 'de-DE'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(invalidLocaleRes.status, 400);
@@ -659,7 +664,8 @@ test('copy generate enforces locale allow-list and normalizes duplicate locales'
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-copy-locales',
-        locales: ['cs-CZ', 'en-US', 'cs-CZ']
+        locales: ['cs-CZ', 'en-US', 'cs-CZ'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(duplicateLocaleRes.status, 200);
@@ -675,6 +681,27 @@ test('copy generate enforces locale allow-list and normalizes duplicate locales'
   }
 });
 
+test('copy generate requires verticalStandardVersion for prompt contract reproducibility', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingVersionRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-version/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-version',
+        locales: ['cs-CZ', 'en-US']
+      })
+    });
+    assert.equal(missingVersionRes.status, 400);
+    const missingVersionBody = await missingVersionRes.json();
+    assert.equal(missingVersionBody.code, 'validation_error');
+    assert.equal(missingVersionBody.message, 'verticalStandardVersion is required');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select rejects slotId/locale mismatch for an existing candidate', async () => {
   const { server, baseUrl } = await startServer();
 
@@ -685,7 +712,8 @@ test('copy select rejects slotId/locale mismatch for an existing candidate', asy
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        locales: ['cs-CZ', 'en-US']
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(generateRes.status, 200);
@@ -719,7 +747,8 @@ test('copy select rejects duplicate slotId/locale selections in one request', as
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        locales: ['cs-CZ', 'en-US']
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(generateRes.status, 200);
@@ -760,7 +789,8 @@ test('copy select allows owner only when site policy enables draft copy edits', 
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        locales: ['cs-CZ', 'en-US']
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(generateRes.status, 200);

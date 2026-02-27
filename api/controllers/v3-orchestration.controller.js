@@ -1042,6 +1042,7 @@ function postCopyGenerate(req, res, next) {
     assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
+    assertString(req.body?.verticalStandardVersion, 'verticalStandardVersion');
 
     const requestedLocales = Array.isArray(req.body?.locales) ? req.body.locales : [];
     const locales = Array.from(new Set(requestedLocales));

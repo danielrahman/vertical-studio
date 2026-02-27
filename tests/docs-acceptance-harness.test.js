@@ -338,7 +338,8 @@ test('WS-B contract: owner copy selection is blocked unless site policy allows d
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        locales: ['cs-CZ', 'en-US']
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(generateRes.status, 200);
@@ -444,6 +445,7 @@ test('WS-D contract: copy generation rejects unsupported high-impact variant mod
       body: JSON.stringify({
         draftId: 'draft-wsd-copy-1',
         locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02',
         highImpactOnlyThreeVariants: false
       })
     });
@@ -458,6 +460,7 @@ test('WS-D contract: copy generation rejects unsupported high-impact variant mod
       body: JSON.stringify({
         draftId: 'draft-wsd-copy-1',
         locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02',
         highImpactOnlyThreeVariants: true
       })
     });
@@ -476,7 +479,8 @@ test('WS-D contract: copy generation accepts only supported locales and de-dupli
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-wsd-locales-1',
-        locales: ['cs-CZ', 'en-US', 'de-DE']
+        locales: ['cs-CZ', 'en-US', 'de-DE'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(invalidLocaleRes.status, 400);
@@ -489,7 +493,8 @@ test('WS-D contract: copy generation accepts only supported locales and de-dupli
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-wsd-locales-1',
-        locales: ['cs-CZ', 'en-US', 'cs-CZ']
+        locales: ['cs-CZ', 'en-US', 'cs-CZ'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(duplicateLocaleRes.status, 200);
@@ -505,6 +510,27 @@ test('WS-D contract: copy generation accepts only supported locales and de-dupli
   }
 });
 
+test('WS-D contract: copy generation requires verticalStandardVersion', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingVersionRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-version/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-version-1',
+        locales: ['cs-CZ', 'en-US']
+      })
+    });
+    assert.equal(missingVersionRes.status, 400);
+    const missingVersionPayload = await missingVersionRes.json();
+    assert.equal(missingVersionPayload.code, 'validation_error');
+    assert.equal(missingVersionPayload.message, 'verticalStandardVersion is required');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy selection enforces unique slot-locale tuples per request', async () => {
   const { app, server, baseUrl } = await startServer();
 
@@ -515,7 +541,8 @@ test('WS-D contract: copy selection enforces unique slot-locale tuples per reque
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        locales: ['cs-CZ', 'en-US']
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(generateRes.status, 200);
@@ -560,7 +587,8 @@ test('acceptance scenario 4.1: bounded copy generation enforces candidate policy
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-copy-1',
-        locales: ['cs-CZ', 'en-US']
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
       })
     });
 

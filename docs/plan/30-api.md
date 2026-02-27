@@ -277,6 +277,7 @@ Request:
 ```json
 {
   "draftId": "uuid",
+  "verticalStandardVersion": "2026.02",
   "locales": ["cs-CZ", "en-US"],
   "highImpactOnlyThreeVariants": true
 }
@@ -303,6 +304,7 @@ Rules:
 3. Every candidate must satisfy slot hard limits before response finalization.
 4. If `highImpactOnlyThreeVariants` is present, it must be `true` (other values return `400 validation_error`).
 5. `locales` may contain only `cs-CZ` and `en-US`; unsupported locales return `400 validation_error`.
+6. `verticalStandardVersion` is required for versioned prompt/audit reproducibility.
 
 #### `GET /api/v1/sites/:siteId/copy/slots?draftId=:id`
 Read bounded slot definitions and generation status.
