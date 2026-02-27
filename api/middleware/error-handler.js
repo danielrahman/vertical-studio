@@ -13,15 +13,15 @@ function errorHandler(err, req, res, _next) {
     code = 'invalid_reference';
   }
 
+  const details =
+    err.details && typeof err.details === 'object' && !Array.isArray(err.details) ? err.details : {};
+
   const response = {
     code,
     message: err.message || 'Unexpected error',
-    requestId: req.id
+    requestId: req.id,
+    details
   };
-
-  if (err.details) {
-    response.details = err.details;
-  }
 
   res.status(statusCode).json(response);
 }

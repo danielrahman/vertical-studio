@@ -135,6 +135,44 @@ test('vertical research build enforces competitor minimum and exposes latest out
   }
 });
 
+test('error responses include mandatory envelope fields on middleware and controller paths', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const notFoundRequestId = 'req-not-found-envelope';
+    const notFoundRes = await fetch(`${baseUrl}/api/v1/route-does-not-exist`, {
+      headers: { 'x-request-id': notFoundRequestId }
+    });
+    assert.equal(notFoundRes.status, 404);
+    const notFoundBody = await notFoundRes.json();
+    assert.equal(notFoundBody.code, 'not_found');
+    assert.equal(typeof notFoundBody.message, 'string');
+    assert.equal(notFoundBody.requestId, notFoundRequestId);
+    assert.deepEqual(notFoundBody.details, {});
+
+    const validationRequestId = 'req-validation-envelope';
+    const validationRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: {
+        ...INTERNAL_ADMIN_HEADERS,
+        'x-request-id': validationRequestId
+      },
+      body: JSON.stringify({
+        targetCompetitorCount: 14,
+        sources: ['public_web']
+      })
+    });
+    assert.equal(validationRes.status, 400);
+    const validationBody = await validationRes.json();
+    assert.equal(validationBody.code, 'insufficient_competitor_sample');
+    assert.equal(typeof validationBody.message, 'string');
+    assert.equal(validationBody.requestId, validationRequestId);
+    assert.deepEqual(validationBody.details, {});
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('tenant/bootstrap/vertical-build mutating endpoints require internal_admin and emit audit events', async () => {
   const { server, baseUrl } = await startServer();
 

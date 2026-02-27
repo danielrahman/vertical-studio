@@ -188,6 +188,25 @@ test('WS-G contract: secret rotation runbook and audit trail path are documented
   mustContain(runbook, 'Never store plaintext secret values in app tables.');
 });
 
+test('WS-A contract: API error envelope includes code, message, requestId, and details object', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const requestId = 'docs-envelope-not-found';
+    const response = await fetch(`${baseUrl}/api/v1/unknown-endpoint`, {
+      headers: { 'x-request-id': requestId }
+    });
+    assert.equal(response.status, 404);
+    const payload = await response.json();
+    assert.equal(payload.code, 'not_found');
+    assert.equal(typeof payload.message, 'string');
+    assert.equal(payload.requestId, requestId);
+    assert.deepEqual(payload.details, {});
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-C contract: cms publish webhook requires a valid signature and enqueues an audited job', async () => {
   const { server, baseUrl } = await startServer();
 

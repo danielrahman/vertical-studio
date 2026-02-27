@@ -83,7 +83,9 @@ function createApp(options = {}) {
   app.use((_req, res) => {
     res.status(404).json({
       code: 'not_found',
-      message: 'Route not found'
+      message: 'Route not found',
+      requestId: _req.id,
+      details: {}
     });
   });
 
