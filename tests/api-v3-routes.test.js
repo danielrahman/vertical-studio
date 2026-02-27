@@ -636,6 +636,45 @@ test('copy generate rejects unsupported highImpactOnlyThreeVariants mode when pr
   }
 });
 
+test('copy generate enforces locale allow-list and normalizes duplicate locales', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const invalidLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-locales/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-locales',
+        locales: ['cs-CZ', 'en-US', 'de-DE']
+      })
+    });
+    assert.equal(invalidLocaleRes.status, 400);
+    const invalidLocaleBody = await invalidLocaleRes.json();
+    assert.equal(invalidLocaleBody.code, 'validation_error');
+    assert.equal(invalidLocaleBody.message, 'locales must contain only supported locales');
+    assert.deepEqual(invalidLocaleBody.details.unsupportedLocales, ['de-DE']);
+
+    const duplicateLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-locales/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-locales',
+        locales: ['cs-CZ', 'en-US', 'cs-CZ']
+      })
+    });
+    assert.equal(duplicateLocaleRes.status, 200);
+    const duplicateLocaleBody = await duplicateLocaleRes.json();
+    assert.deepEqual(duplicateLocaleBody.candidateCounts, {
+      A: 12,
+      B: 12,
+      C: 12,
+      SINGLE: 6
+    });
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select rejects slotId/locale mismatch for an existing candidate', async () => {
   const { server, baseUrl } = await startServer();
 

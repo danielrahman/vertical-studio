@@ -1043,7 +1043,16 @@ function postCopyGenerate(req, res, next) {
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
 
-    const locales = Array.isArray(req.body?.locales) ? req.body.locales : [];
+    const requestedLocales = Array.isArray(req.body?.locales) ? req.body.locales : [];
+    const locales = Array.from(new Set(requestedLocales));
+    const unsupportedLocales = locales.filter((locale) => !COPY_LOCALES.has(locale));
+    if (unsupportedLocales.length > 0) {
+      throw createError('locales must contain only supported locales', 400, 'validation_error', {
+        field: 'locales',
+        unsupportedLocales,
+        allowedLocales: Array.from(COPY_LOCALES)
+      });
+    }
     if (!locales.includes('cs-CZ') || !locales.includes('en-US')) {
       throw createError('locales must include cs-CZ and en-US', 400, 'validation_error');
     }

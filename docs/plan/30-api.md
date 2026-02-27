@@ -302,6 +302,7 @@ Rules:
 2. Non-high-impact slots must generate one `SINGLE` candidate.
 3. Every candidate must satisfy slot hard limits before response finalization.
 4. If `highImpactOnlyThreeVariants` is present, it must be `true` (other values return `400 validation_error`).
+5. `locales` may contain only `cs-CZ` and `en-US`; unsupported locales return `400 validation_error`.
 
 #### `GET /api/v1/sites/:siteId/copy/slots?draftId=:id`
 Read bounded slot definitions and generation status.

@@ -467,6 +467,44 @@ test('WS-D contract: copy generation rejects unsupported high-impact variant mod
   }
 });
 
+test('WS-D contract: copy generation accepts only supported locales and de-duplicates inputs', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const invalidLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-locales/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-locales-1',
+        locales: ['cs-CZ', 'en-US', 'de-DE']
+      })
+    });
+    assert.equal(invalidLocaleRes.status, 400);
+    const invalidLocalePayload = await invalidLocaleRes.json();
+    assert.equal(invalidLocalePayload.code, 'validation_error');
+    assert.deepEqual(invalidLocalePayload.details.unsupportedLocales, ['de-DE']);
+
+    const duplicateLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-locales/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-locales-1',
+        locales: ['cs-CZ', 'en-US', 'cs-CZ']
+      })
+    });
+    assert.equal(duplicateLocaleRes.status, 200);
+    const duplicateLocaleSummary = await duplicateLocaleRes.json();
+    assert.deepEqual(duplicateLocaleSummary.candidateCounts, {
+      A: 12,
+      B: 12,
+      C: 12,
+      SINGLE: 6
+    });
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 

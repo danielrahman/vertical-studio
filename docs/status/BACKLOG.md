@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-039 | Enforce copy-generate locale allow-list (`cs-CZ`,`en-US`)            | done        | codex | `POST /copy/generate` now rejects unsupported locales and de-duplicates locale inputs; API/WS-D coverage added |
 | VS3-IMP-038 | Enforce `copy/select` request selection shape and candidate coherence | done        | codex | `POST /copy/select` now validates `slotId`/`locale`/`candidateId` and rejects candidate slot/locale mismatches; API/WS coverage updated |
 | VS3-IMP-037 | Enforce `highImpactOnlyThreeVariants` copy-generate request contract  | done        | codex | `POST /copy/generate` now rejects non-`true` values when flag is provided; API/WS-D coverage added |
 | VS3-IMP-036 | Enforce low-confidence review-required publish pre-gate               | done        | codex | Publish now blocks with `low_confidence_review_required` when required extraction TODOs remain; API/WS-B coverage added |
