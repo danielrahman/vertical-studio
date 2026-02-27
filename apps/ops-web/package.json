@@ -1,0 +1,10 @@
+{
+  "name": "@vertical-studio/ops-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node ../../scripts/start-ui.js",
+    "start": "node ../../scripts/start-ui.js"
+  }
+}

@@ -20,15 +20,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 4. Quality docs updated with COPY/LAYOUT/MEDIA/LEGAL P0 families and KPI-ready release report sections.
 5. Security docs updated with required JSON findings contract and explicit release gate schema.
 6. Persistent cross-session tracking maintained in `docs/status/*`.
+7. Monorepo workspace scaffold added (`apps/*`, `packages/*`) with legacy runtime compatibility bridges and root npm workspaces.
 
 ## In Progress
 
-1. Runtime implementation has not started yet.
-2. Monorepo scaffold and TypeScript migration are pending execution.
+1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
+2. TypeScript toolchain migration (`VS3-IMP-002`) is pending.
 
 ## Next
 
-1. Create monorepo workspace structure (`apps/*`, `packages/*`) without breaking current runtime.
+1. Add TS toolchain baseline (tsconfig, eslint, prettier, vitest) across workspace.
 2. Implement `packages/schema` contracts first, matching plan docs exactly.
 3. Add additive API routes for vertical research, copy lifecycle, overrides, and review transitions.
 4. Implement publish gate skeleton with deterministic blocking reason codes.
@@ -41,4 +42,3 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 3. Competitor data is pattern-level only (`IA + CTA + trust + tone`).
 4. Publish must block on quality `P0` and unresolved security `critical/high`.
 5. Corpus remains optional and non-blocking in v1.
-

@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "description": "Automated website generation system for boutique developers.",
   "license": "MIT",
+  "private": true,
   "type": "commonjs",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "validate": "node scripts/validate.js",
     "generate": "node engine/generator.js",

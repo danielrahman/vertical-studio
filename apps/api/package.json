@@ -1,0 +1,10 @@
+{
+  "name": "@vertical-studio/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node ../../scripts/start-api.js",
+    "start": "node ../../scripts/start-api.js"
+  }
+}

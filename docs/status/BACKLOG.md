@@ -10,7 +10,7 @@
 |---|---|---|---|---|
 | VS3-DOC-001 | Revise plan/quality/security docs to vertical-intelligence-first spec | done | codex | Includes ADR-005..007 and plan files 50/60/70 |
 | VS3-DOC-002 | Cross-file naming consistency check (`00/10/20/30`) | done | codex | Types and endpoint families aligned in docs |
-| VS3-IMP-001 | Create monorepo workspace structure (`apps/*`, `packages/*`) | todo | codex | Preserve current runtime while scaffolding |
+| VS3-IMP-001 | Create monorepo workspace structure (`apps/*`, `packages/*`) | done | codex | Scaffolded with workspace bridges; legacy runtime preserved |
 | VS3-IMP-002 | Add TS toolchain (tsconfig, eslint, prettier, vitest baseline) | todo | codex | Workspace-wide config |
 | VS3-IMP-003 | Implement `packages/schema` canonical contracts from docs | todo | codex | `ExtractedField`, `ComponentContract`, copy/vertical types |
 | VS3-IMP-004 | Add additive v3 API routes from updated `docs/plan/30-api.md` | todo | codex | Keep existing `/api/v1` compatibility |

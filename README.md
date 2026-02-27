@@ -197,7 +197,22 @@ Current suite covers:
 
 ## Main Project Structure
 
+Monorepo scaffold for v3 is now present under `apps/` and `packages/`.
+Legacy runtime paths remain active during migration to preserve compatibility.
+
 ```text
+apps/
+  api/
+  worker/
+  cms/
+  ops-web/
+  public-web/
+packages/
+  schema/
+  component-catalog/
+  composition-rules/
+  quality/
+  security/
 api/
 engine/
 extraction/
