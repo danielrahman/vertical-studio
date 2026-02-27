@@ -980,6 +980,12 @@ function postVerticalResearchBuild(req, res, next) {
     }
     const payload = req.body || {};
     const targetCompetitorCount = payload.targetCompetitorCount;
+    const sourcesProvided = Object.prototype.hasOwnProperty.call(payload, 'sources');
+    if (sourcesProvided && !Array.isArray(payload.sources)) {
+      throw createError('sources must be an array when provided', 400, 'validation_error', {
+        invalidField: 'sources'
+      });
+    }
     const sources = Array.isArray(payload.sources) ? payload.sources : [];
     const sourceDomainsProvided = Object.prototype.hasOwnProperty.call(payload, 'sourceDomains');
     if (sourceDomainsProvided && !Array.isArray(payload.sourceDomains)) {

@@ -423,6 +423,20 @@ test('WS-B contract: vertical research build enforces supported source classes',
   const { server, baseUrl } = await startServer();
 
   try {
+    const nonArrayResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: 'public_web'
+      })
+    });
+    assert.equal(nonArrayResponse.status, 400);
+    const nonArrayPayload = await nonArrayResponse.json();
+    assert.equal(nonArrayPayload.code, 'validation_error');
+    assert.equal(nonArrayPayload.message, 'sources must be an array when provided');
+    assert.equal(nonArrayPayload.details.invalidField, 'sources');
+
     const response = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

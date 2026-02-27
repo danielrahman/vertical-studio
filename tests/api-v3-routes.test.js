@@ -178,6 +178,20 @@ test('vertical research build enforces supported source classes with determinist
   const { server, baseUrl } = await startServer();
 
   try {
+    const nonArraySourcesRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: 'public_web'
+      })
+    });
+    assert.equal(nonArraySourcesRes.status, 400);
+    const nonArraySourcesPayload = await nonArraySourcesRes.json();
+    assert.equal(nonArraySourcesPayload.code, 'validation_error');
+    assert.equal(nonArraySourcesPayload.message, 'sources must be an array when provided');
+    assert.equal(nonArraySourcesPayload.details.invalidField, 'sources');
+
     const unsupportedSourceRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
