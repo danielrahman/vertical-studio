@@ -532,3 +532,51 @@ test('WS-F contract: security report exposes JSON+markdown artifacts and gate de
     await stopServer(server);
   }
 });
+
+test('WS-F contract: security latest reflects deterministic gate outcomes from publish attempts', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const blockedPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security-latest/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsf-security-latest-1',
+        proposalId: 'proposal-wsf-security-latest-1',
+        simulateSecurityHigh: true
+      })
+    });
+    assert.equal(blockedPublishRes.status, 409);
+
+    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security-latest/security/latest`);
+    assert.equal(blockedLatestRes.status, 200);
+    const blockedLatest = await blockedLatestRes.json();
+    assert.equal(blockedLatest.gateDecision.reasonCode, 'security_blocked_high');
+    assert.equal(blockedLatest.gateDecision.blocked, true);
+    assert.equal(blockedLatest.gateDecision.unresolvedBlockingCount, 1);
+    assert.equal(blockedLatest.severityCounts.high, 1);
+
+    const passPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security-latest/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsf-security-latest-2',
+        proposalId: 'proposal-wsf-security-latest-2',
+        securityFindings: [{ severity: 'medium', status: 'open' }]
+      })
+    });
+    assert.equal(passPublishRes.status, 200);
+    const passPublish = await passPublishRes.json();
+
+    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security-latest/security/latest`);
+    assert.equal(passLatestRes.status, 200);
+    const passLatest = await passLatestRes.json();
+    assert.equal(passLatest.versionId, passPublish.versionId);
+    assert.equal(passLatest.gateDecision.reasonCode, 'security_pass_non_blocking_only');
+    assert.equal(passLatest.gateDecision.blocked, false);
+    assert.equal(passLatest.gateDecision.unresolvedBlockingCount, 0);
+    assert.equal(passLatest.severityCounts.medium, 1);
+  } finally {
+    await stopServer(server);
+  }
+});

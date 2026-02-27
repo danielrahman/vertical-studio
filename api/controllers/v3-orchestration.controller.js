@@ -5,6 +5,7 @@ const { PublishGateService } = require('../../services/publish-gate-service');
 
 const SUPPORTED_RESEARCH_SOURCES = new Set(['public_web', 'legal_pages', 'selected_listings']);
 const QUALITY_GATE_FAMILIES = ['COPY', 'LAYOUT', 'MEDIA', 'LEGAL'];
+const SECURITY_SEVERITY_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
 const SECRET_REF_PATTERN = /^tenant\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+)$/;
 const SECRET_REF_SEGMENT_PATTERN = /^[a-z0-9-]+$/;
 const SECRET_VALUE_KEYS = ['value', 'secret', 'secretValue', 'plaintext', 'token', 'apiKey', 'privateKey'];
@@ -47,6 +48,7 @@ function getState(req) {
       copyCandidatesByDraft: new Map(),
       overridesByDraft: new Map(),
       copySelectionsByDraft: new Map(),
+      securityReportsBySite: new Map(),
       secretRefs: new Map(),
       auditEvents: []
     };
@@ -148,6 +150,129 @@ function normalizeHost(rawHost) {
   const withoutProtocol = trimmed.replace(/^https?:\/\//, '');
   const host = withoutProtocol.split('/')[0];
   return host.split(':')[0] || null;
+}
+
+function normalizeSecurityFindingStatus(finding) {
+  const rawStatus = typeof finding?.status === 'string' ? finding.status.trim().toLowerCase() : '';
+  if (rawStatus === 'open' || rawStatus === 'accepted' || rawStatus === 'resolved') {
+    return rawStatus;
+  }
+
+  if (finding?.resolved === true) {
+    return 'resolved';
+  }
+
+  return 'open';
+}
+
+function normalizeSecurityFindingSeverity(finding) {
+  const rawSeverity = typeof finding?.severity === 'string' ? finding.severity.trim().toLowerCase() : '';
+  if (SECURITY_SEVERITY_LEVELS.has(rawSeverity)) {
+    return rawSeverity;
+  }
+
+  return 'low';
+}
+
+function normalizeSecurityFinding(finding, index) {
+  const evidence = Array.isArray(finding?.evidence)
+    ? finding.evidence.filter((item) => typeof item === 'string' && item.trim())
+    : [];
+
+  return {
+    findingId:
+      typeof finding?.findingId === 'string' && finding.findingId.trim()
+        ? finding.findingId.trim()
+        : `SEC-${String(index + 1).padStart(3, '0')}`,
+    severity: normalizeSecurityFindingSeverity(finding),
+    title:
+      typeof finding?.title === 'string' && finding.title.trim()
+        ? finding.title.trim()
+        : `Security finding ${index + 1}`,
+    description:
+      typeof finding?.description === 'string' && finding.description.trim()
+        ? finding.description.trim()
+        : 'No description provided.',
+    impact:
+      typeof finding?.impact === 'string' && finding.impact.trim()
+        ? finding.impact.trim()
+        : 'Impact pending triage.',
+    status: normalizeSecurityFindingStatus(finding),
+    evidence,
+    remediation:
+      typeof finding?.remediation === 'string' && finding.remediation.trim()
+        ? finding.remediation.trim()
+        : 'Remediation plan pending.',
+    owner:
+      typeof finding?.owner === 'string' && finding.owner.trim() ? finding.owner.trim() : 'unassigned'
+  };
+}
+
+function buildSecuritySeverityCounts(findings) {
+  const severityCounts = {
+    critical: 0,
+    high: 0,
+    medium: 0,
+    low: 0
+  };
+
+  for (const finding of findings) {
+    if (SECURITY_SEVERITY_LEVELS.has(finding.severity)) {
+      severityCounts[finding.severity] += 1;
+    }
+  }
+
+  return severityCounts;
+}
+
+function pickSecurityReasonCode(securityReasonCodes) {
+  if (Array.isArray(securityReasonCodes)) {
+    if (securityReasonCodes.includes('security_blocked_critical')) {
+      return 'security_blocked_critical';
+    }
+    if (securityReasonCodes.includes('security_blocked_high')) {
+      return 'security_blocked_high';
+    }
+  }
+
+  return 'security_pass_non_blocking_only';
+}
+
+function buildSecurityReport({
+  siteId,
+  versionId,
+  generatedAt,
+  securityFindings,
+  securityReasonCodes
+}) {
+  const findings = securityFindings.map((finding, index) => normalizeSecurityFinding(finding, index));
+  const unresolvedFindings = findings.filter((finding) => finding.status !== 'resolved');
+  const reasonCode = pickSecurityReasonCode(securityReasonCodes);
+  const unresolvedBlockingCount = unresolvedFindings.filter((finding) => {
+    return finding.severity === 'critical' || finding.severity === 'high';
+  }).length;
+  const releaseId = `${siteId}-${versionId}`;
+
+  return {
+    siteId,
+    releaseId,
+    versionId,
+    generatedAt,
+    status: 'completed',
+    findings,
+    unresolvedFindings,
+    severityCounts: buildSecuritySeverityCounts(findings),
+    gateDecision: {
+      blocked: reasonCode !== 'security_pass_non_blocking_only',
+      reasonCode,
+      unresolvedBlockingCount
+    },
+    artifacts: {
+      findingsJsonPath: `docs/security/findings/${releaseId}.json`,
+      reportMarkdownPath: `docs/security/reports/${releaseId}.md`,
+      gateResultJsonPath: `docs/security/gates/${releaseId}.json`
+    }
+  };
 }
 
 function buildRuntimeSnapshot({ siteId, versionId, draftId, proposalId }) {
@@ -717,7 +842,21 @@ function postPublishSite(req, res, next) {
       qualityFindings,
       securityFindings
     });
+    const state = getState(req);
+    const reportGeneratedAt = new Date().toISOString();
+
     if (gate.blocked) {
+      state.securityReportsBySite.set(
+        req.params.siteId,
+        buildSecurityReport({
+          siteId: req.params.siteId,
+          versionId: 'version-pending',
+          generatedAt: reportGeneratedAt,
+          securityFindings,
+          securityReasonCodes: gate.securityReasonCodes
+        })
+      );
+
       res.status(409).json({
         siteId: req.params.siteId,
         status: 'blocked',
@@ -729,7 +868,6 @@ function postPublishSite(req, res, next) {
     }
 
     const versionId = randomUUID();
-    const state = getState(req);
     const runtimeHost = normalizeHost(req.body?.host) || `${req.params.siteId}.public.vertical-studio.local`;
     const storageKey = `site-versions/${req.params.siteId}/${versionId}.json`;
     const versions = state.siteVersions.get(req.params.siteId) || [];
@@ -756,6 +894,16 @@ function postPublishSite(req, res, next) {
         versionId,
         draftId: req.body.draftId,
         proposalId: req.body.proposalId
+      })
+    );
+    state.securityReportsBySite.set(
+      req.params.siteId,
+      buildSecurityReport({
+        siteId: req.params.siteId,
+        versionId,
+        generatedAt: reportGeneratedAt,
+        securityFindings,
+        securityReasonCodes: gate.securityReasonCodes
       })
     );
 
@@ -852,6 +1000,12 @@ function getLatestQualityReport(req, res, next) {
 function getLatestSecurityReport(req, res, next) {
   try {
     const state = getState(req);
+    const latest = state.securityReportsBySite.get(req.params.siteId);
+    if (latest) {
+      res.status(200).json(latest);
+      return;
+    }
+
     const versions = state.siteVersions.get(req.params.siteId) || [];
     const activeVersion = versions.find((item) => item.active) || null;
     const versionId = activeVersion?.versionId || 'version-pending';

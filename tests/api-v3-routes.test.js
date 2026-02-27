@@ -652,6 +652,63 @@ test('security latest endpoint returns artifact references and deterministic gat
   }
 });
 
+test('security latest endpoint reflects latest publish-attempt gate outcome', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const blockedPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-security-latest/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-security-latest-1',
+        proposalId: 'proposal-security-latest-1',
+        simulateSecurityHigh: true
+      })
+    });
+    assert.equal(blockedPublishRes.status, 409);
+
+    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-security-latest/security/latest`);
+    assert.equal(blockedLatestRes.status, 200);
+    const blockedLatest = await blockedLatestRes.json();
+    assert.equal(blockedLatest.status, 'completed');
+    assert.equal(blockedLatest.versionId, 'version-pending');
+    assert.equal(blockedLatest.gateDecision.reasonCode, 'security_blocked_high');
+    assert.equal(blockedLatest.gateDecision.blocked, true);
+    assert.equal(blockedLatest.gateDecision.unresolvedBlockingCount, 1);
+    assert.equal(blockedLatest.severityCounts.high, 1);
+    assert.equal(Array.isArray(blockedLatest.findings), true);
+    assert.equal(blockedLatest.findings.length, 1);
+    assert.equal(blockedLatest.unresolvedFindings.length, 1);
+
+    const passPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-security-latest/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-security-latest-2',
+        proposalId: 'proposal-security-latest-2',
+        securityFindings: [{ severity: 'medium', status: 'open' }]
+      })
+    });
+    assert.equal(passPublishRes.status, 200);
+    const passPublish = await passPublishRes.json();
+
+    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-security-latest/security/latest`);
+    assert.equal(passLatestRes.status, 200);
+    const passLatest = await passLatestRes.json();
+    assert.equal(passLatest.status, 'completed');
+    assert.equal(passLatest.versionId, passPublish.versionId);
+    assert.equal(passLatest.gateDecision.reasonCode, 'security_pass_non_blocking_only');
+    assert.equal(passLatest.gateDecision.blocked, false);
+    assert.equal(passLatest.gateDecision.unresolvedBlockingCount, 0);
+    assert.equal(passLatest.severityCounts.medium, 1);
+    assert.equal(passLatest.severityCounts.high, 0);
+    assert.equal(passLatest.findings.length, 1);
+    assert.equal(passLatest.unresolvedFindings.length, 1);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('audit events endpoint is internal-admin scoped and returns privileged action trail', async () => {
   const { server, baseUrl } = await startServer();
 

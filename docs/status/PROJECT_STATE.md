@@ -48,6 +48,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 27. Security report artifact+gate output contract implemented (`VS3-IMP-020`): security latest report now includes deterministic gate decision/reason code, severity counts, and required JSON+markdown+gate artifact references.
 28. WS-G secret rotation runbook artifact contract check implemented (`VS3-IMP-021`): added a formal rotation runbook and executable acceptance assertion for naming policy, `internal_admin` scope, and audit trail path presence.
 29. Security findings JSON top-level contract alignment implemented (`VS3-IMP-022`): security latest endpoint now includes required `findings` field and explicit contract assertions for release/site/version metadata in API and acceptance harness coverage.
+30. Latest security gate report persistence implemented (`VS3-IMP-023`): publish attempts now store normalized security findings/severity summaries and deterministic gate decisions so `/security/latest` reflects real blocked or non-blocking outcomes.
 
 ## In Progress
 
