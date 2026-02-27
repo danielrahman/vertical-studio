@@ -218,6 +218,9 @@ Query:
 1. `catalogVersion` (optional)
 2. `componentIds` (optional)
 
+Behavior:
+1. If `catalogVersion` is provided, return only contracts in that catalog version.
+
 #### `GET /api/v1/component-contracts/:componentId/:version`
 Read component contract definition.
 
@@ -258,6 +261,7 @@ Response:
 Hard rules:
 1. Exactly three variants must always be returned.
 2. Deterministic output for identical input payload and versions.
+3. Requested `catalogVersion` must resolve to at least one loaded component contract (`404 component_contract_not_found` otherwise).
 
 #### `POST /api/v1/sites/:siteId/compose/select`
 Select one proposal as final composition.

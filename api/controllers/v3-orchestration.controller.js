@@ -566,8 +566,30 @@ function buildQualityReport({
   };
 }
 
-function listComponentContractVersions(state) {
-  return Array.from(state.componentContracts.values())
+function getContractCatalogVersion(contract) {
+  if (typeof contract?.catalogVersion === 'string' && contract.catalogVersion.trim()) {
+    return contract.catalogVersion.trim();
+  }
+
+  if (typeof contract?.version === 'string') {
+    return contract.version.trim();
+  }
+
+  return '';
+}
+
+function resolveComponentContractsForCatalogVersion(state, catalogVersion) {
+  return Array.from(state.componentContracts.values()).filter((contract) => {
+    return getContractCatalogVersion(contract) === catalogVersion;
+  });
+}
+
+function listComponentContractVersions(state, componentContracts) {
+  const contracts = Array.isArray(componentContracts)
+    ? componentContracts
+    : Array.from(state.componentContracts.values());
+
+  return contracts
     .map((item) => `${item.componentId}:${item.version}`)
     .sort();
 }
@@ -604,7 +626,8 @@ function buildPromptPayloadAuditRecord({
   state,
   draftId,
   verticalStandardVersion,
-  slotDefinitions
+  slotDefinitions,
+  componentContracts
 }) {
   const manualOverrides = normalizeManualOverrides(state.overridesByDraft.get(draftId));
   const disallowedPatterns = Array.isArray(manualOverrides?.excludedCompetitorPatterns)
@@ -616,7 +639,7 @@ function buildPromptPayloadAuditRecord({
       typeof verticalStandardVersion === 'string' && verticalStandardVersion.trim()
         ? verticalStandardVersion.trim()
         : 'version-unknown',
-    componentContractVersions: listComponentContractVersions(state),
+    componentContractVersions: listComponentContractVersions(state, componentContracts),
     slotDefinitions: normalizePromptSlotDefinitions(slotDefinitions),
     manualOverrides,
     disallowedPatterns
@@ -896,6 +919,10 @@ function getComponentContracts(req, res, next) {
   try {
     assertTenantMemberOrInternalAdmin(req);
     const state = getState(req);
+    const requestedCatalogVersion =
+      typeof req.query.catalogVersion === 'string' && req.query.catalogVersion.trim()
+        ? req.query.catalogVersion.trim()
+        : null;
     const requestedIds =
       typeof req.query.componentIds === 'string' && req.query.componentIds.trim()
         ? req.query.componentIds
@@ -905,6 +932,9 @@ function getComponentContracts(req, res, next) {
         : null;
 
     let items = Array.from(state.componentContracts.values());
+    if (requestedCatalogVersion) {
+      items = items.filter((item) => getContractCatalogVersion(item) === requestedCatalogVersion);
+    }
     if (requestedIds && requestedIds.length) {
       items = items.filter((item) => requestedIds.includes(item.componentId));
     }
@@ -943,6 +973,13 @@ function postComposePropose(req, res, next) {
     assertString(req.body?.rulesVersion, 'rulesVersion');
     assertString(req.body?.catalogVersion, 'catalogVersion');
     assertString(req.body?.verticalStandardVersion, 'verticalStandardVersion');
+    const state = getState(req);
+    const componentContracts = resolveComponentContractsForCatalogVersion(state, req.body.catalogVersion);
+    if (componentContracts.length === 0) {
+      throw createError('component contracts not found for catalogVersion', 404, 'component_contract_not_found', {
+        catalogVersion: req.body.catalogVersion
+      });
+    }
 
     const response = composeCopyService.proposeVariants({
       siteId: req.params.siteId,
@@ -952,13 +989,13 @@ function postComposePropose(req, res, next) {
       verticalStandardVersion: req.body.verticalStandardVersion
     });
 
-    const state = getState(req);
     const now = new Date().toISOString();
     const promptPayload = buildPromptPayloadAuditRecord({
       state,
       draftId: req.body.draftId,
       verticalStandardVersion: req.body.verticalStandardVersion,
-      slotDefinitions: composeCopyService.getSlotDefinitions()
+      slotDefinitions: composeCopyService.getSlotDefinitions(),
+      componentContracts
     });
     state.proposalsByDraft.set(req.body.draftId, response.variants);
     state.reviewStatesByDraft.set(req.body.draftId, 'proposal_generated');

@@ -435,6 +435,45 @@ test('WS-B contract: publish is blocked when required low-confidence extraction 
   }
 });
 
+test('WS-D contract: compose requires loaded component contracts for requested catalogVersion', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingContractsRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-compose/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-compose-1',
+        rulesVersion: '1.0.0',
+        catalogVersion: '9.9.9',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(missingContractsRes.status, 404);
+    const missingContractsPayload = await missingContractsRes.json();
+    assert.equal(missingContractsPayload.code, 'component_contract_not_found');
+
+    const validContractsRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-compose/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-compose-1',
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(validContractsRes.status, 200);
+    const validContractsPayload = await validContractsRes.json();
+    assert.deepEqual(
+      validContractsPayload.variants.map((variant) => variant.variantKey),
+      ['A', 'B', 'C']
+    );
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy generation rejects unsupported high-impact variant modes', async () => {
   const { server, baseUrl } = await startServer();
 

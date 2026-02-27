@@ -526,6 +526,55 @@ test('compose propose returns deterministic three-variant envelope', async () =>
   }
 });
 
+test('component contracts endpoint honors catalogVersion query filter', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const matchingRes = await fetch(`${baseUrl}/api/v1/component-contracts?catalogVersion=1.0.0`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(matchingRes.status, 200);
+    const matchingBody = await matchingRes.json();
+    assert.equal(matchingBody.count >= 1, true);
+    assert.equal(matchingBody.items.every((item) => item.version === '1.0.0'), true);
+
+    const missingRes = await fetch(`${baseUrl}/api/v1/component-contracts?catalogVersion=9.9.9`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(missingRes.status, 200);
+    const missingBody = await missingRes.json();
+    assert.equal(missingBody.count, 0);
+    assert.deepEqual(missingBody.items, []);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('compose propose requires loaded component contracts for requested catalogVersion', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-1/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-compose-contracts-missing',
+        rulesVersion: '1.0.0',
+        catalogVersion: '9.9.9',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+
+    assert.equal(response.status, 404);
+    const payload = await response.json();
+    assert.equal(payload.code, 'component_contract_not_found');
+    assert.equal(payload.message, 'component contracts not found for catalogVersion');
+    assert.equal(payload.details.catalogVersion, '9.9.9');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('compose propose audit event persists structured prompt payload contract fields', async () => {
   const { server, baseUrl } = await startServer();
 
