@@ -68,28 +68,34 @@ Implemented:
 
 ## Environment Variables
 
+- `NODE_ENV=development`
 - `PORT=3000`
 - `VERTICAL_RUNTIME_DIR=.runtime`
 - `VERTICAL_OUTPUT_ROOT=build-output/jobs`
+- `VERTICAL_SCRAPER_TIMEOUT_MS=8000` (optional; scraper/fetch timeout override)
 - `VERTICAL_WORKER_POLL_MS=500`
 - `VERTICAL_PREVIEW_BASE_URL` (optional)
 - `VERTICAL_SQLITE_PATH` (optional, overrides DB file)
 - `VERTICAL_UI_BASE_URL` (optional, used by local deploy preview URL)
+- `NEXT_PUBLIC_UI_BASE_URL` (optional, UI fallback base for preview links)
+- `NEXT_PUBLIC_API_BASE_URL` (optional, frontend API base URL)
 - `VERTICAL_REQUIRE_AUTH` (optional; `true` enforces API key auth, defaults to `true` in production)
 - `VERTICAL_API_KEYS` (optional comma-separated API keys accepted via `x-api-key` or `Authorization: Bearer ...`)
 - `VERTICAL_API_KEY` (optional single-key shortcut when `VERTICAL_API_KEYS` is not set)
 - `OPENAI_API_KEY` (optional, enrichment without this uses fallback)
+- `VERTICAL_OPENAI_MODEL` (optional, defaults to `gpt-4.1-mini`)
 - `EXA_API_KEY` (optional off-site Exa people/PR/competitive intelligence)
 - `SERPAPI_API_KEY` (optional off-site SERP/PR/maps modules)
-- `COMPANY_DATA_API_KEY` (optional reserved provider connector)
-- `SOCIAL_ENRICH_API_KEY` (optional reserved provider connector)
 - `CAPTCHA_API_KEY` (optional fallback for captcha provider; supports reCAPTCHA/hCaptcha/Turnstile)
 - `VERTICAL_SECRET_MASTER_KEY` (recommended for encrypted secret store)
 - `VERTICAL_SECRET_MAP_JSON` (optional ref->secret map override)
 - `VERTICAL_SECRET_MAP_FILE` (optional path to JSON map, e.g. `config/secrets.json`)
 - `VERTICAL_SECRET_REF_<REF_NAME>` (optional per-ref fallback, e.g. `VERTICAL_SECRET_REF_CAPTCHA_2CAPTCHA`)
 - `VERCEL_TOKEN` + `VERCEL_PROJECT_ID` (enables Vercel deploy adapter)
-- `NODE_ENV`
+- `VERCEL_TEAM_ID` (optional Vercel team scoping)
+- `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` + `AWS_S3_BUCKET` + `CLOUDFLARE_CDN_BASE_URL` (optional S3/Cloudflare adapter)
+- `SUPABASE_URL` + `SUPABASE_ANON_KEY` + `SUPABASE_SERVICE_ROLE_KEY` (planned v3 placeholders; not wired yet)
+- `COMPANY_DATA_API_KEY`, `SOCIAL_ENRICH_API_KEY` (rare/experimental connectors)
 
 API and worker scripts automatically load `.env`, `.env.local`, `.env.<NODE_ENV>`, `.env.<NODE_ENV>.local` from repository root.
 

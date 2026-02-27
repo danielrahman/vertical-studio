@@ -37,7 +37,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 16. Public runtime snapshot rendering skeleton implemented (`VS3-IMP-010`) with host-based active-version resolution, immutable storage-key snapshot fetch APIs, and a public-web runtime client/HTML renderer module.
 17. Documentation acceptance harness implemented (`VS3-IMP-011`) with executable coverage for rollout documentation tests (1-8) and acceptance scenarios (4.1-4.4).
 18. Runtime rollback repointing implemented (`VS3-IMP-012`) so rollback reactivates an exact prior immutable version and public runtime resolution follows the active pointer.
-18. Environment baseline curation completed (`VS3-OPS-001`): `.env.example` reduced to stable runtime keys, README env reference aligned, and local `.env` prefilled with future-ready placeholders.
+19. Environment baseline curation completed (`VS3-OPS-001`): `.env.example` reduced to stable runtime keys, README env reference aligned, and local `.env` prefilled with future-ready placeholders.
 
 ## In Progress
 
