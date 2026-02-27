@@ -414,6 +414,27 @@ test('WS-B contract: vertical research build requires numeric targetCompetitorCo
     const payload = await response.json();
     assert.equal(payload.code, 'insufficient_competitor_sample');
     assert.equal(payload.message, 'targetCompetitorCount must be >= 15');
+    assert.deepEqual(payload.details, {
+      minimumTargetCompetitorCount: 15,
+      receivedTargetCompetitorCount: '15'
+    });
+
+    const minimumResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 14,
+        sources: ['public_web', 'legal_pages', 'selected_listings']
+      })
+    });
+    assert.equal(minimumResponse.status, 400);
+    const minimumPayload = await minimumResponse.json();
+    assert.equal(minimumPayload.code, 'insufficient_competitor_sample');
+    assert.equal(minimumPayload.message, 'targetCompetitorCount must be >= 15');
+    assert.deepEqual(minimumPayload.details, {
+      minimumTargetCompetitorCount: 15,
+      receivedTargetCompetitorCount: 14
+    });
   } finally {
     await stopServer(server);
   }

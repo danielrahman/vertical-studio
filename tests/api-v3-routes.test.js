@@ -105,6 +105,10 @@ test('vertical research build enforces competitor minimum and exposes latest out
     assert.equal(invalidRes.status, 400);
     const invalidBody = await invalidRes.json();
     assert.equal(invalidBody.code, 'insufficient_competitor_sample');
+    assert.deepEqual(invalidBody.details, {
+      minimumTargetCompetitorCount: 15,
+      receivedTargetCompetitorCount: 14
+    });
 
     const invalidTypeRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
@@ -117,6 +121,10 @@ test('vertical research build enforces competitor minimum and exposes latest out
     assert.equal(invalidTypeRes.status, 400);
     const invalidTypeBody = await invalidTypeRes.json();
     assert.equal(invalidTypeBody.code, 'insufficient_competitor_sample');
+    assert.deepEqual(invalidTypeBody.details, {
+      minimumTargetCompetitorCount: 15,
+      receivedTargetCompetitorCount: '15'
+    });
 
     const validRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
@@ -374,7 +382,10 @@ test('error responses include mandatory envelope fields on middleware and contro
     assert.equal(validationBody.code, 'insufficient_competitor_sample');
     assert.equal(typeof validationBody.message, 'string');
     assert.equal(validationBody.requestId, validationRequestId);
-    assert.deepEqual(validationBody.details, {});
+    assert.deepEqual(validationBody.details, {
+      minimumTargetCompetitorCount: 15,
+      receivedTargetCompetitorCount: 14
+    });
   } finally {
     await stopServer(server);
   }

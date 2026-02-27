@@ -996,7 +996,10 @@ function postVerticalResearchBuild(req, res, next) {
     const rawSourceDomains = Array.isArray(payload.sourceDomains) ? payload.sourceDomains : [];
 
     if (typeof targetCompetitorCount !== 'number' || !Number.isInteger(targetCompetitorCount) || targetCompetitorCount < 15) {
-      throw createError('targetCompetitorCount must be >= 15', 400, 'insufficient_competitor_sample');
+      throw createError('targetCompetitorCount must be >= 15', 400, 'insufficient_competitor_sample', {
+        minimumTargetCompetitorCount: 15,
+        receivedTargetCompetitorCount: targetCompetitorCount
+      });
     }
 
     const invalidSources = Array.from(
