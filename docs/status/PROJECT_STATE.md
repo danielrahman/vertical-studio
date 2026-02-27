@@ -88,6 +88,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 67. Tenant-create unknown-field payload guard implemented (`VS3-IMP-062`): tenant create requests now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict tenant lifecycle request-shape integrity.
 68. Bootstrap unknown-field payload guard implemented (`VS3-IMP-061`): extraction bootstrap requests now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict draft bootstrap request-shape integrity.
 69. Vertical-research-build unknown-field payload guard implemented (`VS3-IMP-060`): vertical research build requests now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict vertical intelligence request-shape integrity.
+70. Rollback unknown-field payload guard implemented (`VS3-IMP-063`): rollback requests now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict immutable runtime repoint request-shape integrity.
 
 ## In Progress
 

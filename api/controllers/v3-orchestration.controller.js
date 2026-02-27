@@ -39,6 +39,7 @@ const PUBLISH_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'host',
   'actorRole'
 ]);
+const ROLLBACK_ALLOWED_TOP_LEVEL_FIELDS = new Set([]);
 const REVIEW_TRANSITION_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'draftId',
   'fromState',
@@ -1896,6 +1897,14 @@ function postRollbackVersion(req, res, next) {
     assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.params.versionId, 'versionId');
+    const unknownTopLevelFields = Object.keys(req.body || {}).filter((field) => {
+      return !ROLLBACK_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+    });
+    if (unknownTopLevelFields.length > 0) {
+      throw createError('rollback payload contains unknown top-level fields', 400, 'validation_error', {
+        unknownFields: unknownTopLevelFields
+      });
+    }
 
     const state = getState(req);
     const versions = state.siteVersions.get(req.params.siteId) || [];

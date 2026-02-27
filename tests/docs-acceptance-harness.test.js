@@ -1759,6 +1759,41 @@ test('WS-E invariant: post-publish draft edits do not alter live immutable runti
   }
 });
 
+test('WS-E contract: rollback rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-wse-rollback-unknown/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wse-rollback-unknown-v1',
+        proposalId: 'proposal-wse-rollback-unknown-v1',
+        host: 'wse-rollback-unknown.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const rollbackRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-wse-rollback-unknown/rollback/${publishBody.versionId}`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          reason: 'manual-repoint'
+        })
+      }
+    );
+    assert.equal(rollbackRes.status, 400);
+    const payload = await rollbackRes.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.deepEqual(payload.details.unknownFields, ['reason']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-E baseline: local runtime resolve+snapshot latency remains within harness threshold', async () => {
   const { server, baseUrl } = await startServer();
 

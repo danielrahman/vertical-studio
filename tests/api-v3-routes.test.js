@@ -2062,6 +2062,42 @@ test('rollback repoints active runtime version to exact prior immutable version'
   }
 });
 
+test('rollback rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-rollback-unknown/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-rollback-unknown-1',
+        proposalId: 'proposal-rollback-unknown-a',
+        host: 'rollback-unknown.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const rollbackRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-runtime-rollback-unknown/rollback/${publishBody.versionId}`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          reason: 'manual-repoint'
+        })
+      }
+    );
+    assert.equal(rollbackRes.status, 400);
+    const payload = await rollbackRes.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'rollback payload contains unknown top-level fields');
+    assert.deepEqual(payload.details.unknownFields, ['reason']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('post-publish draft edits do not affect live runtime snapshot pointer', async () => {
   const { server, baseUrl } = await startServer();
 
