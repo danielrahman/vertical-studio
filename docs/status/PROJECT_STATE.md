@@ -21,18 +21,24 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 5. Security docs updated with required JSON findings contract and explicit release gate schema.
 6. Persistent cross-session tracking maintained in `docs/status/*`.
 7. Monorepo workspace scaffold added (`apps/*`, `packages/*`) with legacy runtime compatibility bridges and root npm workspaces.
+8. Workspace TypeScript toolchain baseline added:
+  1. shared `tsconfig` (`tsconfig.base.json`, `tsconfig.json`)
+  2. ESLint baseline (`.eslintrc.cjs`)
+  3. Prettier baseline (`.prettierrc.json`)
+  4. Vitest baseline (`vitest.config.ts`, `tests/vitest/*`)
+  5. root scripts (`typecheck`, `lint`, `format:check`, `test:vitest`)
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. TypeScript toolchain migration (`VS3-IMP-002`) is pending.
+2. `packages/schema` implementation (`VS3-IMP-003`) is the immediate next execution step.
 
 ## Next
 
-1. Add TS toolchain baseline (tsconfig, eslint, prettier, vitest) across workspace.
-2. Implement `packages/schema` contracts first, matching plan docs exactly.
-3. Add additive API routes for vertical research, copy lifecycle, overrides, and review transitions.
-4. Implement publish gate skeleton with deterministic blocking reason codes.
+1. Implement `packages/schema` contracts first, matching plan docs exactly.
+2. Add additive API routes for vertical research, copy lifecycle, overrides, and review transitions.
+3. Implement publish gate skeleton with deterministic blocking reason codes.
+4. Implement review state transition guard service with documented reason codes.
 5. Add test harness for documentation acceptance criteria.
 
 ## Known Constraints

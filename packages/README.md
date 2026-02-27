@@ -3,6 +3,7 @@
 This directory is the v3 monorepo surface for shared contracts and reusable platform modules.
 
 Planned packages:
+
 - `schema`
 - `component-catalog`
 - `composition-rules`

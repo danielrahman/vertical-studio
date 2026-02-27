@@ -185,6 +185,15 @@ Run all unit + integration tests:
 npm test
 ```
 
+v3 workspace tooling baseline:
+
+```bash
+npm run typecheck
+npm run lint
+npm run format:check
+npm run test:vitest
+```
+
 Current suite covers:
 
 - request schema validation

@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "apps/**/*.ts",
+    "apps/**/*.tsx",
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "tests/vitest/**/*.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": ["node_modules", ".runtime", ".runtime-*", "build-output"]
+}
