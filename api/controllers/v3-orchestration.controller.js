@@ -11,6 +11,13 @@ const TENANT_MEMBER_ROLES = new Set(['internal_admin', 'owner', 'editor', 'viewe
 const EXTRACTION_METHODS = new Set(['dom', 'ocr', 'inference', 'manual']);
 const COPY_LOCALES = new Set(['cs-CZ', 'en-US']);
 const COPY_SELECT_ACTOR_ROLES = new Set(['internal_admin', 'owner']);
+const COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
+  'draftId',
+  'rulesVersion',
+  'catalogVersion',
+  'verticalStandardVersion',
+  'actorRole'
+]);
 const COPY_GENERATE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'draftId',
   'locales',
@@ -1074,6 +1081,15 @@ function postComposePropose(req, res, next) {
     assertString(req.body?.rulesVersion, 'rulesVersion');
     assertString(req.body?.catalogVersion, 'catalogVersion');
     assertString(req.body?.verticalStandardVersion, 'verticalStandardVersion');
+    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
+      return !COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+    });
+    if (unknownTopLevelFields.length > 0) {
+      throw createError('compose propose payload contains unknown top-level fields', 400, 'validation_error', {
+        unknownFields: unknownTopLevelFields
+      });
+    }
+
     const state = getState(req);
     const componentContracts = resolveComponentContractsForCatalogVersion(state, req.body.catalogVersion);
     if (componentContracts.length === 0) {

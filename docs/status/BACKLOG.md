@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-054 | Reject unknown `compose/propose` payload fields                       | done        | codex | `POST /compose/propose` now rejects unknown top-level keys with deterministic `validation_error` details to enforce deterministic prompt-contract request shape; API/WS-D coverage added |
 | VS3-IMP-053 | Reject unknown `copy/generate` payload fields                         | done        | codex | `POST /copy/generate` now rejects unknown top-level keys with deterministic `validation_error` details to enforce deterministic request shape; API/WS-D coverage added |
 | VS3-IMP-052 | Reject unknown `copy/select` payload fields                           | done        | codex | `POST /copy/select` now rejects unknown top-level keys and unknown per-selection fields with deterministic `validation_error` details; API/WS-D coverage added |
 | VS3-IMP-051 | Reject unknown top-level fields in override payloads                  | done        | codex | `POST /overrides` now rejects unexpected top-level keys with deterministic `invalid_override_payload` details to prevent silent operator input drift; API/WS-D coverage added |

@@ -526,6 +526,31 @@ test('compose propose returns deterministic three-variant envelope', async () =>
   }
 });
 
+test('compose propose rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-compose-unknown-fields/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-compose-unknown-fields',
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02',
+        promptMode: 'fast'
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'compose propose payload contains unknown top-level fields');
+    assert.deepEqual(payload.details.unknownFields, ['promptMode']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('component contracts endpoint honors catalogVersion query filter', async () => {
   const { server, baseUrl } = await startServer();
 

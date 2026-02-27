@@ -474,6 +474,30 @@ test('WS-D contract: compose requires loaded component contracts for requested c
   }
 });
 
+test('WS-D contract: compose rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const unknownFieldRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-compose-unknown/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-compose-unknown-1',
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02',
+        promptMode: 'fast'
+      })
+    });
+    assert.equal(unknownFieldRes.status, 400);
+    const unknownFieldPayload = await unknownFieldRes.json();
+    assert.equal(unknownFieldPayload.code, 'validation_error');
+    assert.deepEqual(unknownFieldPayload.details.unknownFields, ['promptMode']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: overrides requiredComponents must reference loaded component contracts', async () => {
   const { server, baseUrl } = await startServer();
 
