@@ -56,6 +56,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 35. Copy generation audit provenance implemented (`VS3-IMP-028`): copy generation mutations now emit explicit audit events and API/acceptance coverage confirms privileged provenance trail visibility.
 36. Compose/copy mutation ACL hardening implemented (`VS3-IMP-029`): compose propose and copy generate/select routes now enforce `internal_admin` access, with unauthorized-path and acceptance coverage aligned to API auth contract.
 37. CMS webhook signed-ingress hardening implemented (`VS3-IMP-030`): `POST /cms/webhooks/publish` now enforces HMAC signature verification, emits `cms_publish_webhook_queued` audit events, and is covered by API + WS-C acceptance tests.
+38. Non-public read endpoint auth hardening implemented (`VS3-IMP-031`): tenant/member scoped GET routes now require `internal_admin|owner|editor|viewer`, with explicit forbidden-path and WS-B contract coverage.
 
 ## In Progress
 

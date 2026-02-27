@@ -71,6 +71,9 @@ const INTERNAL_ADMIN_HEADERS = {
   'content-type': 'application/json',
   'x-user-role': 'internal_admin'
 };
+const TENANT_MEMBER_HEADERS = {
+  'x-user-role': 'viewer'
+};
 const CMS_WEBHOOK_SECRET = 'test-cms-webhook-secret';
 
 function stableId(seed) {
@@ -111,13 +114,18 @@ test('vertical research build enforces competitor minimum and exposes latest out
 
     assert.equal(validRes.status, 202);
 
-    const latestRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/latest`);
+    const latestRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(latestRes.status, 200);
     const latest = await latestRes.json();
     assert.equal(latest.competitorCount, 15);
 
     const standardRes = await fetch(
-      `${baseUrl}/api/v1/verticals/boutique-developers/standards/${latest.version}`
+      `${baseUrl}/api/v1/verticals/boutique-developers/standards/${latest.version}`,
+      {
+        headers: TENANT_MEMBER_HEADERS
+      }
     );
     assert.equal(standardRes.status, 200);
     const standard = await standardRes.json();
@@ -258,6 +266,124 @@ test('cms webhook publish ingress requires valid signature and emits audit trail
     assert.equal(auditBody.count >= 1, true);
     assert.equal(auditBody.items[0].action, 'cms_publish_webhook_queued');
     assert.equal(auditBody.items[0].entityId, validSignatureBody.jobId);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('non-public read endpoints require tenant-member or internal_admin role', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const tenantId = 'tenant-read-acl';
+    const draftId = 'draft-read-acl';
+    const siteId = 'site-read-acl';
+
+    const tenantCreateRes = await fetch(`${baseUrl}/api/v1/tenants`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId,
+        name: 'Read ACL Tenant'
+      })
+    });
+    assert.equal(tenantCreateRes.status, 201);
+
+    const verticalBuildRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings']
+      })
+    });
+    assert.equal(verticalBuildRes.status, 202);
+
+    const verticalLatestRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(verticalLatestRes.status, 200);
+    const verticalLatest = await verticalLatestRes.json();
+
+    const copyGenerateRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US']
+      })
+    });
+    assert.equal(copyGenerateRes.status, 200);
+
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        proposalId: 'proposal-read-acl'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+
+    const forbiddenUrls = [
+      `${baseUrl}/api/v1/tenants/${tenantId}`,
+      `${baseUrl}/api/v1/verticals/boutique-developers/research/latest`,
+      `${baseUrl}/api/v1/verticals/boutique-developers/standards/${verticalLatest.version}`,
+      `${baseUrl}/api/v1/component-contracts`,
+      `${baseUrl}/api/v1/component-contracts/hero/1.0.0`,
+      `${baseUrl}/api/v1/sites/${siteId}/copy/slots?draftId=${draftId}`,
+      `${baseUrl}/api/v1/sites/${siteId}/versions`,
+      `${baseUrl}/api/v1/sites/${siteId}/quality/latest`,
+      `${baseUrl}/api/v1/sites/${siteId}/security/latest`
+    ];
+
+    for (const url of forbiddenUrls) {
+      const response = await fetch(url);
+      assert.equal(response.status, 403);
+    }
+
+    const tenantReadRes = await fetch(`${baseUrl}/api/v1/tenants/${tenantId}`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(tenantReadRes.status, 200);
+
+    const standardsReadRes = await fetch(
+      `${baseUrl}/api/v1/verticals/boutique-developers/standards/${verticalLatest.version}`,
+      {
+        headers: TENANT_MEMBER_HEADERS
+      }
+    );
+    assert.equal(standardsReadRes.status, 200);
+
+    const componentListRes = await fetch(`${baseUrl}/api/v1/component-contracts`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(componentListRes.status, 200);
+
+    const componentDetailRes = await fetch(`${baseUrl}/api/v1/component-contracts/hero/1.0.0`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(componentDetailRes.status, 200);
+
+    const copySlotsRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/slots?draftId=${draftId}`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(copySlotsRes.status, 200);
+
+    const versionsRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/versions`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(versionsRes.status, 200);
+
+    const qualityRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/quality/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(qualityRes.status, 200);
+
+    const securityRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/security/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(securityRes.status, 200);
   } finally {
     await stopServer(server);
   }
@@ -860,7 +986,9 @@ test('quality latest endpoint returns required COPY/LAYOUT/MEDIA/LEGAL gate outc
   const { server, baseUrl } = await startServer();
 
   try {
-    const response = await fetch(`${baseUrl}/api/v1/sites/site-quality/quality/latest`);
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-quality/quality/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(response.status, 200);
     const payload = await response.json();
     assert.equal(payload.status, 'pending');
@@ -890,7 +1018,9 @@ test('quality latest endpoint reflects latest publish-attempt gate outcome', asy
     });
     assert.equal(blockedPublishRes.status, 409);
 
-    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-quality-latest/quality/latest`);
+    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-quality-latest/quality/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(blockedLatestRes.status, 200);
     const blockedLatest = await blockedLatestRes.json();
     assert.equal(blockedLatest.status, 'completed');
@@ -914,7 +1044,9 @@ test('quality latest endpoint reflects latest publish-attempt gate outcome', asy
     assert.equal(passPublishRes.status, 200);
     const passPublish = await passPublishRes.json();
 
-    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-quality-latest/quality/latest`);
+    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-quality-latest/quality/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(passLatestRes.status, 200);
     const passLatest = await passLatestRes.json();
     assert.equal(passLatest.status, 'completed');
@@ -934,7 +1066,9 @@ test('security latest endpoint returns artifact references and deterministic gat
   const { server, baseUrl } = await startServer();
 
   try {
-    const response = await fetch(`${baseUrl}/api/v1/sites/site-security/security/latest`);
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-security/security/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(response.status, 200);
     const payload = await response.json();
     assert.equal(payload.status, 'pending');
@@ -973,7 +1107,9 @@ test('security latest endpoint reflects latest publish-attempt gate outcome', as
     });
     assert.equal(blockedPublishRes.status, 409);
 
-    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-security-latest/security/latest`);
+    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-security-latest/security/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(blockedLatestRes.status, 200);
     const blockedLatest = await blockedLatestRes.json();
     assert.equal(blockedLatest.status, 'completed');
@@ -998,7 +1134,9 @@ test('security latest endpoint reflects latest publish-attempt gate outcome', as
     assert.equal(passPublishRes.status, 200);
     const passPublish = await passPublishRes.json();
 
-    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-security-latest/security/latest`);
+    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-security-latest/security/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(passLatestRes.status, 200);
     const passLatest = await passLatestRes.json();
     assert.equal(passLatest.status, 'completed');
@@ -1222,10 +1360,14 @@ test('component contract endpoint returns contract and typed not-found code', as
   const { server, baseUrl } = await startServer();
 
   try {
-    const existingRes = await fetch(`${baseUrl}/api/v1/component-contracts/hero/1.0.0`);
+    const existingRes = await fetch(`${baseUrl}/api/v1/component-contracts/hero/1.0.0`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(existingRes.status, 200);
 
-    const missingRes = await fetch(`${baseUrl}/api/v1/component-contracts/missing/1.0.0`);
+    const missingRes = await fetch(`${baseUrl}/api/v1/component-contracts/missing/1.0.0`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(missingRes.status, 404);
     const missingBody = await missingRes.json();
     assert.equal(missingBody.code, 'component_contract_not_found');

@@ -17,6 +17,9 @@ const INTERNAL_ADMIN_HEADERS = {
   'content-type': 'application/json',
   'x-user-role': 'internal_admin'
 };
+const TENANT_MEMBER_HEADERS = {
+  'x-user-role': 'viewer'
+};
 const CMS_WEBHOOK_SECRET = 'test-cms-webhook-secret';
 
 function readRepoFile(relativePath) {
@@ -225,6 +228,40 @@ test('WS-C contract: cms publish webhook requires a valid signature and enqueues
   }
 });
 
+test('WS-B contract: non-public read endpoints require tenant-member or internal_admin role', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-wsb-auth/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-auth-1',
+        proposalId: 'proposal-wsb-auth-1'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+
+    const qualityForbiddenRes = await fetch(`${baseUrl}/api/v1/sites/site-wsb-auth/quality/latest`);
+    assert.equal(qualityForbiddenRes.status, 403);
+
+    const qualityAllowedRes = await fetch(`${baseUrl}/api/v1/sites/site-wsb-auth/quality/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(qualityAllowedRes.status, 200);
+
+    const contractsForbiddenRes = await fetch(`${baseUrl}/api/v1/component-contracts`);
+    assert.equal(contractsForbiddenRes.status, 403);
+
+    const contractsAllowedRes = await fetch(`${baseUrl}/api/v1/component-contracts`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(contractsAllowedRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 
@@ -375,7 +412,9 @@ test('acceptance scenario 4.3: vertical standard version is reusable across mult
     });
     assert.equal(buildRes.status, 202);
 
-    const latestRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/latest`);
+    const latestRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(latestRes.status, 200);
     const latest = await latestRes.json();
 
@@ -580,7 +619,9 @@ test('WS-F contract: quality report exposes COPY/LAYOUT/MEDIA/LEGAL gate outcome
   const { server, baseUrl } = await startServer();
 
   try {
-    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality/quality/latest`);
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality/quality/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(response.status, 200);
     const payload = await response.json();
 
@@ -610,7 +651,9 @@ test('WS-F contract: quality latest reflects deterministic gate outcomes from pu
     });
     assert.equal(blockedPublishRes.status, 409);
 
-    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality-latest/quality/latest`);
+    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality-latest/quality/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(blockedLatestRes.status, 200);
     const blockedLatest = await blockedLatestRes.json();
     assert.equal(blockedLatest.status, 'completed');
@@ -630,7 +673,9 @@ test('WS-F contract: quality latest reflects deterministic gate outcomes from pu
     assert.equal(passPublishRes.status, 200);
     const passPublish = await passPublishRes.json();
 
-    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality-latest/quality/latest`);
+    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality-latest/quality/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(passLatestRes.status, 200);
     const passLatest = await passLatestRes.json();
     assert.equal(passLatest.versionId, passPublish.versionId);
@@ -647,7 +692,9 @@ test('WS-F contract: security report exposes JSON+markdown artifacts and gate de
   const { server, baseUrl } = await startServer();
 
   try {
-    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security/security/latest`);
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security/security/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(response.status, 200);
     const payload = await response.json();
 
@@ -685,7 +732,9 @@ test('WS-F contract: security latest reflects deterministic gate outcomes from p
     });
     assert.equal(blockedPublishRes.status, 409);
 
-    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security-latest/security/latest`);
+    const blockedLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security-latest/security/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(blockedLatestRes.status, 200);
     const blockedLatest = await blockedLatestRes.json();
     assert.equal(blockedLatest.gateDecision.reasonCode, 'security_blocked_high');
@@ -705,7 +754,9 @@ test('WS-F contract: security latest reflects deterministic gate outcomes from p
     assert.equal(passPublishRes.status, 200);
     const passPublish = await passPublishRes.json();
 
-    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security-latest/security/latest`);
+    const passLatestRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security-latest/security/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
     assert.equal(passLatestRes.status, 200);
     const passLatest = await passLatestRes.json();
     assert.equal(passLatest.versionId, passPublish.versionId);

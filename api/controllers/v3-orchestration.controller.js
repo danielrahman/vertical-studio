@@ -7,6 +7,7 @@ const SUPPORTED_RESEARCH_SOURCES = new Set(['public_web', 'legal_pages', 'select
 const QUALITY_GATE_FAMILIES = ['COPY', 'LAYOUT', 'MEDIA', 'LEGAL'];
 const QUALITY_SEVERITY_LEVELS = new Set(['P0', 'P1', 'P2']);
 const SECURITY_SEVERITY_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
+const TENANT_MEMBER_ROLES = new Set(['internal_admin', 'owner', 'editor', 'viewer']);
 const SECRET_REF_PATTERN = /^tenant\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+)$/;
 const SECRET_REF_SEGMENT_PATTERN = /^[a-z0-9-]+$/;
 const SECRET_VALUE_KEYS = ['value', 'secret', 'secretValue', 'plaintext', 'token', 'apiKey', 'privateKey'];
@@ -124,6 +125,19 @@ function assertInternalAdmin(req) {
   if (role !== 'internal_admin') {
     throw createError('internal_admin role required', 403, 'forbidden', {
       requiredRole: 'internal_admin'
+    });
+  }
+}
+
+function assertTenantMemberOrInternalAdmin(req) {
+  const headerRole =
+    typeof req.headers['x-user-role'] === 'string' ? req.headers['x-user-role'].trim() : null;
+  const bodyRole = typeof req.body?.actorRole === 'string' ? req.body.actorRole.trim() : null;
+  const role = headerRole || bodyRole;
+
+  if (!TENANT_MEMBER_ROLES.has(role)) {
+    throw createError('tenant member or internal_admin role required', 403, 'forbidden', {
+      requiredRoles: ['internal_admin', 'owner', 'editor', 'viewer']
     });
   }
 }
@@ -525,6 +539,7 @@ function postCreateTenant(req, res, next) {
 
 function getTenantDetail(req, res, next) {
   try {
+    assertTenantMemberOrInternalAdmin(req);
     const state = getState(req);
     const tenant = state.tenants.get(req.params.tenantId);
     if (!tenant) {
@@ -644,6 +659,7 @@ function postVerticalResearchBuild(req, res, next) {
 
 function getVerticalResearchLatest(req, res, next) {
   try {
+    assertTenantMemberOrInternalAdmin(req);
     const state = getState(req);
     const latest = state.verticalResearch.get(req.params.verticalKey);
 
@@ -667,6 +683,7 @@ function getVerticalResearchLatest(req, res, next) {
 
 function getVerticalStandardVersion(req, res, next) {
   try {
+    assertTenantMemberOrInternalAdmin(req);
     const state = getState(req);
     const latest = state.verticalResearch.get(req.params.verticalKey);
 
@@ -685,6 +702,7 @@ function getVerticalStandardVersion(req, res, next) {
 
 function getComponentContracts(req, res, next) {
   try {
+    assertTenantMemberOrInternalAdmin(req);
     const state = getState(req);
     const requestedIds =
       typeof req.query.componentIds === 'string' && req.query.componentIds.trim()
@@ -710,6 +728,7 @@ function getComponentContracts(req, res, next) {
 
 function getComponentContractDefinition(req, res, next) {
   try {
+    assertTenantMemberOrInternalAdmin(req);
     const state = getState(req);
     const key = `${req.params.componentId}:${req.params.version}`;
     const contract = state.componentContracts.get(key);
@@ -863,6 +882,7 @@ function postCopyGenerate(req, res, next) {
 
 function getCopySlots(req, res, next) {
   try {
+    assertTenantMemberOrInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
 
     if (typeof req.query.draftId !== 'string' || !req.query.draftId) {
@@ -1231,6 +1251,7 @@ function postRollbackVersion(req, res, next) {
 
 function getSiteVersions(req, res, next) {
   try {
+    assertTenantMemberOrInternalAdmin(req);
     const state = getState(req);
     const versions = state.siteVersions.get(req.params.siteId) || [];
 
@@ -1245,6 +1266,7 @@ function getSiteVersions(req, res, next) {
 
 function getLatestQualityReport(req, res, next) {
   try {
+    assertTenantMemberOrInternalAdmin(req);
     const state = getState(req);
     const latest = state.qualityReportsBySite.get(req.params.siteId);
     if (latest) {
@@ -1273,6 +1295,7 @@ function getLatestQualityReport(req, res, next) {
 
 function getLatestSecurityReport(req, res, next) {
   try {
+    assertTenantMemberOrInternalAdmin(req);
     const state = getState(req);
     const latest = state.securityReportsBySite.get(req.params.siteId);
     if (latest) {
