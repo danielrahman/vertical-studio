@@ -351,7 +351,7 @@ test('WS-B contract: owner copy selection is blocked unless site policy allows d
       },
       body: JSON.stringify({
         draftId,
-        selections: [{ candidateId: `missing-${draftId}` }]
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: `missing-${draftId}` }]
       })
     });
     assert.equal(ownerDeniedRes.status, 403);
@@ -376,7 +376,13 @@ test('WS-B contract: owner copy selection is blocked unless site policy allows d
       },
       body: JSON.stringify({
         draftId,
-        selections: [{ candidateId: app.locals.v3State.copyCandidatesByDraft.get(draftId)[0].candidateId }]
+        selections: [
+          {
+            slotId: app.locals.v3State.copyCandidatesByDraft.get(draftId)[0].slotId,
+            locale: app.locals.v3State.copyCandidatesByDraft.get(draftId)[0].locale,
+            candidateId: app.locals.v3State.copyCandidatesByDraft.get(draftId)[0].candidateId
+          }
+        ]
       })
     });
     assert.equal(ownerAllowedRes.status, 200);
@@ -501,7 +507,7 @@ test('acceptance scenario 4.1: bounded copy generation enforces candidate policy
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-copy-1',
-        selections: [{ candidateId: candidates[0].candidateId }]
+        selections: [{ slotId: candidates[0].slotId, locale: candidates[0].locale, candidateId: candidates[0].candidateId }]
       })
     });
     assert.equal(selectRes.status, 200);

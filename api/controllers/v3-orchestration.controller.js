@@ -9,6 +9,7 @@ const QUALITY_SEVERITY_LEVELS = new Set(['P0', 'P1', 'P2']);
 const SECURITY_SEVERITY_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
 const TENANT_MEMBER_ROLES = new Set(['internal_admin', 'owner', 'editor', 'viewer']);
 const EXTRACTION_METHODS = new Set(['dom', 'ocr', 'inference', 'manual']);
+const COPY_LOCALES = new Set(['cs-CZ', 'en-US']);
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
 const OVERRIDE_ARRAY_KEYS = [
   'tone',
@@ -177,6 +178,32 @@ function assertCopySelectActorRole(req, state, siteId) {
     allowedAlternativeRole: 'owner',
     policyField: 'sitePolicy.allowOwnerDraftCopyEdits'
   });
+}
+
+function assertCopySelectionShape(selection, index) {
+  if (!selection || typeof selection !== 'object' || Array.isArray(selection)) {
+    throw createError('selection item must be an object', 400, 'validation_error', {
+      field: `selections[${index}]`
+    });
+  }
+
+  if (typeof selection.slotId !== 'string' || !selection.slotId.trim()) {
+    throw createError('selection slotId is required', 400, 'validation_error', {
+      field: `selections[${index}].slotId`
+    });
+  }
+
+  if (!COPY_LOCALES.has(selection.locale)) {
+    throw createError('selection locale must be one of cs-CZ or en-US', 400, 'validation_error', {
+      field: `selections[${index}].locale`
+    });
+  }
+
+  if (typeof selection.candidateId !== 'string' || !selection.candidateId.trim()) {
+    throw createError('selection candidateId is required', 400, 'validation_error', {
+      field: `selections[${index}].candidateId`
+    });
+  }
 }
 
 function assertNoPlaintextSecretPayload(body) {
@@ -1097,18 +1124,33 @@ function postCopySelect(req, res, next) {
     if (!Array.isArray(req.body?.selections)) {
       throw createError('selections array is required', 400, 'validation_error');
     }
+    req.body.selections.forEach((selection, index) => assertCopySelectionShape(selection, index));
 
     const state = getState(req);
     const selectedByRole = assertCopySelectActorRole(req, state, req.params.siteId);
     const candidates = state.copyCandidatesByDraft.get(req.body.draftId) || [];
-    const candidateIds = new Set(candidates.map((candidate) => candidate.candidateId));
+    const candidateById = new Map(candidates.map((candidate) => [candidate.candidateId, candidate]));
 
     const missingCandidate = req.body.selections.find((selection) => {
-      return typeof selection?.candidateId !== 'string' || !candidateIds.has(selection.candidateId);
+      return !candidateById.has(selection.candidateId);
     });
 
     if (missingCandidate) {
       throw createError('copy candidate not found', 404, 'copy_candidate_not_found');
+    }
+
+    const mismatchedSelection = req.body.selections.find((selection) => {
+      const candidate = candidateById.get(selection.candidateId);
+      return candidate.slotId !== selection.slotId || candidate.locale !== selection.locale;
+    });
+
+    if (mismatchedSelection) {
+      throw createError('selection must match candidate slotId and locale', 400, 'validation_error', {
+        field: 'selections',
+        candidateId: mismatchedSelection.candidateId,
+        slotId: mismatchedSelection.slotId,
+        locale: mismatchedSelection.locale
+      });
     }
 
     state.copySelectionsByDraft.set(req.body.draftId, req.body.selections);

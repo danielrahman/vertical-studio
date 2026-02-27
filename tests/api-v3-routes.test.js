@@ -636,6 +636,40 @@ test('copy generate rejects unsupported highImpactOnlyThreeVariants mode when pr
   }
 });
 
+test('copy select rejects slotId/locale mismatch for an existing candidate', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-copy-select-mismatch';
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-select-mismatch/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US']
+      })
+    });
+    assert.equal(generateRes.status, 200);
+
+    const candidateId = stableId(`${draftId}|hero.h1|cs-CZ|B`);
+    const mismatchRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-select-mismatch/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ slotId: 'about.intro', locale: 'en-US', candidateId }]
+      })
+    });
+    assert.equal(mismatchRes.status, 400);
+    const mismatchBody = await mismatchRes.json();
+    assert.equal(mismatchBody.code, 'validation_error');
+    assert.equal(mismatchBody.message, 'selection must match candidate slotId and locale');
+    assert.equal(mismatchBody.details.candidateId, candidateId);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select allows owner only when site policy enables draft copy edits', async () => {
   const { server, baseUrl } = await startServer();
 
@@ -659,7 +693,7 @@ test('copy select allows owner only when site policy enables draft copy edits', 
       headers: OWNER_HEADERS,
       body: JSON.stringify({
         draftId,
-        selections: [{ candidateId }]
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId }]
       })
     });
     assert.equal(ownerForbiddenRes.status, 403);
@@ -681,7 +715,7 @@ test('copy select allows owner only when site policy enables draft copy edits', 
       headers: OWNER_HEADERS,
       body: JSON.stringify({
         draftId,
-        selections: [{ candidateId }]
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId }]
       })
     });
     assert.equal(ownerAllowedRes.status, 200);
@@ -743,6 +777,8 @@ test('copy selection writes audit trail event for provenance', async () => {
         draftId,
         selections: [
           {
+            slotId: 'hero.h1',
+            locale: 'cs-CZ',
             candidateId
           }
         ]

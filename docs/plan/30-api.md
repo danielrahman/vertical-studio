@@ -332,6 +332,11 @@ Request:
 }
 ```
 
+Rules:
+1. Every selection item must include `slotId`, `locale`, and `candidateId`.
+2. `candidateId` must resolve to a generated candidate for the draft.
+3. Selected candidate `slotId` and `locale` must match the request tuple.
+
 ### 4.6 Manual Override Lifecycle
 
 #### `POST /api/v1/sites/:siteId/overrides`
