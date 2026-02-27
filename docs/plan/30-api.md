@@ -194,6 +194,7 @@ Response `202`:
 Validation:
 1. `targetCompetitorCount` must be `>= 15`.
 2. Pattern extraction scope is limited to `IA + CTA + trust + tone`.
+3. Unknown top-level payload fields are rejected with `400 validation_error`.
 
 #### `GET /api/v1/verticals/:verticalKey/research/latest`
 Return latest research run summary and references.
