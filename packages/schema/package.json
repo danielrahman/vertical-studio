@@ -2,5 +2,8 @@
   "name": "@vertical-studio/schema",
   "version": "0.1.0",
   "private": true,
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "zod": "^4.3.6"
+  }
 }

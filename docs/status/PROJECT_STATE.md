@@ -27,18 +27,19 @@ Move from decision-complete documentation to incremental v3 implementation, pres
   3. Prettier baseline (`.prettierrc.json`)
   4. Vitest baseline (`vitest.config.ts`, `tests/vitest/*`)
   5. root scripts (`typecheck`, `lint`, `format:check`, `test:vitest`)
+9. `packages/schema` canonical contracts implemented (TypeScript + Zod) for extraction evidence, vertical standards, component contracts, copy lifecycle, review transition requests, and manual overrides.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. `packages/schema` implementation (`VS3-IMP-003`) is the immediate next execution step.
+2. Additive v3 API route implementation (`VS3-IMP-004`) is the immediate next execution step.
 
 ## Next
 
-1. Implement `packages/schema` contracts first, matching plan docs exactly.
-2. Add additive API routes for vertical research, copy lifecycle, overrides, and review transitions.
-3. Implement publish gate skeleton with deterministic blocking reason codes.
-4. Implement review state transition guard service with documented reason codes.
+1. Add additive API routes for vertical research, copy lifecycle, overrides, and review transitions.
+2. Implement review state transition guard service with documented reason codes.
+3. Implement compose/copy skeleton with bounded slot validation.
+4. Implement publish gate skeleton with deterministic blocking reason codes.
 5. Add test harness for documentation acceptance criteria.
 
 ## Known Constraints
