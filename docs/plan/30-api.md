@@ -369,6 +369,10 @@ Request:
 }
 ```
 
+Rules:
+1. Override fields in this payload are arrays of strings when provided.
+2. `requiredComponents` must reference loaded component contract IDs; unknown IDs return `400 invalid_override_payload`.
+
 ### 4.7 Review State Lifecycle
 
 #### `POST /api/v1/sites/:siteId/review/transition`

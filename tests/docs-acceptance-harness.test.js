@@ -474,6 +474,62 @@ test('WS-D contract: compose requires loaded component contracts for requested c
   }
 });
 
+test('WS-D contract: overrides requiredComponents must reference loaded component contracts', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-wsd-overrides-components';
+    const composeRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(composeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const invalidOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredComponents: ['missing-component']
+      })
+    });
+    assert.equal(invalidOverrideRes.status, 400);
+    const invalidOverridePayload = await invalidOverrideRes.json();
+    assert.equal(invalidOverridePayload.code, 'invalid_override_payload');
+    assert.deepEqual(invalidOverridePayload.details.unknownComponentIds, ['missing-component']);
+
+    const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredComponents: ['cards-3up']
+      })
+    });
+    assert.equal(validOverrideRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy generation rejects unsupported high-impact variant modes', async () => {
   const { server, baseUrl } = await startServer();
 

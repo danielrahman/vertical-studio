@@ -74,6 +74,7 @@ function getState(req) {
     const heroContract = {
       componentId: 'hero',
       version: '1.0.0',
+      catalogVersion: '1.0.0',
       description: 'Primary intro section',
       propsSchema: {
         type: 'object',
@@ -95,8 +96,53 @@ function getState(req) {
       allowedVariants: ['split-media', 'centered-copy', 'minimal'],
       seoA11yRequirements: ['must_render_single_h1', 'cta_links_must_be_valid_urls', 'meaningful_media_requires_alt']
     };
+    const cards3upContract = {
+      componentId: 'cards-3up',
+      version: '1.0.0',
+      catalogVersion: '1.0.0',
+      description: 'Three side-by-side value proposition cards',
+      propsSchema: {
+        type: 'object',
+        required: ['cards'],
+        properties: {
+          cards: { type: 'array' }
+        }
+      },
+      requiredFields: ['cards'],
+      maxLengths: {
+        'cards.title': 60,
+        'cards.body': 180
+      },
+      fallbackPolicy: {
+        cards: 'exclude_if_incomplete'
+      },
+      allowedVariants: ['icon-top', 'image-top', 'minimal'],
+      seoA11yRequirements: ['card_images_require_alt_when_present']
+    };
+    const ctaFormContract = {
+      componentId: 'cta-form',
+      version: '1.0.0',
+      catalogVersion: '1.0.0',
+      description: 'Primary conversion form with CTA',
+      propsSchema: {
+        type: 'object',
+        required: ['headline', 'submitLabel']
+      },
+      requiredFields: ['headline', 'submitLabel'],
+      maxLengths: {
+        headline: 120,
+        submitLabel: 28
+      },
+      fallbackPolicy: {
+        description: 'omit_if_missing'
+      },
+      allowedVariants: ['default', 'inline'],
+      seoA11yRequirements: ['form_labels_must_be_present', 'submit_control_must_be_accessible']
+    };
 
     req.app.locals.v3State.componentContracts.set('hero:1.0.0', heroContract);
+    req.app.locals.v3State.componentContracts.set('cards-3up:1.0.0', cards3upContract);
+    req.app.locals.v3State.componentContracts.set('cta-form:1.0.0', ctaFormContract);
   }
 
   return req.app.locals.v3State;
@@ -592,6 +638,10 @@ function listComponentContractVersions(state, componentContracts) {
   return contracts
     .map((item) => `${item.componentId}:${item.version}`)
     .sort();
+}
+
+function listComponentContractIds(state) {
+  return Array.from(state.componentContracts.values()).map((item) => item.componentId);
 }
 
 function normalizeManualOverrides(overrides) {
@@ -1288,6 +1338,24 @@ function postOverrides(req, res, next) {
     }
 
     const state = getState(req);
+    if (Array.isArray(req.body.requiredComponents)) {
+      const knownComponentIds = new Set(listComponentContractIds(state));
+      const unknownRequiredComponents = req.body.requiredComponents.filter((componentId) => {
+        return !knownComponentIds.has(componentId);
+      });
+      if (unknownRequiredComponents.length > 0) {
+        throw createError(
+          'Invalid override payload: requiredComponents contains unknown componentId values',
+          400,
+          'invalid_override_payload',
+          {
+            field: 'requiredComponents',
+            unknownComponentIds: unknownRequiredComponents
+          }
+        );
+      }
+    }
+
     const reviewState = state.reviewStatesByDraft.get(req.body.draftId);
     if (reviewState !== 'review_in_progress' && reviewState !== 'proposal_selected') {
       throw createError('Invalid review transition', 409, 'invalid_transition', {

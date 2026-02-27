@@ -1199,6 +1199,66 @@ test('ops review flow enforces internal_admin selection and override state gatin
   }
 });
 
+test('overrides rejects unknown requiredComponents values', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-override-components-1';
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-override-components/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-override-components/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const invalidOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-components/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredComponents: ['unknown-component']
+      })
+    });
+    assert.equal(invalidOverrideRes.status, 400);
+    const invalidOverrideBody = await invalidOverrideRes.json();
+    assert.equal(invalidOverrideBody.code, 'invalid_override_payload');
+    assert.equal(
+      invalidOverrideBody.message,
+      'Invalid override payload: requiredComponents contains unknown componentId values'
+    );
+    assert.deepEqual(invalidOverrideBody.details.unknownComponentIds, ['unknown-component']);
+
+    const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-components/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredComponents: ['cards-3up', 'cta-form']
+      })
+    });
+    assert.equal(validOverrideRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('public runtime resolves active site version by host and serves immutable snapshots', async () => {
   const { server, baseUrl } = await startServer();
 

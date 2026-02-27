@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-045 | Validate override `requiredComponents` against loaded component contracts | done        | codex | `POST /overrides` now rejects unknown `requiredComponents` IDs with `invalid_override_payload`, while allowing known contract IDs; API/WS-D coverage added |
 | VS3-IMP-044 | Enforce catalog-version component contract validation for compose flow | done        | codex | `compose/propose` now rejects unknown `catalogVersion` with `component_contract_not_found`, and `/component-contracts` now honors `catalogVersion` filtering; API/WS-D coverage added |
 | VS3-IMP-043 | Enforce `copy/select` `selectedBy` actor provenance                  | done        | codex | `POST /copy/select` now validates `selectedBy` against authenticated actor role and stores server-derived selector role; API/WS-D coverage added |
 | VS3-IMP-042 | Require at least one selection item in `copy/select`                 | done        | codex | `POST /copy/select` now rejects empty `selections` arrays with deterministic validation errors; API/WS-D coverage added |
