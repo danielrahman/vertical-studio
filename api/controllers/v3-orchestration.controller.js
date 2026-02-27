@@ -674,6 +674,7 @@ function postReviewTransition(req, res, next) {
 
 function postPublishSite(req, res, next) {
   try {
+    assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
     assertString(req.body?.proposalId, 'proposalId');
@@ -755,6 +756,7 @@ function postPublishSite(req, res, next) {
 
 function postRollbackVersion(req, res, next) {
   try {
+    assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.params.versionId, 'versionId');
 

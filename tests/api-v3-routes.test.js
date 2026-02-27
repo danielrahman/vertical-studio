@@ -316,7 +316,7 @@ test('public runtime resolves active site version by host and serves immutable s
   try {
     const firstPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-1/publish`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-runtime-1',
         proposalId: 'proposal-runtime-a',
@@ -344,7 +344,7 @@ test('public runtime resolves active site version by host and serves immutable s
 
     const secondPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-1/publish`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-runtime-2',
         proposalId: 'proposal-runtime-b',
@@ -386,7 +386,7 @@ test('rollback repoints active runtime version to exact prior immutable version'
   try {
     const firstPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-rollback/publish`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-rollback-1',
         proposalId: 'proposal-rollback-a',
@@ -398,7 +398,7 @@ test('rollback repoints active runtime version to exact prior immutable version'
 
     const secondPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-rollback/publish`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-rollback-2',
         proposalId: 'proposal-rollback-b',
@@ -444,6 +444,48 @@ test('rollback repoints active runtime version to exact prior immutable version'
     assert.equal(missingRollbackRes.status, 404);
     const missingRollback = await missingRollbackRes.json();
     assert.equal(missingRollback.code, 'runtime_version_not_found');
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('publish and rollback endpoints require internal_admin role', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishForbiddenRes = await fetch(`${baseUrl}/api/v1/sites/site-acl/publish`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-acl-1',
+        proposalId: 'proposal-acl-1'
+      })
+    });
+    assert.equal(publishForbiddenRes.status, 403);
+    const publishForbiddenBody = await publishForbiddenRes.json();
+    assert.equal(publishForbiddenBody.code, 'forbidden');
+
+    const publishOkRes = await fetch(`${baseUrl}/api/v1/sites/site-acl/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-acl-1',
+        proposalId: 'proposal-acl-1'
+      })
+    });
+    assert.equal(publishOkRes.status, 200);
+    const publishOk = await publishOkRes.json();
+
+    const rollbackForbiddenRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-acl/rollback/${publishOk.versionId}`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' }
+      }
+    );
+    assert.equal(rollbackForbiddenRes.status, 403);
+    const rollbackForbiddenBody = await rollbackForbiddenRes.json();
+    assert.equal(rollbackForbiddenBody.code, 'forbidden');
   } finally {
     await stopServer(server);
   }

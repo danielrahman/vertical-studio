@@ -26,3 +26,4 @@
 | VS3-IMP-010 | Implement public runtime snapshot rendering skeleton                  | done        | codex | Added host->active version resolution, immutable snapshot fetch endpoints, and public-web runtime client skeleton |
 | VS3-IMP-011 | Add documentation acceptance test harness                             | done        | codex | Added executable docs+API acceptance harness covering rollout tests 1-8 and scenarios 4.1-4.4 |
 | VS3-IMP-012 | Implement rollback active-version repoint for public runtime          | done        | codex | Rollback endpoint now reactivates exact prior immutable version and runtime resolve follows active pointer |
+| VS3-IMP-013 | Enforce `internal_admin` ACL for publish and rollback                 | done        | codex | Publish/rollback now require `internal_admin`; regression tests cover forbidden and allowed paths |

@@ -338,7 +338,7 @@ test('acceptance scenario 4.4: publish gate blocks on synthetic quality/security
   try {
     const qualityBlockedRes = await fetch(`${baseUrl}/api/v1/sites/site-gate/publish`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-gate-1',
         proposalId: 'proposal-gate-1',
@@ -351,7 +351,7 @@ test('acceptance scenario 4.4: publish gate blocks on synthetic quality/security
 
     const securityBlockedRes = await fetch(`${baseUrl}/api/v1/sites/site-gate/publish`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-gate-2',
         proposalId: 'proposal-gate-2',
@@ -364,7 +364,7 @@ test('acceptance scenario 4.4: publish gate blocks on synthetic quality/security
 
     const nonBlockingPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-gate/publish`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-gate-3',
         proposalId: 'proposal-gate-3',
