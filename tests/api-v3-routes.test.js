@@ -751,6 +751,30 @@ test('copy generate requires verticalStandardVersion for prompt contract reprodu
   }
 });
 
+test('copy generate rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const unknownFieldRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-generate-unknown/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-generate-unknown',
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02',
+        promptMode: 'fast'
+      })
+    });
+    assert.equal(unknownFieldRes.status, 400);
+    const unknownFieldBody = await unknownFieldRes.json();
+    assert.equal(unknownFieldBody.code, 'validation_error');
+    assert.equal(unknownFieldBody.message, 'copy generate payload contains unknown top-level fields');
+    assert.deepEqual(unknownFieldBody.details.unknownFields, ['promptMode']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select rejects slotId/locale mismatch for an existing candidate', async () => {
   const { server, baseUrl } = await startServer();
 

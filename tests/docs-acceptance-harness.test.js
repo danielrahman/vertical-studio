@@ -999,6 +999,29 @@ test('WS-D contract: copy generation requires verticalStandardVersion', async ()
   }
 });
 
+test('WS-D contract: copy generation rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const unknownFieldRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-copy-generate-unknown/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-copy-generate-unknown-1',
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02',
+        promptMode: 'fast'
+      })
+    });
+    assert.equal(unknownFieldRes.status, 400);
+    const unknownFieldPayload = await unknownFieldRes.json();
+    assert.equal(unknownFieldPayload.code, 'validation_error');
+    assert.deepEqual(unknownFieldPayload.details.unknownFields, ['promptMode']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy selection enforces unique slot-locale tuples per request', async () => {
   const { app, server, baseUrl } = await startServer();
 
