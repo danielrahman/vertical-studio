@@ -256,6 +256,29 @@ test('tenant/bootstrap/vertical-build mutating endpoints require internal_admin 
   }
 });
 
+test('tenant create rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/tenants`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-unknown-fields',
+        name: 'Tenant Unknown Fields',
+        provisioningMode: 'manual'
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'tenant payload contains unknown top-level fields');
+    assert.deepEqual(payload.details.unknownFields, ['provisioningMode']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('bootstrap-from-extraction normalizes low-confidence fields into TODO entries', async () => {
   const { server, baseUrl } = await startServer();
 

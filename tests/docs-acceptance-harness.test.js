@@ -333,6 +333,28 @@ test('WS-B contract: non-public read endpoints require tenant-member or internal
   }
 });
 
+test('WS-B contract: tenant create rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/tenants`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsb-unknown-fields',
+        name: 'Tenant WSB Unknown',
+        provisioningMode: 'manual'
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.deepEqual(payload.details.unknownFields, ['provisioningMode']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: low-confidence required extraction fields are stored as TODO and mark draft lowConfidence', async () => {
   const { app, server, baseUrl } = await startServer();
 

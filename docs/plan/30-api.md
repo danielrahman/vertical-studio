@@ -143,6 +143,9 @@ Create tenant.
 Auth:
 1. `internal_admin`
 
+Validation:
+1. Unknown top-level payload fields are rejected with `400 validation_error`.
+
 #### `GET /api/v1/tenants/:tenantId`
 Read tenant detail.
 
