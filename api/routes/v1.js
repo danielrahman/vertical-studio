@@ -20,6 +20,30 @@ const {
   cancelExtractJob
 } = require('../controllers/extract-jobs.controller');
 const { validateBody } = require('../validation/validate-body');
+const {
+  postCreateTenant,
+  getTenantDetail,
+  postBootstrapFromExtraction,
+  postVerticalResearchBuild,
+  getVerticalResearchLatest,
+  getVerticalStandardVersion,
+  getComponentContracts,
+  getComponentContractDefinition,
+  postComposePropose,
+  postComposeSelect,
+  postCopyGenerate,
+  getCopySlots,
+  postCopySelect,
+  postOverrides,
+  postReviewTransition,
+  postPublishSite,
+  postRollbackVersion,
+  getSiteVersions,
+  getLatestQualityReport,
+  getLatestSecurityReport,
+  postCmsPublishWebhook,
+  postSecretRef
+} = require('../controllers/v3-orchestration.controller');
 const generateRequestSchema = require('../validation/generate-request.schema.json');
 const deployRequestSchema = require('../validation/deploy-request.schema.json');
 const companyRequestSchema = require('../validation/company-request.schema.json');
@@ -45,6 +69,36 @@ router.post('/companies', validateBody(companyRequestSchema), createCompany);
 router.get('/companies', listCompanies);
 router.put('/companies/:id', validateBody(companyRequestSchema), updateCompany);
 router.get('/companies/:id/extraction', getCompanyExtractionStatus);
+
+router.post('/tenants', postCreateTenant);
+router.get('/tenants/:tenantId', getTenantDetail);
+router.post('/sites/:siteId/bootstrap-from-extraction', postBootstrapFromExtraction);
+
+router.post('/verticals/:verticalKey/research/build', postVerticalResearchBuild);
+router.get('/verticals/:verticalKey/research/latest', getVerticalResearchLatest);
+router.get('/verticals/:verticalKey/standards/:version', getVerticalStandardVersion);
+
+router.get('/component-contracts', getComponentContracts);
+router.get('/component-contracts/:componentId/:version', getComponentContractDefinition);
+
+router.post('/sites/:siteId/compose/propose', postComposePropose);
+router.post('/sites/:siteId/compose/select', postComposeSelect);
+
+router.post('/sites/:siteId/copy/generate', postCopyGenerate);
+router.get('/sites/:siteId/copy/slots', getCopySlots);
+router.post('/sites/:siteId/copy/select', postCopySelect);
+
+router.post('/sites/:siteId/overrides', postOverrides);
+router.post('/sites/:siteId/review/transition', postReviewTransition);
+
+router.post('/sites/:siteId/publish', postPublishSite);
+router.post('/sites/:siteId/rollback/:versionId', postRollbackVersion);
+router.get('/sites/:siteId/versions', getSiteVersions);
+router.get('/sites/:siteId/quality/latest', getLatestQualityReport);
+router.get('/sites/:siteId/security/latest', getLatestSecurityReport);
+
+router.post('/cms/webhooks/publish', postCmsPublishWebhook);
+router.post('/secrets/refs', postSecretRef);
 
 module.exports = {
   v1Router: router
