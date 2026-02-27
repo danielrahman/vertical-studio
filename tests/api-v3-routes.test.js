@@ -1368,6 +1368,60 @@ test('security latest endpoint reflects latest publish-attempt gate outcome', as
   }
 });
 
+test('publish is blocked with low_confidence_review_required when required extraction TODO fields remain', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-publish-low-confidence';
+    const draftId = 'draft-publish-low-confidence';
+
+    const bootstrapRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        extractedFields: [
+          {
+            fieldPath: 'contact.email',
+            value: 'team@example.test',
+            sourceUrl: 'https://example.test/contact',
+            method: 'dom',
+            confidence: 0.2,
+            required: true
+          }
+        ]
+      })
+    });
+    assert.equal(bootstrapRes.status, 202);
+
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        proposalId: 'proposal-low-confidence'
+      })
+    });
+    assert.equal(publishRes.status, 409);
+    const publishPayload = await publishRes.json();
+    assert.equal(publishPayload.code, 'low_confidence_review_required');
+    assert.equal(publishPayload.requiredTodoCount, 1);
+    assert.deepEqual(publishPayload.reasons, ['low_confidence_review_required']);
+
+    const auditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=ops_publish_blocked&siteId=${siteId}&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(auditRes.status, 200);
+    const auditPayload = await auditRes.json();
+    assert.equal(auditPayload.count >= 1, true);
+    assert.equal(auditPayload.items[0].gateCode, 'low_confidence_review_required');
+    assert.equal(auditPayload.items[0].requiredTodoCount, 1);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('publish attempts emit privileged audit events for blocked and successful outcomes', async () => {
   const { server, baseUrl } = await startServer();
 

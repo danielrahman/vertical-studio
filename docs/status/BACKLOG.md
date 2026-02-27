@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-036 | Enforce low-confidence review-required publish pre-gate               | done        | codex | Publish now blocks with `low_confidence_review_required` when required extraction TODOs remain; API/WS-B coverage added |
 | VS3-IMP-035 | Allow owner copy selection only when site policy enables draft edits  | done        | codex | `POST /copy/select` now allows `owner` only when `sitePolicy.allowOwnerDraftCopyEdits` is enabled; API/WS-B coverage added |
 | VS3-IMP-034 | Implement extraction bootstrap evidence normalization and TODO policy  | done        | codex | Bootstrap now stores normalized `ExtractedField` records, enforces low-confidence TODO nulling, and audits required TODO counts |
 | VS3-IMP-033 | Enforce mandatory error envelope for all API error paths              | done        | codex | Unified error envelope (`code/message/requestId/details`) across error handler + 404 path with API/WS-A coverage |

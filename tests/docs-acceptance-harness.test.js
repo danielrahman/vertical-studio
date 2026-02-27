@@ -385,6 +385,49 @@ test('WS-B contract: owner copy selection is blocked unless site policy allows d
   }
 });
 
+test('WS-B contract: publish is blocked when required low-confidence extraction TODOs remain', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-wsb-low-confidence-publish';
+    const draftId = 'draft-wsb-low-confidence-publish';
+
+    const bootstrapRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        extractedFields: [
+          {
+            fieldPath: 'contact.phone',
+            value: '+420123456789',
+            sourceUrl: 'https://example.test/contact',
+            method: 'dom',
+            confidence: 0.12,
+            required: true
+          }
+        ]
+      })
+    });
+    assert.equal(bootstrapRes.status, 202);
+
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        proposalId: 'proposal-wsb-low-confidence'
+      })
+    });
+    assert.equal(publishRes.status, 409);
+    const payload = await publishRes.json();
+    assert.equal(payload.code, 'low_confidence_review_required');
+    assert.equal(payload.requiredTodoCount, 1);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 

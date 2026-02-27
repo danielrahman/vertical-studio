@@ -589,6 +589,11 @@ function buildPromptPayloadAuditRecord({
   };
 }
 
+function countRequiredExtractionTodosForDraft(state, draftId) {
+  const extractedFields = state.extractedFieldsByDraft.get(draftId) || [];
+  return extractedFields.filter((field) => field.required && field.todo).length;
+}
+
 function buildRuntimeSnapshot({ siteId, versionId, draftId, proposalId }) {
   return {
     siteId,
@@ -1226,6 +1231,33 @@ function postPublishSite(req, res, next) {
     assertString(req.body?.draftId, 'draftId');
     assertString(req.body?.proposalId, 'proposalId');
 
+    const state = getState(req);
+    const requiredTodoCount = countRequiredExtractionTodosForDraft(state, req.body.draftId);
+    if (requiredTodoCount > 0) {
+      const blockedAt = new Date().toISOString();
+      state.auditEvents.push({
+        id: randomUUID(),
+        action: 'ops_publish_blocked',
+        occurredAt: blockedAt,
+        entityType: 'draft',
+        entityId: req.body.draftId,
+        siteId: req.params.siteId,
+        proposalId: req.body.proposalId,
+        gateCode: 'low_confidence_review_required',
+        reasons: ['low_confidence_review_required'],
+        requiredTodoCount
+      });
+
+      res.status(409).json({
+        siteId: req.params.siteId,
+        status: 'blocked',
+        code: 'low_confidence_review_required',
+        reasons: ['low_confidence_review_required'],
+        requiredTodoCount
+      });
+      return;
+    }
+
     const qualityFindings = Array.isArray(req.body?.qualityFindings) ? [...req.body.qualityFindings] : [];
     const securityFindings = Array.isArray(req.body?.securityFindings) ? [...req.body.securityFindings] : [];
 
@@ -1247,7 +1279,6 @@ function postPublishSite(req, res, next) {
       qualityFindings,
       securityFindings
     });
-    const state = getState(req);
     const reportGeneratedAt = new Date().toISOString();
 
     if (gate.blocked) {
