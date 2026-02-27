@@ -980,8 +980,14 @@ function postVerticalResearchBuild(req, res, next) {
       throw createError('targetCompetitorCount must be >= 15', 400, 'insufficient_competitor_sample');
     }
 
-    if (!sources.length || sources.some((source) => !SUPPORTED_RESEARCH_SOURCES.has(source))) {
-      throw createError('sources must use allowed research classes', 400, 'validation_error');
+    const invalidSources = Array.from(
+      new Set(sources.filter((source) => !SUPPORTED_RESEARCH_SOURCES.has(source)))
+    );
+    if (!sources.length || invalidSources.length > 0) {
+      throw createError('sources must use allowed research classes', 400, 'validation_error', {
+        invalidSources,
+        allowedSources: Array.from(SUPPORTED_RESEARCH_SOURCES).sort()
+      });
     }
 
     const state = getState(req);

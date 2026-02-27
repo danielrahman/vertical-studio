@@ -398,6 +398,29 @@ test('WS-B contract: vertical research build rejects unknown top-level payload f
   }
 });
 
+test('WS-B contract: vertical research build enforces supported source classes', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'community_forums']
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'sources must use allowed research classes');
+    assert.deepEqual(payload.details.invalidSources, ['community_forums']);
+    assert.deepEqual(payload.details.allowedSources, ['legal_pages', 'public_web', 'selected_listings']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: low-confidence required extraction fields are stored as TODO and mark draft lowConfidence', async () => {
   const { app, server, baseUrl } = await startServer();
 

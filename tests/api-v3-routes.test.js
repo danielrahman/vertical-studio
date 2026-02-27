@@ -162,6 +162,52 @@ test('vertical research build rejects unknown top-level payload fields', async (
   }
 });
 
+test('vertical research build enforces supported source classes with deterministic validation details', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const unsupportedSourceRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'community_forums']
+      })
+    });
+    assert.equal(unsupportedSourceRes.status, 400);
+    const unsupportedSourcePayload = await unsupportedSourceRes.json();
+    assert.equal(unsupportedSourcePayload.code, 'validation_error');
+    assert.equal(unsupportedSourcePayload.message, 'sources must use allowed research classes');
+    assert.deepEqual(unsupportedSourcePayload.details.invalidSources, ['community_forums']);
+    assert.deepEqual(unsupportedSourcePayload.details.allowedSources, [
+      'legal_pages',
+      'public_web',
+      'selected_listings'
+    ]);
+
+    const emptySourcesRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: []
+      })
+    });
+    assert.equal(emptySourcesRes.status, 400);
+    const emptySourcesPayload = await emptySourcesRes.json();
+    assert.equal(emptySourcesPayload.code, 'validation_error');
+    assert.equal(emptySourcesPayload.message, 'sources must use allowed research classes');
+    assert.deepEqual(emptySourcesPayload.details.invalidSources, []);
+    assert.deepEqual(emptySourcesPayload.details.allowedSources, [
+      'legal_pages',
+      'public_web',
+      'selected_listings'
+    ]);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('error responses include mandatory envelope fields on middleware and controller paths', async () => {
   const { server, baseUrl } = await startServer();
 
