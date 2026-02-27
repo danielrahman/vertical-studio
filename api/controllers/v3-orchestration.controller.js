@@ -975,6 +975,7 @@ function postVerticalResearchBuild(req, res, next) {
     }
     const targetCompetitorCount = Number(req.body?.targetCompetitorCount);
     const sources = Array.isArray(req.body?.sources) ? req.body.sources : [];
+    const rawSourceDomains = Array.isArray(req.body?.sourceDomains) ? req.body.sourceDomains : [];
 
     if (!Number.isInteger(targetCompetitorCount) || targetCompetitorCount < 15) {
       throw createError('targetCompetitorCount must be >= 15', 400, 'insufficient_competitor_sample');
@@ -989,6 +990,15 @@ function postVerticalResearchBuild(req, res, next) {
         allowedSources: Array.from(SUPPORTED_RESEARCH_SOURCES).sort()
       });
     }
+    const invalidSourceDomains = rawSourceDomains.filter((domain) => {
+      return typeof domain !== 'string' || !domain.trim();
+    });
+    if (invalidSourceDomains.length > 0) {
+      throw createError('sourceDomains must contain non-empty strings when provided', 400, 'validation_error', {
+        invalidSourceDomains
+      });
+    }
+    const sourceDomains = Array.from(new Set(rawSourceDomains.map((domain) => domain.trim())));
 
     const state = getState(req);
     const verticalKey = req.params.verticalKey;
@@ -1025,7 +1035,7 @@ function postVerticalResearchBuild(req, res, next) {
       jobId,
       status: 'completed',
       requestedAt: createdAt,
-      sourceDomains: Array.isArray(req.body?.sourceDomains) ? req.body.sourceDomains : [],
+      sourceDomains,
       standard,
       patterns
     });

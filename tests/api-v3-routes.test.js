@@ -208,6 +208,47 @@ test('vertical research build enforces supported source classes with determinist
   }
 });
 
+test('vertical research build validates sourceDomains entries and persists normalized unique values', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const invalidDomainsRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings'],
+        sourceDomains: ['example-1.com', ' ', 123]
+      })
+    });
+    assert.equal(invalidDomainsRes.status, 400);
+    const invalidDomainsPayload = await invalidDomainsRes.json();
+    assert.equal(invalidDomainsPayload.code, 'validation_error');
+    assert.equal(invalidDomainsPayload.message, 'sourceDomains must contain non-empty strings when provided');
+    assert.deepEqual(invalidDomainsPayload.details.invalidSourceDomains, [' ', 123]);
+
+    const validDomainsRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings'],
+        sourceDomains: [' example-1.com ', 'example-1.com', 'example-2.com']
+      })
+    });
+    assert.equal(validDomainsRes.status, 202);
+
+    const latestRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(latestRes.status, 200);
+    const latestPayload = await latestRes.json();
+    assert.deepEqual(latestPayload.sourceDomains, ['example-1.com', 'example-2.com']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('error responses include mandatory envelope fields on middleware and controller paths', async () => {
   const { server, baseUrl } = await startServer();
 

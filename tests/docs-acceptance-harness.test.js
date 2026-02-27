@@ -421,6 +421,47 @@ test('WS-B contract: vertical research build enforces supported source classes',
   }
 });
 
+test('WS-B contract: vertical research build validates and normalizes sourceDomains', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const invalidResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings'],
+        sourceDomains: ['example-1.com', '', 123]
+      })
+    });
+    assert.equal(invalidResponse.status, 400);
+    const invalidPayload = await invalidResponse.json();
+    assert.equal(invalidPayload.code, 'validation_error');
+    assert.equal(invalidPayload.message, 'sourceDomains must contain non-empty strings when provided');
+    assert.deepEqual(invalidPayload.details.invalidSourceDomains, ['', 123]);
+
+    const validResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings'],
+        sourceDomains: [' example-1.com ', 'example-1.com', 'example-2.com']
+      })
+    });
+    assert.equal(validResponse.status, 202);
+
+    const latestResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/latest`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(latestResponse.status, 200);
+    const latestPayload = await latestResponse.json();
+    assert.deepEqual(latestPayload.sourceDomains, ['example-1.com', 'example-2.com']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: low-confidence required extraction fields are stored as TODO and mark draft lowConfidence', async () => {
   const { app, server, baseUrl } = await startServer();
 

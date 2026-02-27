@@ -90,6 +90,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 69. Vertical-research-build unknown-field payload guard implemented (`VS3-IMP-060`): vertical research build requests now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict vertical intelligence request-shape integrity.
 70. Rollback unknown-field payload guard implemented (`VS3-IMP-063`): rollback requests now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict immutable runtime repoint request-shape integrity.
 71. Vertical research source-class validation details implemented (`VS3-IMP-064`): vertical research build now returns deterministic `validation_error` details (`invalidSources`, `allowedSources`) when `sources` is empty or includes unsupported classes, tightening source-policy contract enforcement.
+72. Vertical research `sourceDomains` payload-shape validation implemented (`VS3-IMP-065`): vertical research build now rejects non-string/blank `sourceDomains` entries with deterministic `validation_error` details and persists trim-normalized unique domain values.
 
 ## In Progress
 
