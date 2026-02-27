@@ -1,0 +1,292 @@
+{
+  "meta": {
+    "companyName": "Castle Rock Investments",
+    "brandSlug": "castle-rock",
+    "locale": "en-US",
+    "industry": "real_estate",
+    "primaryColor": {
+      "hex": "#1A1A1A",
+      "name": "Charcoal"
+    },
+    "secondaryColor": {
+      "hex": "#B99257",
+      "name": "Bronze Gold"
+    },
+    "fontPrimary": {
+      "family": "Cormorant Garamond",
+      "weights": [400, 500, 600, 700],
+      "googleFontsId": "cormorant-garamond"
+    },
+    "fontSecondary": {
+      "family": "Source Sans Pro",
+      "weights": [300, 400, 600],
+      "googleFontsId": "source-sans-pro"
+    }
+  },
+  "brand": {
+    "tagline": "Boutique investment and development studio",
+    "description": "Castle Rock develops and curates high-end residential opportunities in strategic urban locations.",
+    "story": {
+      "html": "<p>Since 2012, Castle Rock has delivered selective developments with long-term investment value.</p>"
+    },
+    "valueProps": [
+      {
+        "id": "vp-1",
+        "icon": "pin",
+        "title": "Prime Locations",
+        "description": "Only high-demand addresses with strong long-term upside.",
+        "order": 1
+      },
+      {
+        "id": "vp-2",
+        "icon": "shield",
+        "title": "Capital Discipline",
+        "description": "Structured financing and risk-managed execution.",
+        "order": 2
+      },
+      {
+        "id": "vp-3",
+        "icon": "sparkles",
+        "title": "Design Quality",
+        "description": "High-spec architecture and premium interior standards.",
+        "order": 3
+      }
+    ],
+    "personality": {
+      "tone": "formal",
+      "keywords": ["legacy", "asset quality", "trust"],
+      "emotions": ["confidence", "stability", "pride"]
+    }
+  },
+  "navigation": {
+    "sticky": true,
+    "items": [
+      { "label": "About", "href": "#about" },
+      { "label": "Portfolio", "href": "#projects" },
+      { "label": "Team", "href": "#team" },
+      { "label": "Contact", "href": "#contact" }
+    ],
+    "cta": {
+      "label": "Book Consultation",
+      "action": "scroll",
+      "href": "#contact",
+      "variant": "primary"
+    }
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "type": "hero",
+      "title": "Invest in places built to hold value",
+      "subtitle": "Boutique developments for long-horizon investors",
+      "order": 1,
+      "data": {
+        "layout": {
+          "fullWidth": true,
+          "align": "center"
+        },
+        "ctaPrimary": {
+          "label": "Book Consultation",
+          "action": "scroll",
+          "href": "#contact"
+        },
+        "ctaSecondary": {
+          "label": "View Portfolio",
+          "action": "scroll",
+          "href": "#projects"
+        }
+      }
+    },
+    {
+      "id": "value-props",
+      "type": "value-props",
+      "title": "Why Castle Rock",
+      "order": 2,
+      "data": {
+        "layout": {
+          "columns": 3,
+          "align": "center"
+        }
+      }
+    },
+    {
+      "id": "projects",
+      "type": "portfolio-preview",
+      "title": "Selected Projects",
+      "order": 3,
+      "data": {
+        "limit": 3,
+        "layout": {
+          "columns": 3,
+          "align": "left"
+        }
+      }
+    },
+    {
+      "id": "process",
+      "type": "process",
+      "title": "How we work",
+      "order": 4,
+      "data": {
+        "steps": [
+          { "title": "Discovery", "description": "Portfolio objectives and investor profile." },
+          { "title": "Selection", "description": "Curated shortlist with financial model." },
+          { "title": "Execution", "description": "Acquisition and development oversight." },
+          { "title": "Handover", "description": "Delivery and post-close support." }
+        ]
+      }
+    },
+    {
+      "id": "cta-form",
+      "type": "cta-form",
+      "title": "Discuss your investment goals",
+      "subtitle": "Leave your details and we will contact you within one business day.",
+      "order": 5,
+      "data": {
+        "layout": {
+          "columns": 1,
+          "align": "center"
+        }
+      }
+    },
+    {
+      "id": "contact",
+      "type": "contact",
+      "title": "Contact",
+      "order": 6,
+      "data": {
+        "layout": {
+          "columns": 2,
+          "align": "left"
+        }
+      }
+    }
+  ],
+  "projects": [
+    {
+      "id": "riverfront-residences",
+      "name": "Riverfront Residences",
+      "slug": "riverfront-residences",
+      "status": "completed",
+      "location": {
+        "city": "Prague",
+        "region": "Smichov"
+      },
+      "type": "residential",
+      "units": 36,
+      "completionYear": 2024,
+      "thumbnail": {
+        "url": "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1280&q=80",
+        "alt": "Riverfront Residences"
+      }
+    },
+    {
+      "id": "castle-lofts",
+      "name": "Castle Lofts",
+      "slug": "castle-lofts",
+      "status": "in_progress",
+      "location": {
+        "city": "Prague",
+        "region": "Hradcany"
+      },
+      "type": "residential",
+      "units": 18,
+      "completionYear": 2026,
+      "thumbnail": {
+        "url": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=1280&q=80",
+        "alt": "Castle Lofts"
+      }
+    },
+    {
+      "id": "embassy-villas",
+      "name": "Embassy Villas",
+      "slug": "embassy-villas",
+      "status": "planned",
+      "location": {
+        "city": "Brno",
+        "region": "Masaryk District"
+      },
+      "type": "villa",
+      "units": 9,
+      "completionYear": 2027,
+      "thumbnail": {
+        "url": "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1280&q=80",
+        "alt": "Embassy Villas"
+      }
+    }
+  ],
+  "team": [
+    {
+      "id": "alex-king",
+      "name": "Alex King",
+      "role": "Managing Partner",
+      "bio": "Leads strategy, acquisitions, and capital partnerships across the portfolio.",
+      "photo": {
+        "url": "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&w=800&q=80"
+      },
+      "linkedin": "https://linkedin.com/in/alex-king",
+      "order": 1
+    },
+    {
+      "id": "mia-chen",
+      "name": "Mia Chen",
+      "role": "Development Director",
+      "bio": "Coordinates design, permitting, and execution from concept to handover.",
+      "photo": {
+        "url": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80"
+      },
+      "linkedin": "https://linkedin.com/in/mia-chen",
+      "order": 2
+    }
+  ],
+  "testimonials": [
+    {
+      "id": "t-1",
+      "quote": "Castle Rock delivered above expectations with clear communication and strong financial visibility.",
+      "author": "P. Novak",
+      "project": "Riverfront Residences",
+      "rating": 5
+    }
+  ],
+  "contact": {
+    "email": "info@castle-rock.com",
+    "phone": "+420210300400",
+    "address": {
+      "street": "Na Prikope 11",
+      "city": "Prague",
+      "postalCode": "11000"
+    },
+    "form": {
+      "title": "Book an investor consultation",
+      "fields": [
+        { "name": "name", "label": "Full name", "type": "text", "required": true },
+        { "name": "email", "label": "Email", "type": "email", "required": true },
+        { "name": "phone", "label": "Phone", "type": "tel", "required": true },
+        { "name": "message", "label": "Investment focus", "type": "textarea", "required": false }
+      ],
+      "submitLabel": "Send request"
+    }
+  },
+  "footer": {
+    "columns": [
+      {
+        "title": "Company",
+        "links": [
+          { "label": "About", "href": "#about" },
+          { "label": "Portfolio", "href": "#projects" }
+        ]
+      },
+      {
+        "title": "Contact",
+        "links": [
+          { "label": "info@castle-rock.com", "href": "mailto:info@castle-rock.com" },
+          { "label": "+420 210 300 400", "href": "tel:+420210300400" }
+        ]
+      }
+    ],
+    "social": [
+      { "platform": "linkedin", "url": "https://linkedin.com/company/castlerock" },
+      { "platform": "instagram", "url": "https://instagram.com/castlerock" }
+    ]
+  }
+}

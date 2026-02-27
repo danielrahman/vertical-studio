@@ -1,0 +1,958 @@
+
+
+===== PAGE 1 =====
+
+vertical-studio-infrastructure
+
+Vertical Studio - Kompletni infrastruktura
+
+1. Pfehled systému
+
+Vertical Studio je automatizovany systém pro generovani marketingovych webti pro boutique developery. Systém
+transformuje strukturovana JSON data o firmé do piné funkéniho, nasaditelného webu.
+
+1.1 Hlavni cile
+
+Rychlost: Generovani webu do 5 sekund
+Skalovatelnost: 100+ webii masiéné
+
+Kvalita: Premium design odpovidajici cenové kategorii
+Individualita: KaZdy web je unikatni (ne Sablonova kopie)
+
+2. Architektura systému
+
+
+===== PAGE 2 =====
+
+INPUT LAYER
+
+Web scraping (company website)
+ARES/Obchodni rejstitik
+
+Google Maps API
+
+Socidlni sité
+
+Manudlni vstup
+
+PROCESSING LAYER
+
+Data extraction & enrichment
+AI content generation (GPT-4)
+Validation (JSON Schema)
+Individualization engine
+Component mapping
+
+OUTPUT LAYER
+
+Next.js site (React + Tailwind)
+Theme config (colors, fonts, spacing)
+Site config (sections, content)
+
+Sales email (personalized)
+
+SPEC.md (dokumentace)
+
+DEPLOYMENT LAYER
+
+Vercel preview deployment
+Custom domain mapping
+Analytics integration
+Form backend (Formspree)
+
+3. Datovy model (JSON Schema)
+
+3.1 Root struktura
+
+
+===== PAGE 3 =====
+
+"meta": { ... }, // Metadata webu
+"brand": { ... }, // Branding
+"navigation": { ... }, // Navigace
+"sections": [ // Sekce webu
+"projects": [ ... // Portfolio projekti
+"team": [ ... ], // Tym
+// Reference
+3, // Kontakt
+o® // Patiéka
+}
+3.2 Meta
+{
+"meta": {
+"companyName": "ALL New Development",  // Nazev firmy
+“brandSlug": "“and-development", // URL slug
+"Locale": "cs-CZ", // Jazyk
+"industry": "boutique_developer", // Nertikala
+“primaryColor": {
+"hex": "#222d51",
+"name": "Navy"
+on
+"“secondaryColor": {
+"hex": "#C9A962",
+"name": "Gold"
+3,
+“fontPrimary": {
+"family": "Playfair Display",
+"weights": [400, 500, 600, 700],
+"googleFontsId": "playfair-display"
+3,
+"fontSecondary": {
+"family": "Inter",
+"weights": [300, 400, 500, 600],
+"googleFontsId": "inter"
++
+t
+}
+
+3.3 Brand
+
+
+===== PAGE 4 =====
+
+"brand": {
+"tagline": "Butikova developerskd spoleénost",
+"description": "VytvaFime prémiové bydleni...",
+{
+
+“story
+
+"html": "<p>Zalozeno v roce 2015...</p>"
+3,
+"valueProps": [
+{
+"id Dalat
+"icon": "Location",
+"title": "Lokalita",
+"description": "Peclivé vybirdme mista...
+"order": 1
+}
+J,
+"personality": {
+"tone": "professional", // formal | warm | playful | professional
+"keywords": ["premium", "Luxury", "quality"],
+"emotions": ["prestiz", "jistota"
+3,
+"awards": [...],
+"certifications": wl
+}
+
+3.4 Sections
+
+
+===== PAGE 5 =====
+
+"sections": [
+
+{
+
+"title": "Vytvarime domovy, na které jste hrdi",
+"subtitle": "Prémiové bydleni v srdci Prahy",
+"order": 1,
+"data": {
+"video": {
+"url": "https://...",
+“autoplay”: true,
+"muted": true,
+"Loop": true
+3,
+"ctaPrimary": {
+"Label": "Objednat konzultaci",
+"action": "scroll",
+"href": "#contact"
+
+3,
+
+"ctaSecondary": {
+"Label"
+"action": "scroll",
+"href": "#projects"
+
+}
+
+3,
+
+"Layout": {
+“fullWidth": true,
+"align": "center"
+
+3,
+
+"visibility": {
+"desktop": true,
+"tablet": true,
+"mobile": true
+
+i
+
+3,
+it
+
+id": "value-props",
+"type": "value-props",
+"title": "Proé zvolit nas",
+
+"order": 2,
+"data": {
+
+"columns
++
+
+3.5 Podporované typy sekci
+
+
+===== PAGE 6 =====
+
+Typ
+
+hero
+value-props
+portfolio-preview
+portfolio-grid
+process
+
+team
+testimonials
+stats
+
+cta-form
+contact
+
+about
+
+faq
+
+4. Generator Engine
+
+4.1 Hlavni trida
+
+Popis
+
+Hero sekce s videem/obrazkem
+Value proposition bloky
+Nahled projekt
+
+Grid v8ech projekti
+Procesni timeline
+
+Tym
+
+Reference
+
+Cisla (10+ let, 50+ projektd)
+CTA s formulafem
+Kontaktni sekce
+
+O nas
+
+Casté dotazy
+
+Povinna data
+title, subtitle, ctaPrimary
+title
+
+title, limit
+
+title
+title
+title
+title
+
+title
+
+title
+
+
+===== PAGE 7 =====
+
+// engine/generator.js
+
+const fs = require('fs');
+
+const path = require('path');
+
+const Ajv = requireC'ajv');
+
+const addFormats = require('ajv-formats');
+
+class GeneratorEngine {
+constructor(schemaPath) {
+// Inicializace AJV validace
+this.ajv = new Ajv({ allErrors: true, strict: false });
+addFormats(this.ajv);
+const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
+this.validate = this.ajv.compile(schema) ;
+
+generateC(inputPath, outputDir) {
+// 1. Naéteni a validace vstupu
+const input = JSON.parse(fs.readFileSyncCinputPath, ‘utf8"));
+const valid = this.validateCinput);
+if C!valid) {
+return { success: false, errors: this.validate.errors };
+
+// 2. Zpracovént konfiguract
+const siteConfig = this.processSiteConfig(input);
+const themeConfig = this.processThemeConfig(input) ;
+
+// 3. Individualizace
+const individualized = this.applyIndividualizationCinput, siteConfig, themeConfig);
+
+// 4. Generovani vystupu
+const previewUrl = “https://preview.doanything.app/${input.meta.brandSlug}* ;
+const salesEmail = this.generateSalesEmailCinput, previewUr1);
+
+const siteCode = this.generateReactCode(input) ;
+
+// 5. Ulozent soubor
+this.saveArtifacts(individualized, outputDir);
+
+return { success: true, previewUrl };
+
+4.2 Individualizaéni logika
+
+
+===== PAGE 8 =====
+
+applyIndividualization(input, siteConfig, themeConfig) {
+const tone = input.brand?.personality?.tone || ‘professional’;
+
+// Typography podle tone
+if (tone === 'formal') {
+themeConfig.fonts.heading = ‘Playfair Display, serif';
+
+themeConfig.styles.borderRadius = '@px'; // Ostré hrany
+} else if (tone ==
+
+themeConfig.styles.borderRadiusLarge
+} else if (tone === 'playful') {
+
+themeConfig.styles.borderRadiusLarge
+
+}
+
+warm') {
+
+"16px'; // Zaoblené
+
+"24px';
+
+// Layout variace
+siteConfig.sections = siteConfig.sections.map(section => {
+if (section.type "hero') {
+section. layout.align = tone ===
+»
+return section;
+
+bd;
+
+‘formal’ ? 'center' : 'left';
+
+return { siteConfig, themeConfig };
+
+5. Component System
+
+5.1 React komponenty
+
+
+===== PAGE 9 =====
+
+src/
+-- components/
+| F > Hero/
+
+| | F Hero. jsx
+
+| | - Hero. styles.js
+
+| | “Hero. stories. jsx
+
+| — ValueProps/
+
+i] | -— ValueProps. jsx
+
+| \— ValueProps.styles.js
+
+| F > Portfolio/
+
+| | KF Portfolio. jsx
+
+| | F— ProjectCard. jsx
+
+i] | ‘— Portfolio.styles.js
+
+| F Team/
+
+I | -— Team. jsx
+
+| |. > TeamMember . jsx
+
+| | \— Team.styles.js
+
+| F— Process/
+
+| | F Process. jsx
+
+| | — Process.styles.js
+
+|  Testimonials/
+
+| -- Testimonials. jsx
+
+| | — Testimonials.styles.js
+| F > Contact/
+
+| | F- Contact. jsx
+
+| | ‘— Contact.styles.js
+
+1 tui
+I
+
+I
+
+I
+
+I
+_
+
+S
+S
+
+-- Button/
+
+FF Card/
+
+--— Container/
+
+‘— Section/
+layouts/
+
+‘— DefaultLayout.jsx
+-— hooks/
+
+| = useTheme. js
+
+i] / useAnimations.js
+|‘ useScrollReveal.js
+--— theme/
+
+| - tokens.js
+
+| fF colors.js
+
+| > typography. js
+
+| “= spacing.js
+
+“— app/
+
+\— page. jsx
+
+5.2 Component mapping
+
+
+===== PAGE 10 =====
+
+const COMPONENT_MAP = {
+"hero': Hero,
+"value-props': ValueProps,
+"portfolio-preview': PortfolioPreview,
+"portfolio-grid': PortfolioGrid,
+"process': Process,
+"team': Team,
+‘testimonials’: Testimonials,
+"stats': Stats,
+"cta-form': CtaForm,
+"contact": Contact,
+"about': About,
+"faq': Faq
+
+35
+
+function resolveComponent(sectionType) {
+return COMPONENT_MAP[sectionType] || FallbackComponent;
+
+6. Design System
+
+6.1 Barevna paleta
+
+
+===== PAGE 11 =====
+
+const colors = {
+
+// Primarnt
+
+primary: {
+DEFAULT: '#1A1A1A",
+Light: '#333333',
+dark: '#000000"
+
+3,
+
+// Sekundarnt (Gold)
+
+secondary: {
+DEFAULT: '#C9A962",
+light: '#D4B872',
+dark: '#A68B4D"
+
+3,
+
+// Pozadi
+
+background: {
+DEFAULT: '#FAFAFA',
+alt: '#FSFSFQ',
+dark: '#1A1A1A'
+
+3,
+
+// Text
+
+text: {
+DEFAULT: '#1A1A1A",
+light: '#666666',
+muted: '#999999' ,
+inverse: '#FFFFFF'
+
+3,
+
+// Border
+
+border: {
+DEFAULT: '#ESESES',
+light: '#FQFOFO"
+
+t
+
+35
+
+6.2 Typografie
+
+
+===== PAGE 12 =====
+
+const typography = {
+fonts: {
+heading: {
+family: "Playfair Display', serif",
+weights: [400, 500, 600, 700],
+lineHeight: 1.2
+3,
+body: {
+family: ""Inter', sans-serif",
+weights: [300, 400, 500, 600],
+lineHeight: 1.6
+»
+3,
+sizes: {
+h1: { desktop: 56, tablet: 44, mobile: 36 },
+h2: { desktop: 40, tablet: 32, mobile: 28 },
+h3: { desktop: 28, tablet: 24, mobile: 20 },
+body: { desktop: 16, tablet: 16, mobile: 14 },
+small: { desktop: 14, tablet: 14, mobile: 12 }
+}
+
+35
+
+6.3 Spacing
+
+const spacing = {
+unit: 8,
+scale: [0, 4, 8, 12, 16, 24, 32, 48, 64, 80, 96, 128],
+section: {
+desktop: { top: 120, bottom: 120 },
+tablet: { top: 80, bottom: 80 },
+mobile: { top: 6@, bottom: 62 }
+y
+35
+
+6.4 Animace
+
+
+===== PAGE 13 =====
+
+const animations = {
+
+duration: {
+fast: '@.15s',
+normal: '@.3s',
+slow: '@.5s'
+
+3,
+
+easing: {
+default: 'ease-out',
+bounce: "cubic-bezier(@.68, -0.55, @.265, 1.55)"
+
+3,
+
+entrance: {
+fadeIn: { opacity: [@, 1], duration: '@.5s' },
+slideUp: { y: [30, @], opacity: [@, 1], duration: '@.5s' },
+scaleIn: { scale: [@.95, 1], opacity: [@, 1], duration: '@.3s' }
+
+3;
+
+7. Pipeline & Automation
+
+7.1 Batch processing
+
+// engine/pipeline.js
+class Pipeline {
+async run(companies) {
+const results = [1];
+
+for (const company of companies) {
+// 1, Extrakce dat
+
+const data = await this.extract(company) ;
+
+// 2. Generovant
+const result = await this.generate(data);
+
+// 3. Deployment
+const deployment = await this.deploy(result);
+
+// 4, Notifikace
+await this.notifyCcompany, deployment);
+
+results.push({ company, ...deployment });
+
+return this.generateDashboard(results) ;
+
+7.2 Data extraction
+
+
+===== PAGE 14 =====
+
+class DataExtractor {
+async extract(companyInput) {
+const [webData, orData, mapsData] = await Promise.all([
+this.scrapeWebsite(companyInput .website),
+this. getCompanyData(companyInput. ico),
+this.getLocationData(companyInput .address)
+
+D;
+
+return this.transform({
+...webData,
+...orData,
+.+-mapsData
+db;
+}
+
+transform(raw) {
+// Mapovani na JSON Schema
+return {
+meta: {
+companyName: raw.name,
+brandSlug: this.slugifyCraw.name) ,
+primaryColor: this.detectBrandColor(raw. logo),
+/...
+3,
+brand: {
+tagline: raw.tagline || this.generateTaglineCraw),
+valueProps: this.extractValueProps(raw),
+YW 000
+3,
+Wf ooo
+3;
+}
+
+8. Deployment
+
+8.1 Vercel integration
+
+
+===== PAGE 15 =====
+
+class Deployment {
+async deploy(buildDir, companySlug) {
+// 1. Nytvofeni Vercel projektu
+const project = await this.vercel.createProject({
+name: ~preview-${companySlug}° ,
+framework: 'nextjs'
+
+dD;
+
+// 2. Upload souboru
+const files = await this.readDir(buildDir);
+await this.vercel.uploadFiles(project.id, files);
+
+// 3. Deployment
+const deployment = await this.vercel.deploy(project.id);
+
+return {
+url: deployment.url,
+status: deployment.state
+35
+}
+
+8.2 Preview URL
+
+https ://preview-{company-slug}- {timestamp} .vertical-studio.dev
+
+PPriklad:
+https: //preview-and-deveLopment-1709000000.vercel .app
+
+9. Sales Automation
+
+9.1 Email workflow
+
+
+===== PAGE 16 =====
+
+class SalesAutomation {
+async sendPreviewEmail(company, previewUrl) {
+const email = this.generateEmail({
+
+to: company.contact.email,
+subject: ‘Your website preview: ${company.name} ,
+previewurl1,
+sections: company.sections.map(s => s.title),
+cta: "Book a call'
+
+dD;
+
+await this.send(email);
+await this.track(company.id, 'preview_sent');
+
+generateEmail({ to, subject, previewUrl, sections, cta }) {
+return {
+
+to,
+
+subject,
+
+html: ~
+<h1>Your Website Preview</h1>
+<p>I've analyzed ${to} and prepared a preview:</p>
+<a href="${previewUrl}">View Preview</a>
+<h2>What's included: </h2>
+<ul>${sections.map(s => *<Li>${s}</li>*).join('')}</ul>
+<a href="${cta}">Book a call</a>
+
+35
+
+9.2 Follow-up sequence
+
+Den @: Preview email odeslan
+
+Den 1: Follow-up email (pokud neodpovédél)
+Den 3: Telefonni hovor
+
+Den 7: Posledni pokus
+
+10. Metriky & Analytics
+
+10.1 Dashboard metriky
+
+
+===== PAGE 17 =====
+
+Metrika cil
+
+Generation time <5s
+
+Preview-to-Call rate 30%
+
+Call-to-Contract rate 50%
+
+Monthly capacity 100+
+
+Customer satisfaction NPS 50+
+10.2 Tracking
+
+const analytics = {
+// Generation metrics
+generation: {
+duration: measure('generation'),
+validationErrors: count('validation_failed'),
+successRate: ratio('success', ‘total')
+
+3,
+
+// Conversion metrics
+
+conversion: {
+previewSent: count('preview_sent'),
+previewOpened: count('preview_opened'),
+callScheduled: count('call_scheduled'),
+contractSigned: count('contract_signed')
+
+3,
+
+// Funnel
+
+funnel: {
+previewToCall: ratio('call_scheduled', 'preview_sent'),
+callToContract: ratio('contract_signed', ‘call_scheduled'),
+overall: ratioC'contract_signed', 'preview_sent")
+
+}
+
+3;
+
+11. API Design
+
+11.1 REST Endpoints
+
+Méfeni
+System clock
+Email tracking
+
+CRM
+Pipeline count
+
+Survey
+
+
+===== PAGE 18 =====
+
+POST
+GET
+GET
+POST
+GET
+
+POST
+GET
+PUT
+
+/api/v1/generate # Generovat web
+
+/api/v1/generate/:id # Status generovani
+/api/v1/previews # Seznam preview
+/api/v1/deploy # Deploynout preview
+/api/vi/analytics # Dashboard metriky
+/api/v1/companies # Pridat firmu
+/api/v1/companies # Seznam firem
+
+/api/v1/companies/:id # Aktualizovat firmu
+
+11.2 Webhook events
+
+const webhooks = {
+"generation.started': { companyId, timestamp },
+"generation.completed': { companyId, previewUrl, duration },
+"generation.failed': { companyId, error },
+"preview.viewed': { companyId, timestamp },
+"call.scheduled': { companyId, callTime },
+"contract.signed': { companyId, value }
+
+35
+
+12. Tech Stack
+
+12.1 Backend
+
+Komponenta Technology Uéel
+
+Runtime Node.js 20 Generovani
+
+Validation Aiv JSON Schema validace
+Al OpenAl GPT-4 Content generation
+Database PostgreSQL Ukladani firem
+
+Queue Redis + Bull Background jobs
+
+Email SendGrid Sales automation
+
+12.2 Frontend
+
+
+===== PAGE 19 =====
+
+Komponenta Technology
+
+Framework Next.js 14
+Styling Tailwind CSS
+Animace Framer Motion
+Formulare React Hook Form
+Hosting Vercel
+
+12.3 DevOps
+Komponenta Technology
+cI/CD GitHub Actions
+Monitoring Sentry
+Analytics GA4
+Logging Logtail
+
+13. Roadmap
+
+Faze 1: MVP (1-2 tydny)
+
+v
+8 JSON Schema
+
+v
+
+- Generator engine
+
+v)
+
+¥ Sample data
+
+@ onan .
+Pipeline script
+
+Vercel deployment
+
+Faze 2: Automation (3-4 tydny)
+
+Data extraction (web scraping)
+
+jake)
+
+Al content generation
+Email automation
+Dashboard
+
+exe)
+
+Faze 3: Scale (1-2 mésice)
+a)
+
+8 Custom domains
+CRM integration
+
+Multi-tenant support
+
+Analytics dashboard
+
+14. Pricing
+
+Uéel
+
+SSR, routing
+Utility-first
+Smooth transitions
+State management
+
+Preview deployment
+
+Uéel
+
+Build pipeline
+Error tracking
+Web analytics
+
+Application logs
+
+
+===== PAGE 20 =====
+
+Tier Cena Features
+
+Starter 9 900 Ké Template, 1 revision
+Professional 24 900 Ké Full custom, 3 revisions, hosting
+Enterprise 49 900 Ké Unlimited, priority support
+
+15. Kontakty
+
+Richard Malek
+
+Email: richard. malek@doanything.com
+GitHub: github.com/danielrahman/doanything-1

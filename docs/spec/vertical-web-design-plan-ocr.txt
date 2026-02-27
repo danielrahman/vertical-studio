@@ -1,0 +1,553 @@
+
+
+===== PAGE 1 =====
+
+vertical-web-design-plan
+
+Vertikalni web design systém: Boutique developeri
+
+Cil projektu
+
+Vytvorit opakovatelny mechanismus pro generovani kvalitnich marketingovych webt v segmentu boutique
+developers (menSich, high-end developerskych spoleénosti zaméfenych na prémiové nemovitosti).
+
+Faze 1: Definovani vertikaly
+
+1.1 Charakteristika boutique developert
+
+Velikost: 5-50 zaméstnanci, éasto rodinné nebo partnerské struktury
+
+Typ projekt: Rezidenéni komplex 20-200 jednotek, vily, penthouse, rekonstrukce historickych budov
+Cilova klientela: HNWI (High Net Worth Individuals), investori, generace 40-65
+
+Hodnotova proposice: Exkluzivita, kvalita, individualita, lokace, femesiné zpracovani
+
+Cenova kategorie: Premium az ultra-premium (nad 50 000 Ké/m?)
+
+Geografické zaméfeni: Prahu 1-5, Brno, coastal areas (Chorvatsko, Spanélsko)
+
+1.2 Kliéové problémy v marketingu
+
+Chybi profesiondlni prezentace odpovidajici cenové kategorii
+Weby jsou éasto zastaralé nebo na urovni "levného developeru"
+Slaby storytelling a emocialni propojeni s klientem
+
+Chybi socialni dikazy a divéryhodnostni signaly
+
+Konverzni cesty nejasné nebo chybéjici
+
+Faze 2: Trzni analyza - Kliéovi hraéi
+
+2.1 Cesky trh - Boutique developeri
+
+All New Development - Butikova developerska spoleénost, 10 let na trhu, projekty Villa Gallery, Vila ROQUE
+Boutigq Real Estate (drive City Projects Company) - Diaz na lidskou a udrzitelnou tvat developmentu
+Sekyra Group - PrestiZni projekty (Smichov City), ocenéni ThePrime Awards 2024
+
+Luxent - Prémiové nemovitosti
+
+Projekty JRD - Men§i rezidenéni projekty
+
+2.2 Globalni benchmark - Luxury Real Estate
+
+Sotheby's International Realty (sothebysrealty.com) - globalnj lidr v luxusnim real estate:
+
+
+===== PAGE 2 =====
+
+Hero: Lifestyle messaging "Find a home that suits your lifestyle" + video background + search bar
+Navigace: Search, Properties, Agents, Stories, prominentni "Sell With Us" CTA
+
+Our Story: Heritage (est. 1976), globalni reach (1,100 offices, 84 countries, $157B annual sales)
+Brand Extensions: Sotheby's Auction, Concierge Auctions
+
+Visual Style: Serif fonts (Baskerville-style), deep navy + gold + white, high-quality imagery
+Conversion: Lifestyle aspiration + authority building + direct lead gen
+
+2.3 Best Practices z analyzy
+
+Prodavat lifestyle a legacy, ne jen nemovitosti
+
+Budovat divéryhodnost pies historii, statistiky, globalni reach
+
+Kombinovat inspirativni obsah (top-of-funnel) s konverznimi nastroji (bottom-of-funnel)
+PouZivat elegantni serif typografii pro nadpisy
+
+Premium color palette: deep navy, gold, white space
+
+Faze 3: Analyza vzorct
+
+3.1 Branding vzorce (CZ trh)
+
+Nazvy: Anglické, elegantni (The, One, Villa, Residence, Estate, Gallery, Roque)
+Logo: Minimalistické, kombinace serif/sans-serif, barvy: zlata/éerna/bila
+
+Claimy: "Luxusni bydleni", "Exkluzivni
+Barvy: Cerna (#1A1A1A), zlata (#C9A962), béZova (#F5FS5DC), bild (#FAFAFA), tmavé modré
+
+"Tradiéni femeslo", "Kvalita nad kvantitou"
+
+3.2 Struktura webu (Common Pattern)
+
+Hero s velkou fotkou/renderem projektu
+
+"O nas" / "NaSe filozofie" - pribéh, hodnoty
+Portfolio projektt - grid s nahledy
+
+Detail projektu - galerie, specifikace, dostupnost
+Kontaktni formulaf / konzultace
+
+Blog/news (éasto nevyuZzité)
+
+3.3 Obsahové vzorce
+
+Vizualy: Render, profesionalni fotografie, video
+
+Technické specifikace: materials, vytapéni, smart home, energeticka naéroénost
+Lokace: mapy, POI (Skolky, restaurace, golf)
+
+Casova osa: planovani > stavba > predani
+
+Tym: kliéové osoby (éasto chybi - gap!)
+
+3.4 UX vzorce
+
+Jednoducha, sticky navigace
+
+Minimalisticky design s hodné white space
+
+Velké, full-width obrazy
+
+Smooth scroll animace (parallax, fade-in)
+
+Clear CTAs: "Kontaktovat", "Stahnout katalog", "Objednat konzultaci"
+
+3.5 Positioning vzorce
+
+
+===== PAGE 3 =====
+
+Vzor Implementace
+
+Kvalita vs. kvantita "10 let, 5 projektd" misto "500+ bytd"
+
+Remesina tradice "Ruéni prace", "Tradiéni materidly", "Remesina zruénost"
+Lokalita "Jedineéna adresa", "Neopakovatelné misto", "Premium lokace"
+Individualita "Na miru", "Va domov", "Personalizace"
+
+Dlouhodoba hodnota "Investice na generace", "Trvalé hodnota"
+
+Faze 4: Vertikalni standard (Vystup)
+
+4.1 Brand Framework
+
+Vizualni identita
+Typografie:
+Nadpisy: Playfair Display / Cormorant Garamond (elegant serif)
+Télo: Inter / Source Sans Pro (clean sans-serif)
+Akcenty: Light weights, letter-spacing
+
+Barevna paleta:
+Primarni: #1A1A1A (€erna/hnéda)
+Sekundarni: #C9A962 (zlataChampagne)
+Pozadi: #FAFAFA (bila), #F5F5FO (bézova)
+Akcent: #2D3436 (grafit), #8B7355 (bronze)
+
+Visual treatment:
+Velké full-width obrazy (min 1920px)
+Generous white space (80-120px mezi sekcemi)
+Jemné animace (fade-in, slide-up)
+Minimalist icons (line style)
+
+Ton hlasu (Copy Voice)
+Elegantni, ale srozumitelny
+Zadny korporatni Zargon
+Emocionalni propojeni
+Pochopeni klienta: "Chapeme, Ze hledate vice nez jen bydleni"
+Priomary emotions: Prestiz, klid, jistota, hrdost
+
+4.2 Webova struktura (Standard Template)
+
+
+===== PAGE 4 =====
+
+1
+
+HEADER (sticky) |
+Logo | Nav: 0 nds | Projekty | Kontakt |
+[CTA: Konzultace] |
+
+HERO SECTION I
+Full-screen video/image |
+Headline + Subheadline + CTA |
+
+1
+
+VALUE PROPOSITION (3-4 bloky) I
+Ikonka | Nadpis | Popis I
+
+PORTFOLIO PREVIEW (3-4 projekty) |
+Grid s ndhledy + hover effects I
+
+PROCES SPOLUPRACE (timeline) |
+Krok 1 + Krok 2 » Krok 3 + Krok 4 |
+
+TYM (2-4 kliéové osoby) I
+Foto | Jméno | Role | LinkedIn |
+
+DUVERYHODNOST |
+Reference | Certifikaty | Cisla I
+
+CTA SECTION I
+"PRijdte na konzultaci" + Formula I
+
+FOOTER I
+Kontakty | Legal | Social I
+
+4.3 Sekce - Detailni specifikace
+
+Hero Section
+
+Vizual: Full-screen (100vh), video nebo high-res render
+
+Headline: Emociondlni, ne popisny ("Zijte na misté, které si zaslouzite")
+Subheadline: Konkrétni hodnota ("Prémiové bydleni v srdci Prahy")
+CTA: Primarni - "Objednat konzultaci", Sekundarni - "Zobrazit projekty"
+Animace: Pomaly fade-in textu (1-1.5s)
+
+Value Proposition
+Struktura: 3-4 sloupce, ikona + nadpis + kratky popis
+Typy hodnot:
+Lokalita ("Jedineéné adresy")
+Kvalita ("Prémiové materialy")
+Individualita ("ReSeni na miru")
+
+Duvéra ("10 let zkuSenosti")
+
+Ikony: Line style, monochrome (gold nebo black)
+
+
+===== PAGE 5 =====
+
+Portfolio Preview
+
+Layout: 3-4 karty v gridu (2 na desktop, 1 na mobile)
+Karta obsahuje:
+Thumbnail (render/foto)
+
+Nazev projektu
+Lokace
+
+Status (ve vystavbé / dokonéeno / pripravujeme)
+CTA "Zobrazit detail"
+
+Hover: Slight zoom, overlay s textem
+
+Proces Spoluprace
+Format: Horizontdlni timeline nebo 4 kroky
+Kroky:
+Konzultace (seznameni s potfebami)
+Vybér (nabidka projektd/bytd)
+Financovani (hypotéka, pravni servis)
+Predani (kliée,f@#servis)
+
+Visual: Cislovani, ikony, kratky popis
+Tym
+
+Layout: Grid 2-4 osob
+
+Karta:
+Profesionalni foto (b/m or color)
+Jméno
+Role (CEO, Architekt, Obchodni feditel)
+Kratky bio (1-2 véty)
+Linkedin ikon
+
+Duraz: Lidskost, expertiza
+
+Divéryhodnost
+
+Prvky:
+Reference klientd (quote + jméno)
+Certifikaty (ISO, élenstvi v asociacich)
+Cisla (let na trhu, projekt, predanych bytt)
+Ocenéni ( pokud existuji)
+
+Design: Minimalist, nemarketingové
+
+CTA Section
+
+Nadpis: Vyzva k akci ("Prijd'te na osobni konzultaci")
+Formulda#: Jméno, Email, Telefon, Zprava, Submit
+Nebo: Calendly embed / phone click
+
+Footer
+
+
+===== PAGE 6 =====
+
+Obsah:
+Logo
+Rychla navigace
+
+Kontakty (adresa, telefon, email)
+
+Legal (ICO, ochrana dat)
+Social icons
+
+4.4 Konverzni logika
+
+AWARENESS INTEREST
+| I
+Hero Video Value Prop
+I I
+v v
+"Lifestyle" + "Proé my"
+
+Lead Magnets
+
+CONSIDERATION DECISION
+| I
+Portfolio CTA Form
+| I
+v v
++  "NaSe pradce" » "Kontakt"
+|
+v
+"Dékujeme"
+
+(Thank you page)
+
+Katalog projektii (PDF ke stazeni)
+Osobni konzultace (hlavni CTA)
+Prehled dostupnych bytd (emailem)
+
+Exkluzivni prohlidky (pro registrované)
+
+Follow-up sekvence
+
+Automaticky email po odeslani formulafe
+
+Thank you page s dalSimi kroky
+
+Follow-up email do 24h (pokud neodpovi)
+
+Faze 5: Aplikace na konkrétni firmu
+
+5.1 Vybér firmy: All New Development
+
+Divody vybéru:
+
+Jasny positioning jako "butikové developerska spoleénost"
+
+Aktivni web a prezentace
+
+Dostupné informace o projektech
+Reprezentativni vzorek segmentu
+
+5.2 Analyza souéasného stavu
+
+Current Website Analysis (allnewdevelopment.cz)
+
+
+===== PAGE 7 =====
+
+Hero section s velkym vizualem
+
+Gijasny positioning "Butikova developerska spoleénost"
+
+Portfolio projektd (Villa Gallery, Vila ROQUE)
+Aktuality (news sekce)
+
+ Chybi sekce "O nas" / tym
+
+X Chybi dévéryhodnostni signaly (reference, isla)
+ Slaby CTA - pouze "Vice o nas"
+
+ Chyb/ konverzni formulat na homepage
+
+Gap Analysis
+Prvek Souéasny stav
+Tym Chybi
+Reference Chybi
+CTA Slabé
+Proces Chybi
+Divéryhodnost Slaba
+
+5.3 Mapping na systém
+
+All New Development - novy web mapping
+
+Hero:
+
+Cilovy stav
+Pridat
+Pridat
+Posilit
+Pridat
+
+Budovat
+
+Souéasny: "Butikova developerska spoleénost" s fotkou projektu
+
+Novy: Video pozadi + "Vytvarime domovy, na které jste hrdi" + "Objednat konzultaci"
+
+Value Proposition (NOVA SEKCE):
+
+Kvalita nad kvantitou (10 let, 5 projektd)
+Exkluzivni lokace (rucen/ se na adresy)
+Remesina zpracovani (materidly, detaily)
+
+Portfolio:
+
+Souéasny: 2 projekty
+Novy: 3-4 projekty + hover effects + status labels
+
+Proces (NOVA SEKCE):
+4 kroky k vysnénému bydleni
+Tym (NOVA SEKCE):
+
+Zakladatelé + kliéové osoby
+Fotky, jména, role
+
+Duvéryhodnost (NOVA SEKCE):
+
+10 let na trhu
+Reference klientd
+
+Clenstvi v asociacich
+
+CTA:
+
+Priorita
+@ High
+@ High
+@ High
+@ Medium
+
+@ High
+
+
+===== PAGE 8 =====
+
+"Objednat konzultaci" formula?
+
+5.4 Vystup: Strukturovana specifikace
+
+[Vytvofeno v samostatném dokumentu - viz dali kapitola]
+
+Faze 6: Implementaéni specifikace
+
+6.1 Technické pozadavky
+
+Frontend
+Framework: Next.js / React nebo WordPress
+Styling: Tailwind CSS / SCSS
+Animace: Framer Motion / GSAP.
+Image optimization: Next.js Image / lazy loading
+Responsive: Mobile-first
+
+Integrace
+
+Contact Form 7 / Formspree
+
+Google Analytics 4
+
+Google Search Console
+
+Chat widget (optional): Tawk.to / Intercom
+
+Performance
+
+Lighthouse score: 90+ (vSechny metriky)
+Core Web Vitals: Pass
+Image sizes: WebP, responsive
+
+6.2 Copy Guidelines
+
+Hero Headlines (priklady)
+"Domov, na ktery budete hrdi"
+"Bydleni, které si zaslouzite"
+"Zijte na misté, které vypravi va& pribéh"
+"Prémiové bydleni pro ty, ktefi znaji rozdil"
+Value Proposition
+
+Lokalita: "Peélivé vybirame mista, ktera jsou sama o sobé unikatni"
+Kvalita: "Nechavame promluvit femeslo, tradiéni materidly a precizni detaily"
+Individualita: "KaZdy projekt prizptsobujeme duchu mista a predstavam budoucich obyvatel”
+
+CTA
+
+Primarni: "Objednat konzultaci zdarma"
+Sekundarni: "Prohlédnout naSe projekty"
+Formuldf: "Radi vam pomizeme najit va8 vysnény domov"
+
+6.3 Asset Requirements
+
+Fotografie
+
+
+===== PAGE 9 =====
+
+Hero: 1920x1080px minimum, 4K preferred
+Portfolio: 800x600px, consistent aspect ratio
+Tym: 400x500px, professional headshot
+Detail: 1600x900px
+
+Ikony
+Style: Line / outline
+
+Size: 24x24px base
+Color: #1A1A1A or #C9A962
+
+Logo
+Primary: Full color on white
+
+Secondary: White on dark
+Favicon: 32x32px
+
+Metodika
+
+Inkrementalni pristup: KaZdy krok stavi na predchozim
+Data-driven: Rozhodnuti zalozena na analyze, ne intuici
+Benchmark: Srovnani s best practices (Sotheby's, luxury segment)
+Scalable: Vystup aplikovatelny opakované na jiné firmy ve vertikale
+implementable: Specifikace dostateéné detailni pro programovani
+
+Shrnuti vertikalniho standardu
+
+Kliéové principy
+Lifestyle selling - Prodavame emoci, ne étvereéni metry
+Premium visual - Kazdy pixel musi odpovidat cenové kategorii
+Trust building - Divéryhodnost pres tym, reference, éfsla
+Clear conversion - Vzdy vite, co mate udélat dal
+Human touch - Lidskost, individudlni pristup
+
+Quick Checklist pro novy web
+
+Hero: Video + headline + CTA
+Value prop: 3-4 bloky
+Portfolio: Grid s hover
+Proces: Timeline 4 kroky
+Tym: 2-4 osoby
+
+eaaaand
+
+~ Divéryhodnost: Reference + isla
+CTA: Formulat
+Footer: Kompletni
+
+Dal&i pouZiti
+
+Tento standard Ize aplikovat na:
+
+
+===== PAGE 10 =====
+
+Jiné boutique developery v CR
+Realitni kancelare (luxury segment)
+Architektonicka studia
+
+Interiérova studia
+
+Investiéni nemovitosti

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "companyIdentifier": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "data": {
+          "type": "object"
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rootDir": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "previewBaseUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customizationLevel": {
+          "type": "string",
+          "enum": ["minimal", "standard", "full"]
+        },
+        "locale": {
+          "type": "string",
+          "minLength": 2
+        },
+        "industry": {
+          "type": "string",
+          "enum": ["boutique_developer", "real_estate", "architecture"]
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "required": ["companyIdentifier"],
+      "not": {
+        "required": ["input"]
+      }
+    },
+    {
+      "required": ["input"],
+      "not": {
+        "required": ["companyIdentifier"]
+      },
+      "properties": {
+        "input": {
+          "required": ["path"],
+          "not": {
+            "required": ["data"]
+          }
+        }
+      }
+    },
+    {
+      "required": ["input"],
+      "not": {
+        "required": ["companyIdentifier"]
+      },
+      "properties": {
+        "input": {
+          "required": ["data"],
+          "not": {
+            "required": ["path"]
+          }
+        }
+      }
+    }
+  ]
+}

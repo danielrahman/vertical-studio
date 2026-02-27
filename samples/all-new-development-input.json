@@ -1,0 +1,407 @@
+{
+  "meta": {
+    "companyName": "ALL New Development",
+    "brandSlug": "and-development",
+    "locale": "cs-CZ",
+    "industry": "boutique_developer",
+    "primaryColor": {
+      "hex": "#222D51",
+      "name": "Navy"
+    },
+    "secondaryColor": {
+      "hex": "#C9A962",
+      "name": "Gold"
+    },
+    "fontPrimary": {
+      "family": "Playfair Display",
+      "weights": [400, 500, 600, 700],
+      "googleFontsId": "playfair-display"
+    },
+    "fontSecondary": {
+      "family": "Inter",
+      "weights": [300, 400, 500, 600],
+      "googleFontsId": "inter"
+    }
+  },
+  "brand": {
+    "tagline": "Butikova developerska spolecnost",
+    "description": "Vytvarime premium bydleni s durazem na kvalitu, lokaci a individualni pristup.",
+    "story": {
+      "html": "<p>Spolecnost byla zalozena v roce 2015 rodinou Salda a od zacatku se soustredi na projekty s dlouhodobou hodnotou.</p>"
+    },
+    "valueProps": [
+      {
+        "id": "vp-1",
+        "icon": "location",
+        "title": "Lokalita",
+        "description": "Peclive vybirame adresy, ktere maji trvalou hodnotu.",
+        "order": 1
+      },
+      {
+        "id": "vp-2",
+        "icon": "quality",
+        "title": "Kvalita",
+        "description": "Pouzivame proverene materialy a remeslne zpracovani.",
+        "order": 2
+      },
+      {
+        "id": "vp-3",
+        "icon": "originality",
+        "title": "Originalita",
+        "description": "Kazdy projekt navrhujeme na miru charakteru mista.",
+        "order": 3
+      },
+      {
+        "id": "vp-4",
+        "icon": "experience",
+        "title": "Zkusenosti",
+        "description": "10+ let na trhu a desitky predanych nemovitosti.",
+        "order": 4
+      }
+    ],
+    "personality": {
+      "tone": "professional",
+      "keywords": ["premium", "quality", "trust"],
+      "emotions": ["prestige", "calm", "confidence"]
+    },
+    "awards": ["ThePrime Awards Nominee"],
+    "certifications": ["Member of Czech Developers Association"]
+  },
+  "navigation": {
+    "sticky": true,
+    "items": [
+      { "label": "O nas", "href": "#about" },
+      { "label": "Projekty", "href": "#projects" },
+      { "label": "Tym", "href": "#team" },
+      { "label": "Kontakt", "href": "#contact" }
+    ],
+    "cta": {
+      "label": "Konzultace",
+      "action": "scroll",
+      "href": "#contact",
+      "variant": "primary"
+    }
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "type": "hero",
+      "title": "Vytvarime domovy, na ktere jste hrdi",
+      "subtitle": "Premium bydleni v srdci Prahy",
+      "order": 1,
+      "data": {
+        "video": {
+          "url": "https://cdn.example.com/and/hero-video.mp4",
+          "poster": {
+            "url": "https://cdn.example.com/and/hero-poster.webp"
+          },
+          "autoplay": true,
+          "muted": true,
+          "loop": true
+        },
+        "ctaPrimary": {
+          "label": "Objednat konzultaci",
+          "action": "scroll",
+          "href": "#contact"
+        },
+        "ctaSecondary": {
+          "label": "Zobrazit projekty",
+          "action": "scroll",
+          "href": "#projects"
+        },
+        "layout": {
+          "fullWidth": true,
+          "align": "center"
+        }
+      }
+    },
+    {
+      "id": "value-props",
+      "type": "value-props",
+      "title": "Proc zvolit AND Development",
+      "order": 2,
+      "data": {
+        "columns": 4,
+        "layout": {
+          "columns": 4,
+          "align": "center"
+        }
+      }
+    },
+    {
+      "id": "projects",
+      "type": "portfolio-preview",
+      "title": "Nase realizovane projekty",
+      "order": 3,
+      "data": {
+        "limit": 3,
+        "showStatus": true,
+        "layout": {
+          "columns": 3,
+          "align": "left"
+        }
+      }
+    },
+    {
+      "id": "process",
+      "type": "process",
+      "title": "Jak probiha cesta k vasemu vysnenemu domovu",
+      "order": 4,
+      "data": {
+        "steps": [
+          {
+            "title": "Konzultace",
+            "description": "Seznamime se s vasimi potrebami a moznostmi."
+          },
+          {
+            "title": "Vyber",
+            "description": "Predstavime vam projekty odpovidajici pozadavkum."
+          },
+          {
+            "title": "Financovani",
+            "description": "Pomuzeme s hypotekou i pravnim servisem."
+          },
+          {
+            "title": "Predani",
+            "description": "Predame klice a zajistime navazny servis."
+          }
+        ],
+        "layout": {
+          "columns": 4,
+          "align": "center"
+        }
+      }
+    },
+    {
+      "id": "team",
+      "type": "team",
+      "title": "Lide za projekty AND",
+      "subtitle": "Zkuseny tym s vasni pro kvalitni architekturu",
+      "order": 5,
+      "data": {
+        "layout": {
+          "columns": 3,
+          "align": "left"
+        }
+      }
+    },
+    {
+      "id": "testimonials",
+      "type": "testimonials",
+      "title": "Co rikaji nasi klienti",
+      "order": 6,
+      "data": {
+        "layout": {
+          "columns": 1,
+          "align": "left"
+        }
+      }
+    },
+    {
+      "id": "stats",
+      "type": "stats",
+      "title": "Vysledky, ktere mluvi za nas",
+      "order": 7,
+      "data": {
+        "items": [
+          { "value": "10+", "label": "let na trhu" },
+          { "value": "50+", "label": "dokoncenych projektu" },
+          { "value": "200+", "label": "spokojenych klientu" }
+        ],
+        "layout": {
+          "columns": 3,
+          "align": "center"
+        }
+      }
+    },
+    {
+      "id": "cta-form",
+      "type": "cta-form",
+      "title": "Prijdte na osobni konzultaci",
+      "subtitle": "Radi vam pomuzeme najit vas vysneny domov.",
+      "order": 8,
+      "data": {
+        "layout": {
+          "columns": 1,
+          "align": "center"
+        }
+      }
+    },
+    {
+      "id": "contact",
+      "type": "contact",
+      "title": "Kontaktujte nas",
+      "order": 9,
+      "data": {
+        "layout": {
+          "columns": 2,
+          "align": "left"
+        }
+      }
+    }
+  ],
+  "projects": [
+    {
+      "id": "vila-roque",
+      "name": "Vila ROQUE",
+      "slug": "vila-roque",
+      "tagline": "Sebevodome bydleni na neopakovatelnem miste",
+      "status": "completed",
+      "location": {
+        "street": "Mala Strana",
+        "city": "Praha",
+        "region": "Praha 1"
+      },
+      "type": "villa",
+      "units": 12,
+      "completionYear": 2025,
+      "thumbnail": {
+        "url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1280&q=80",
+        "alt": "Vila ROQUE"
+      },
+      "features": ["Vyhled na Prahu", "Terasa", "Garaz"]
+    },
+    {
+      "id": "villa-gallery",
+      "name": "Villa GALLERY",
+      "slug": "villa-gallery",
+      "tagline": "Moderni byty v prestizni adrese",
+      "status": "completed",
+      "location": {
+        "city": "Praha",
+        "region": "Vinohrady"
+      },
+      "type": "apartment",
+      "units": 24,
+      "completionYear": 2024,
+      "thumbnail": {
+        "url": "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1280&q=80",
+        "alt": "Villa GALLERY"
+      },
+      "features": ["Vinohrady", "Balkony", "Smart home"]
+    },
+    {
+      "id": "vila-epoque",
+      "name": "Vila EPOQUE",
+      "slug": "vila-epoque",
+      "tagline": "Komorni projekt s durazem na soukromi",
+      "status": "completed",
+      "location": {
+        "city": "Praha",
+        "region": "Bubenec"
+      },
+      "type": "villa",
+      "units": 8,
+      "completionYear": 2023,
+      "thumbnail": {
+        "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1280&q=80",
+        "alt": "Vila EPOQUE"
+      },
+      "features": ["Soukroma zahrada", "Nizkoenergeticky standard"]
+    }
+  ],
+  "team": [
+    {
+      "id": "jiri-salda",
+      "name": "Jiri Salda",
+      "role": "CEO & Founder",
+      "bio": "20+ let zkusenosti v realitnim a developerskem trhu.",
+      "photo": {
+        "url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80"
+      },
+      "linkedin": "https://linkedin.com/in/jiri-salda",
+      "email": "jiri@and-development.cz",
+      "order": 1
+    },
+    {
+      "id": "jana-saldova",
+      "name": "Jana Saldova",
+      "role": "COO",
+      "bio": "Zodpovida za provoz a rizeni projektu napric portfoliem.",
+      "photo": {
+        "url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80"
+      },
+      "linkedin": "https://linkedin.com/in/jana-saldova",
+      "order": 2
+    },
+    {
+      "id": "martin-kolar",
+      "name": "Martin Kolar",
+      "role": "Lead Architect",
+      "bio": "Vede navrh konceptu a dohli zi na architektonickou kvalitu.",
+      "photo": {
+        "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80"
+      },
+      "linkedin": "https://linkedin.com/in/martin-kolar",
+      "order": 3
+    }
+  ],
+  "testimonials": [
+    {
+      "id": "t-1",
+      "quote": "Spoluprace s AND byla vyborna. Profesionalita a detailni pristup od konzultace po predani.",
+      "author": "Jan Novak",
+      "project": "Vila ROQUE",
+      "rating": 5
+    },
+    {
+      "id": "t-2",
+      "quote": "Ocenujeme transparentnost procesu i kvalitu provedeni. Vse probehlo podle dohody.",
+      "author": "Rodina Svobodova",
+      "project": "Villa GALLERY",
+      "rating": 5
+    }
+  ],
+  "contact": {
+    "email": "info@and-development.cz",
+    "phone": "+420220515199",
+    "address": {
+      "street": "Zlatnicka 1582/10",
+      "city": "Praha",
+      "postalCode": "11000"
+    },
+    "form": {
+      "title": "Zanechte nam zpravu",
+      "fields": [
+        { "name": "name", "label": "Jmeno", "type": "text", "required": true },
+        { "name": "phone", "label": "Telefon", "type": "tel", "required": true },
+        { "name": "email", "label": "Email", "type": "email", "required": true },
+        { "name": "message", "label": "Zprava", "type": "textarea", "required": false },
+        { "name": "gdpr", "label": "Souhlasim se zpracovanim osobnich udaju", "type": "checkbox", "required": true }
+      ],
+      "submitLabel": "Odeslat dotaz"
+    }
+  },
+  "footer": {
+    "columns": [
+      {
+        "title": "Kontakt",
+        "links": [
+          { "label": "info@and-development.cz", "href": "mailto:info@and-development.cz" },
+          { "label": "+420 220 515 199", "href": "tel:+420220515199" },
+          { "label": "Zlatnicka 1582/10, Praha", "href": "https://maps.google.com/?q=Zlatnicka+1582/10+Praha" }
+        ]
+      },
+      {
+        "title": "Navigace",
+        "links": [
+          { "label": "O nas", "href": "#about" },
+          { "label": "Projekty", "href": "#projects" },
+          { "label": "Tym", "href": "#team" },
+          { "label": "Kontakt", "href": "#contact" }
+        ]
+      },
+      {
+        "title": "Legal",
+        "links": [
+          { "label": "ICO: 12345678", "href": "#" },
+          { "label": "GDPR", "href": "#gdpr" }
+        ]
+      }
+    ],
+    "social": [
+      { "platform": "instagram", "url": "https://instagram.com/anddevelopment" },
+      { "platform": "linkedin", "url": "https://linkedin.com/company/anddevelopment" }
+    ]
+  }
+}

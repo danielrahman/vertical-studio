@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["url"],
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["forensic", "balanced", "fast"]
+    },
+    "qualityProfile": {
+      "type": "string",
+      "enum": ["max_quality", "hybrid", "local_only"]
+    },
+    "siteMapMode": {
+      "type": "string",
+      "enum": ["template_samples", "all_urls", "marketing_only"]
+    },
+    "ignoreRobots": {
+      "type": "boolean"
+    },
+    "maxDurationMs": {
+      "type": "integer",
+      "minimum": 10000,
+      "maximum": 1800000
+    },
+    "budgetUsd": {
+      "type": "number",
+      "minimum": 0.1,
+      "maximum": 100
+    },
+    "localeHints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "maxItems": 8
+    },
+    "auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["none", "form", "http_basic", "cookie"]
+        },
+        "credentialRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "captcha": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "provider": {
+          "type": "string",
+          "enum": ["2captcha", "anticaptcha", "capsolver", "custom"]
+        },
+        "apiKeyRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "offsite": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "providers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "exa",
+              "serp",
+              "company_data",
+              "social_enrichment",
+              "maps_reviews",
+              "tech_intel",
+              "pr_reputation"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 12
+        },
+        "providerKeyRefs": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "serpapiRef": { "type": "string", "minLength": 1, "maxLength": 128 },
+            "companyDataRef": { "type": "string", "minLength": 1, "maxLength": 128 },
+            "socialRef": { "type": "string", "minLength": 1, "maxLength": 128 }
+          }
+        }
+      }
+    },
+    "markdown": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "mode": { "type": "string", "enum": ["hybrid", "local", "remote"] },
+        "remoteProvider": { "type": "string", "enum": ["markdown_new"] },
+        "method": { "type": "string", "enum": ["auto", "ai", "browser"] },
+        "retainImages": { "type": "boolean" },
+        "maxDocs": { "type": "integer", "minimum": 1, "maximum": 100 }
+      }
+    },
+    "options": {
+      "type": "object"
+    }
+  }
+}

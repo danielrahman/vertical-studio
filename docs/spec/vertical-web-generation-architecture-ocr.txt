@@ -1,0 +1,1796 @@
+
+
+===== PAGE 1 =====
+
+vertical-web-generation-architecture
+
+Automatizovany Web Generation Systém
+
+Kompletni architektura pro vertikalni generovani webt
+
+1. Datovy Model s Dynamickymi Polemi
+
+1.1 Priklad napInéného datasetu (All New Development)
+
+{
+"meta": {
+"companyName": "ALL New Development",
+"brandSlug' "and-development" ,
+"Locale": "cs-CZ",
+"industry": "boutique_developer",
+“primaryColor": { "hex": "#222d51", "name": "Navy" },
+"secondaryColor": { "hex": "#C9A962", "name": "Gold" },
+"fontPrimary": {
+"family": “Playfair Display",
+"weights": [400, 500, 600, 700],
+"googleFontsId": "playfair-display"
+¥
+"fontSecondary": {
+"family": "Inter",
+"weights": [300, 400, 500, 600],
+"googleFontsId": "inter"
+3
+3,
+"brand": {
+
+"tagline": "Butikova developerskd spoleénost",
+"description": "Vytvarime prémiové bydleni s durazem na kvalitu, lokalitu a individualitu.",
+"story": {
+
+"html": "<p>Spoleénost AND Development byla zalozena v roce 2015 rodinou Salda...</p>"
+
+3,
+"valueProps": [
+{
+"id": "vp-1",
+"icon": "Location",
+"title": "Lokalita",
+"description": "Peclivé vybirdme mista, kterd jsou sama o sobé unikdtni.",
+"order": 1
+3,
+{
+"id": "vp-2",
+"icon": "quality",
+
+"title
+
+"Kvalita"
+
+
+===== PAGE 2 =====
+
+“description”
+
+"Prémiové materidly a fFemeslné zpracovani.",
+
+"order": 2
+3,
+{
+"id": "vp-3",
+"icon": "originality",
+"title": "Originalita",
+"description": "ReSeni na miru pro kazdého klienta.",
+"order": 3
+3,
+{
+id p-4",
+"icol experience",
+"title": "ZkuSenosti",
+"description": "10 let na trhu, 50+ dokonéenych projekti.",
+"order": 4
+}
+J,
+"personality": {
+"tone": "professional",
+"keywords": ["premium", "Luxury", "quality", "trust"],
+"emotions": ["prestiz", "hrdost"]
+»
+3,
+
+"navigation": {
+
+sticky": true,
+
+{ "label
+{ "label":
+{ "label":
+{ "label
+
+"O nds", "href": "#about" },
+"Projekty", "href": "#projects" },
+"Tym", "href": "#team" },
+"Kontakt", "href": "#contact" }
+
+"Label": "Konzultace",
+"action": "scroll",
+"href": "#contact",
+"variant": "primary"
+
+¥
+
+3,
+"sections": [
+
+{
+
+"id
+“type
+“title™:
+"subtitle": "Prémiové bydleni v srdci Prahy",
+"data": {
+"video": {
+"url": “https://cdn.example.com/hero-video.mp4",
+
+lero",
+
+"hero",
+
+"Vytvaiime domovy, na které jste hrdi",
+
+"poster": { "url": "https://cdn.example.com/hero-poster. jpg" },
+
+"autoplay": true,
+"muted": true,
+"Loop": true
+
+
+===== PAGE 3 =====
+
+3,
+"ctaPrimary": {
+"Label": "Objednat konzultaci",
+"action": "scroll",
+"href": "#contact"
+3,
+"ctaSecondary": {
+"Label": "Zobrazit projekty",
+"action": "scroll",
+"href": "#projects"
+}
+3,
+"Layout": {
+“fullWidth": true,
+"align": "center"
+
+"id": "value-props",
+“type
+"title": "Proé zvolit AND Development",
+"data": {
+
+"columns": 4
+
+"id": "portfolio-preview",
+"type": "portfolio-preview",
+"title": "Nase realizované projekty",
+"data": {
+
+"Limit": 3,
+
+"showStatus": true
+
+"data": {
+
+"Konzultace", "descriptior
+
+{ "title": "Vybér", "description": "Nabidka odpovidajicich projektu" },
+
+{ "title": "Financovani", "description": "Pomoc s hypotékou a pravnim servisem" },
+{ "title": "Predani", "description": "Klice a kompletni servis" }
+
+"Sezndmeni s vaSimi potfebami" },
+
+5]
+}
+3,
+{
+"id":
+"type" >
+"title": "Lidé za projekty AND",
+"subtitle": "ZkuSeny tym s vant pro kvalitni architekturu"
+
+3,
+
+
+===== PAGE 4 =====
+
+estimonials",
+
+: "Co Pikaji nasi klienti"
+
+"stats",
+"type": "stats",
+"data": {
+"items": [
+{ "value": "10+", "Label": "let na trhu" },
+{ "value": "50+", "Label": "projekt dokonéeno" },
+{ "value": "200+", "Label": "spokojenych klientu" }
+
+J
+}
+3,
+{
+"id": "cta-form",
+“type ta-form",
+"title": "PFijdte na osobni konzultaci",
+
+"subtitle": "Radi vam pomizeme najit vas vysnény domov"
+
+"id": "contact",
+"type": "contact",
+"title": "Kontaktujte nds"
+»
+Jo
+"projects": [
+{
+
+i
+
+: "vila-roque",
+ila ROQUE",
+ila-roque",
+
+"slug"
+"tagline": "Sebevédomé bydleni na neopakovatelném misté",
+"status": "completed",
+
+"Location": {
+"street": "Mala Strana",
+"city": "Praha"
+3,
+"type": "villa",
+"units": 12,
+"completionYear": 2025,
+"thumbnail": {
+"url": "https://cdn.example.com/vila-roque-thumb. jpg",
+"alt": "Vila ROQUE"
+3,
+"features": ["Vyhled na Prahu", "Terasa", "Gardz"],
+"architect": "Studio KO"
+},
+{
+"id": "villa-gallery",
+lla GALLERY",
+
+FleeMeeesict eee
+
+Opapef
+
+Medel
+
+
+
+===== PAGE 5 =====
+
+puuy .  viLtu-yuriery 5
+
+"status"
+
+"Location": { "city": "Praha", "region": "Vinohrady" },
+
+"type": "apartment",
+
+"units": 24,
+
+"thumbnail": { "url": "https://cdn.example.com/villa-gallery-thumb. jpg" }
+»
+
+"completed",
+
+1,
+"team": [
+{
+"id": "jiri-salda",
+"name": "JiFi Salda",
+"role": "CEO & Founder",
+"bio": "20+ let zkuSenosti v realitnim a developerském trhu.",
+"photo": { "url": “https://cdn.example.com/jiri-salda. jpg" },
+"Linkedin": "https://Linkedin.com/in/jiri-salda",
+"order": 1
+3,
+{
+"id": "jana-saldova",
+"name": "Jana Saldova",
+"role": "COO",
+"bio": "Zodpovédna za provoz a Fizent projektu.",
+"photo": { "url": "https://cdn.exampLe.com/jana-saldova. jpg" },
+“order": 2
+3
+1,
+"testimonials": [
+{
+"id"; "t-1",
+"quote": "Spoluprace s AND byla vynikajict. Profesionalita, pozornost k detailum."
+"author" jan Novak",
+"project": "Vila ROQUE",
+"rating": 5
+3
+1,
+"contact": {
+
+"email": "info@and-development.cz",
+"phone": "+420 220 515 199",
+"address": {
+
+"street": "Zlatnicka 1582/10",
+
+"city": "Praha",
+
+“postalCode": "110 00"
+
+"Zanechte ném zpravu",
+"fields": [
+{ "name"
+
+"name", "Label": "Jméno", "type": "text", "required": true },
+
+{ "name": "email", "Label mail", "type": "email", "required": true },
+{ "name": "phone", "Label": "Telefon", "type": "tel" },
+{ "name": "message", "label": "Zprdva", "type": "textarea" }
+
+1,
+"submitLabel": "Odeslat dotaz"
+
+
+===== PAGE 6 =====
+
+3,
+"footer": {
+"columns": [
+{
+"title": "Kontakt",
+"Links": [
+{ "label": "info@and-development.cz", "href": "mailto: info@and-development.cz" },
+{ "label": "+420 220 515 199", "href": "tel:+420220515199" }
+J
+3,
+{
+"title": "Navigace",
+"Links": [
+{ "label": "O nds", "href": "#about" },
+{ "label": "Projekty", "href": "#projects" }
+J
++
+1,
+"social": [
+{ "platform": "instagram", "url": "https://instagram.com/anddevelopment" },
+{ "platform": "Linkedin", "url": "https://Linkedin.com/company/anddevelopment" }
+i]
+i
+
+2. Generovaci Logika
+
+2.1 Flow Diagram
+
+I GENEROVACL PIPELINE |
+
+od
+
+RAW COMPANY DATA
+(unstructured)
+
+re!
+
+v
+| 1. DATA EXTRACTION |
+lor 1 6 1 6
+
+| | Web | | Socidlni | | Databaze
+
+| | Scraper | | site | | Firem
+
+| © T 7 t T a T
+
+| | | | |
+I \ + 7 |
+I v I
+| |
+I
+
+I
+
+I
+
+v
+
+
+
+===== PAGE 7 =====
+
+2. DATA ENRICHMENT & MAPPING
+
+r 1 or 1
+
+| AI Content | | Validation I
+| Generator | | Engine |
+I |
+Mi
+
+=
+| INPUT DATASET I
+| (JSON validated) |
+a,
+
+I
+I
+I
+I
+I
+I
+I SS
+I
+I
+I
+I
+I
+
+v
+
+3. TEMPLATE GENERATION
+
+r 1 71
+
+| Component | | Style |
+| Resolver | | Generator |
+\ ' 4 : j
+I |
+a,
+’
+
+SS
+| TEMPLATE OUTPUT |
+| (Next. js pages) I
+_—————————
+
++
+
+v
+
+4. BUILD & DEPLOY
+
+| Build | | CON |
+| Pipeline | | Upload I
+L , : 4 S 1
+I |
+(a
+v
+
+———
+
+| PREVIEW URL |
+
+| (deploy ready) |
+(—F
+
+2.2 Pseudokéd generovaciho engine
+
+// generators/website-generator.js
+class WebsiteGenerator {
+constructor(config) {
+this.schema = loadSchema('web-generation-schema-v1.json');
+this.templateEngine = new TemplateEngine();
+
+thie cammanantDanictm: — nau CamanantDanicbmil\+
+
+
+===== PAGE 8 =====
+
+Uo. Cumpuneneneyesury = HEM Cumpuneneney tse ys
+
+async generate(inputDataset) {
+// 1. Validate input
+const validated = await this.validateCinputDataset);
+
+// 2. Enrich with defaults
+const enriched = await this.enrich(validated);
+
+// 3. Generate sections
+const sections = await this.generateSectionsCenriched) ;
+
+// 4. Apply individualization
+const individualized = await this.individualizeCenriched, sections);
+
+// 5. Generate pages
+const pages = await this.generatePages(individualized) ;
+
+// 6. Build assets
+const assets = await this.buildAssets(pages);
+
+return {
+pages,
+assets,
+metadata: {
+generatedAt: new Date().toISOStringQ),
+version: '1.0.0',
+companyName: enriched.meta.companyName
+
+35
+
+async validateCinput) {
+const validator = new Ajv({ allErrors: true });
+const validate = validator.compile(this. schema);
+
+if (!validateCinput)) {
+throw new ValidationError(validate.errors);
+
+return input;
+
+async enrichCinput) {
+// Apply default values based on industry
+const defaults = getDefaultsForIndustryCinput.meta. industry);
+
+// Merge with input, input takes precedence
+return deepMerge(defaults, input);
+
+async generateSections(data) {
+const sections = [];
+
+
+===== PAGE 9 =====
+
+for (const sectionDef of data.sections) {
+const component = this.componentRegistry.resolve(sectionDef.type);
+const sectionData = this.mapSectionData(sectionDef, data);
+
+const generated = await component.generate(sectionData);
+sections. push(generated) ;
+
+return sections;
+
+async individualize(data, sections) {
+// Apply brand personality variations
+const personalityModifiers = getPersonalityModi fiers(data.brand.personality) ;
+
+// Modify sections based on company uniqueness
+
+return sections.map(section =>
+personalityModifiers.apply(section, data)
+
+5
+
+3. Data Extraction z Verejnych Zdroja
+
+3.1 Input Dataset Construction
+
+// extractors/company-extractor. js
+class CompanyDataExtractor {
+constructor() {
+this.sources = {
+web: new WebScraper(),
+or: new ObchodniRejstrik(),
+ares: new AresApi(),
+social: new SocialMediaScraper(),
+maps: new GoogleMapsApi()
+3;
+
+async extract(companyNameOrIco) {
+// 1. Resolve company identifier
+const company = await this.resolveCompany(companyNameOrIco) ;
+
+// 2. Extract from multiple sources in parallel
+
+const [webData, orData, socialData, mapData] = await Promise.al1([
+this.sources.web.scrape(company.website),
+this.sources.or.getCompanyInfo(company.ico),
+this.sources.social.getProfiles(company.name),
+this. sources .maps.getLocation(company.address)
+
+D;
+
+
+===== PAGE 10 =====
+
+// 3. Merge and normalize
+
+const rawData = this.normalize({
+- Company ,
+..webData,
+
+orData,
+
+..socialData,
+
+.-mapData
+
+db;
+
+// 4. Transform to input dataset schema
+return this.transformToSchema(rawData) ;
+
+transformToSchemaC(raw) {
+return {
+
+meta: {
+companyName: raw.name,
+brandSlug: this.slugifyCraw.name) ,
+primaryColor: this.detectBrandColor(raw.logo || raw.website),
+secondaryColor: this.inferSecondaryColor(raw)
+
+3,
+
+brand: {
+tagline: raw.tagline || this.generateTagline(raw),
+description: raw.description,
+valueProps: this.extractValueProps(raw),
+story: raw.about
+
+3,
+
+contact: {
+email: raw.email,
+
+phone: raw.phone,
+address: raw.address
+
+3,
+
+projects: raw.projects.map(p => ({
+name: p.name,
+status: p.status,
+location: p.location,
+description: p.description
+
+»D),
+// ... ete
+
+3.2 Data Sources Mapping
+
+
+===== PAGE 11 =====
+
+Zdroj Data
+
+Web firmy Popis, projekty, tym, kontakty
+Obchodni rejstrik ICO, sidlo, statutdri, zapis
+Socialni sité Profil, prispévky, reference
+Google Maps Lokace, hodnoceni, fotky
+Media Tiskové zpravy, ocenéni
+Databaze firem Velikost, obor, trzby
+
+4. Komponentovy Mapping Systém
+
+4.1 Component Registry
+
+// components/registry. js
+const COMPONENT_REGISTRY = {
+"hero': {
+component: HeroSection,
+defaultProps: {
+layout: { fullWidth: true, align: ‘center’ },
+animation: { type: 'fade-in', duration: 'slow' },
+background: { type: 'video', overlay: 0.4 }
+3,
+variants: {
+"video': HeroVideoSection,
+"image': HeroImageSection,
+"slideshow': HeroSlideshowSection,
+"minimal": HeroMinimalSection
+i
+3,
+
+"value-props': {
+component: ValuePropsSection,
+defaultProps: {
+layout: { columns: 4, gap: 'md' },
+columns: ['icon', ‘title’, 'description']
++
+3,
+
+"portfolio-preview': {
+component: PortfolioPreviewSection,
+defaultProps: {
+layout: { columns: 3, gap: 'lg' },
+display: { showStatus: true, showLocation: true }
+»
+3,
+
+"process': {
+
+Metoda
+
+Web scraping
+ARES API
+
+Social APIs
+Google Places API
+News search API
+
+Business DB
+
+
+===== PAGE 12 =====
+
+component: ProcessSection,
+defaultProps: {
+layout: { columns: 4 },
+style: 'timeline'
+3
+3,
+
+"team': {
+component: TeamSection,
+defaultProps: {
+layout: { columns: 3 },
+display: { showBio: true, showSocial: true }
+
+3
+3,
+
+‘testimonials’: {
+component: TestimonialsSection,
+defaultProps: {
+layout: { columns: 1 },
+display: { showRating: true, showProject: true }
+
+»
+3,
+
+"stats': {
+component: StatsSection,
+defaultProps: {
+layout: { columns: 3 },
+style: 'large-numbers'
+3
+3,
+
+"cta-form': {
+component: CtaFormSection,
+defaultProps: {
+layout: { fullWidth: false, align: ‘center’ },
+formProvider: 'formspree'
+i
+3,
+
+"contact': {
+component: ContactSection,
+defaultProps: {
+layout: { columns: 2 },
+showMap: true
+
+}
+35
+
+4.2 Dynamic Field Mapping
+
+// components/mapper. js
+class SectionDataMapper {
+
+
+===== PAGE 13 =====
+
+mapSectionData(sectionDef, companyData) {
+const mapped = {
+// Static fields
+...sectionDef,
+
+// Dynamic field resolution
+...this.resolveDynamicFields(sectionDef.data, companyData),
+
+// Computed fields
+...this.computeFields(sectionDef, companyData)
+
+i
+
+return mapped;
+
+resolveDynamicFields(data, companyData) {
+const resolved = {};
+
+for (const [key, value] of Object.entries(data)) {
+if (typeof value === 'string' && value.startsWith('$')) {
+// Resolve template variable
+resolved[key] = this.resolveTemplate(value, companyData);
+} else if (Array.isArray(value)) {
+resolved[key] = value.map(item =>
+typeof item === ‘object’
+? this.mapSectionDataCitem, companyData)
+: item
+5
+} else {
+resolved[key] = value;
+
+return resolved;
+
+resolveTemplate(template, data) {
+// $company.name -> companyData.meta.companyName
+// $projects[@].name -> companyData.projects[@] .name
+const match = tempLate.match(/\$(\w+)(?:\. C\w+))?(? :\LQ\d4)\)) 7/4);
+if (!match) return template;
+
+const [, root, path, index] = match;
+const rootData = data[root];
+
+if C!rootData) return '';
+if Cindex !== undefined) {
+return rootData[parseInt(index)]?. [path] || '';
+
+return path ? rootData[path] : rootData;
+
+
+===== PAGE 14 =====
+
+5. Individualizaéni Algoritmus
+
+5.1 Uniqueness Scoring
+
+// individualizer/algorithm. js
+class WebsiteIndividualizer {
+constructor() {
+this.baselinePatterns = getBaselinePatterns('boutique_developer');
+
+async individualize(sections, companyData) {
+const uniquenessScore = await this.calculateUniqueness(companyData) ;
+
+// Mpply variations based on score
+if CuniquenessScore > 0.7) {
+
+return this.applyHighUniquenessVariations(sections, companyData) ;
+} else if CuniquenessScore > 0.4) {
+
+return this.appLyMediumUniquenessVariations(sections, companyData);
+} else {
+
+return this.applyLowUniquenessVariations(sections, companyData);
+
+async calculateUniqueness(companyData) {
+const factors = {
+// Unique story (compared to industry baseline)
+storyUniqueness: await this.compareText(
+companyData.brand.story,
+this.baselinePatterns.stories
+
+»
+
+// Unique value props
+valuePropUniqueness: this.compareValueProps(
+companyData.brand.valueProps,
+this. baselinePatterns.valueProps
+
+»
+
+// Nisual uniqueness (colors, fonts)
+
+visuaLUniqueness: this.compareVisuals(
+companyData.meta,
+this.baselinePatterns.visuals
+
+»
+
+// Portfolio uniqueness
+
+projectUniqueness: this.compareProjects(
+companyData. projects,
+this.baselinePatterns.projects
+
+
+===== PAGE 15 =====
+
+35
+
+return this.weightedAverage(factors, { story: @.3, values: @.25, visual: 0.25, projects: 0.2 }
+
+applyHighUniquenessVariations(sections, companyData) {
+return sections.map(section => {
+// Use custom Layout variations
+if (section.type === 'hero') {
+return {
+...Section,
+layout: {
+...Section. Layout,
+align: this.pickRandom(['left', 'center', ‘right'])
+3,
+animation: {
+...Section.animation,
+type: this.pickRandom(['fade-in', 'slide-up', 'parallax'])
+
+t
+35
+}
+// Add custom section ordering
+if (section.type === 'process') {
+return {
+...Section,
+data: {
+
+...Section.data,
+style: this.pickRandom(['timeline’, ‘cards', 'vertical'])
+
+3;
+
+return section;
+
+dD;
+i
+
+5.2 Variation Categories
+
+
+===== PAGE 16 =====
+
+Kategorie Variace
+
+Layout Left/Center/Right align
+
+Animace fade-in, slide-up, zoom, parallax
+Barvy Primary/Secondary/Accent dominant
+Typography Serif/Sans mix
+
+Pofadi sekci Standard/Dynamic
+
+CTA Riizné texty
+
+Obrazky Stock/Custom
+
+6. Tech Stack pro Automatizaci
+
+6.1 Architektura
+
+Pravdépodobnost
+33% kazda
+
+25% kazda
+
+40% primary
+50/50
+
+70/30
+
+Al generated
+
+Podle dostupnosti
+
+
+===== PAGE 17 =====
+
+PRESENTATION LAYER
+
+| Next.js 14 |
+| CApp Router) |
+
+| Tailwind
+| css
+
+React 18
+
+|
+Components |
+
+GENERATION LAYER
+
+| Template | | Component | | Asset
+| Engine | | Registry | | Generator
+I
+I DATA LAYER
+lor 1 oF 1
+| | JSON | | Validation | | Transform
+| | Schema | 1 CAlv) | | Pipeline
+1 rou no
+I
+r
+I EXTRACTION LAYER
+lor noo 1 oF
+| | Web | | Company | | AI Content
+| | Scraper | | APIs | | Generator
+1 sou Tn
+I
+] INFRASTRUCTURE
+lo 1 oF 1
+| | Vercel | | AWS S3 | | Cloudflare
+| | (Preview) | | (Assets). | | CCDN)
+!
+
+6.2 Tech Stack Detail
+
+
+===== PAGE 18 =====
+
+Warstwa Technologie
+Framework Next.js 14
+Styling Tailwind CSS
+Animace Framer Motion
+Schema Ajv + JSON Schema
+Templating Handlebars + custom
+Scraping Puppeteer + Cheerio
+Al OpenAl GPT-4
+Hosting Vercel
+CDN Cloudflare
+Storage AWS S3
+Database PostgreSQL
+Queue Redis + Bull
+ciI/cD GitHub Actions
+
+6.3 API Design
+
+# OpenAPI spec pro generation endpoint
+openapi: 3.0.0
+info:
+
+title: Vertical Studio API
+
+version: 1.0.0
+
+paths:
+/api/v1/generate:
+post:
+summary: Generate website preview
+requestBody:
+content:
+application/json:
+schema:
+type: object
+properties:
+companyIdentifier:
+type: string
+description: "Company name or ICO"
+options:
+type: object
+properties:
+industry:
+type: string
+
+Uéel
+
+SSR, routing, optimalizace
+Utility-first styling
+Smooth transitions
+Validace vstupi
+Component templates
+Web data extraction
+Content generation
+Preview deployments
+Asset delivery
+Images, assets
+Company records
+Background jobs
+
+Build pipelines
+
+enum: [boutique_developer, real_estate, architecture]
+
+locale:
+
+
+===== PAGE 19 =====
+
+type: string
+customizationLevel:
+type: string
+enum: [minimal, standard, full]
+responses:
+202:
+description: Generation started
+content:
+application/json:
+schema:
+properties:
+jobId:
+type: string
+previewUrl1:
+type: string
+estimatedTime:
+type: integer
+
+/api/v1/generate/{jobId}/status:
+get:
+summary: Check generation status
+responses:
+200:
+content:
+application/json:
+schema:
+properties:
+status:
+type: string
+enum: [pending, processing, completed, failed]
+previewUrl1:
+type: string
+
+/api/v1/companies:
+get:
+summary: List extracted companies
+parameters:
+- name: industry
+in: query
+schema:
+type: string
+
+post:
+summary: Add new company
+requestBody:
+content:
+application/json:
+schema:
+$ref: '#/components/schemas/CompanyInput '
+
+
+===== PAGE 20 =====
+
+7. Build Pipeline
+
+7.1 CI/CD Flow
+
+# .github/workflows/generate.ymL
+name: Website Generation Pipeline
+
+on:
+workflow_dispatch:
+inputs:
+company_id:
+description: 'Company ID to generate’
+required: true
+jobs:
+extract:
+runs-on: ubuntu-Latest
+steps:
+- uses: actions/checkout@v4
+- name: Extract company data
+run: |
+npm run extract:company ${{ github.event.inputs.company_id }}
+env:
+OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+- name: Upload data artifact
+uses: actions/upload-arti fact@v4
+with:
+name: company-data
+path: data/output/
+generate:
+
+needs: extract
+runs-on: ubuntu-latest
+steps:
+
+- uses: actions/checkout@v4
+
+- name: Download data artifact
+uses: actions/download-artifact@v4
+with:
+name: company-data
+path: data/input/
+
+- name: Setup Node
+uses: actions/setup-node@v4
+with:
+
+node-version: '20"
+
+- name: Install dependencies
+
+run: npm ci
+
+
+===== PAGE 21 =====
+
+- name: Generate website
+run: |
+npm run generate --
+
+‘input data/input/company. json
+env:
+OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+- name: Build Next.js
+run: npm run build
+
+- name: Upload build artifact
+uses: actions/upload-arti fact@v4
+
+with:
+name: build-output
+path: .next/
+
+deploy-preview:
+needs: generate
+runs-on: ubuntu-Latest
+steps:
+- uses: actions/checkout@v4
+
+- name: Download build artifact
+uses: actions/download-arti fact@v4
+
+with:
+name: build-output
+path: .next/
+
+- name: Deploy to Vercel Preview
+uses: amondnet/vercel-action@v25
+with:
+vercel-token: ${{ secrets.VERCEL_TOKEN }}
+vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+github-token: ${{ secrets.GITHUB_TOKEN }}
+
+- name: Store preview URL
+run: |
+
+echo "PREVIEW_URL=${{ steps.vercel.outputs.preview_url }}" >> $GITHUB_ENV
+
+- name: Update job status
+run: |
+npm run update: job -- --status completed --url $PREVIEW_URL
+
+notify:
+needs: deploy-preview
+runs-on: ubuntu-Latest
+steps:
+- name: Send notification
+run: |
+npm run notify:completion -- \
+--preview-url ${{ needs.deploy-preview.outputs.preview_url }} \
+--company-id ${{ github.event.inputs.company_id }}
+
+
+===== PAGE 22 =====
+
+7.2 Build Script
+
+// scripts/build.js
+
+const { execSync } = require('child_process');
+
+const fs = require('fs');
+
+const path = require('path');
+
+async function build() {
+
+console. log('#¥ Starting build...
+
+// 1, Validate environment
+checkEnvironmentQ);
+
+// 2. Load company data
+
+const companyData
+
+LoadCompanyDataC) ;
+
+// 3. Validate against schema
+
+validateDataCcompanyData) ;
+
+// 4. Generate pages
+console. log(''+ Generating
+execSync('npm run generate
+
+// 5. Generate components
+console. log(' Generating
+execSync('"npm run generate
+
+// ©. Generate styles
+console. log('® Generating
+execSync('npm run generate
+
+// 7. Optimize images
+console. log(' sai Optimizing
+
+execSync('npm run optimize
+
+// 8. Build Next.js
+
+pages...');
+
+spages', { stdio: 'inherit' });
+
+components .
+
+3
+
+:components', { stdio: ‘inherit’ });
+
+styles...");
+
+rstyles', { stdio: ‘inherit’ });
+
+images...');
+
+rimages', { stdio: ‘inherit’ });
+
+console.log('* Building Next.js...');
+execSync('npm run next:build', { stdio: ‘inherit’ });
+
+// 9, Upload assets
+console. log("
+await uploadAssets();
+
+Uploading assets.
+
+console. log('@&% Build complete!');
+
+buildQ.catch(console.error);
+
+
+===== PAGE 23 =====
+
+8. Preview Hosting
+
+8.1 Vercel Integration
+
+
+===== PAGE 24 =====
+
+// lib/vercel.js
+const { Vercel } = require('@vercel/node');
+
+class PreviewDeployment {
+constructor() {
+this.vercel = new Vercel({ token: process.env.VERCEL_TOKEN });
+}
+
+async deploy(buildDir, companySlug) {
+// Create unique deployment name
+const deploymentName = ~preview-${companySlug}-${Date.now()} >;
+
+// Upload files
+const files = await this.readDir(buildDir);
+
+const deployment = await this.vercel.createDepLoyment({
+name: depLoymentName,
+files: files,
+projectSettings: {
+framework: 'nextjs',
+devCommand: 'npm run dev',
+instalLCommand: 'npm ci"
+3,
+meta: {
+companySLug,
+generatedAt: new Date().toISOStringQ)
++
+dD;
+
+return {
+url: deployment.url,
+deploymentId: deployment. id
+45
+y
+
+async waitForReady(deploymentId) {
+let status = 'BUILDING';
+
+while (status === 'BUILDING' || status === 'INITIALIZING') {
+await sleep(S000) ;
+const deployment = await this.vercel.getDepLoyment(deploymentId) ;
+status = deployment.state;
+
+»
+
+if (status === 'READY') {
+return deployment;
+
+}
+
+throw new Error(*Deployment failed: ${status}*);
+t
+
+
+===== PAGE 25 =====
+
+8.2 Preview URL Structure
+
+https: //preview-{company-slug}-{timestamp} .vertical-studio.dev
+
+Priklad:
+https: //preview-and-development-1709000000.vercel .app
+
+9. Sales Delivery Workflow
+
+9.1 Email Template
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Your Website Preview</title>
+</head>
+<body style="font-family: 'Inter', Arial, sans-serif; max-width: 60@px; margin: @ auto; padding: 2)
+
+<!-- Header -->
+<div style="text-align: center; padding: 40px 0;">
+
+<img src="https://vertical-studio.dev/logo.png" alt="Vertical Studio" width="120">
+</div>
+
+<!-- Main Content -->
+
+<h1 style="color: #1A1A1A; text-align: center; font-size: 28px;">
+VaS ndvrh webu je piipraven
+
+</h1>
+
+<p style="color: #666; font-size: 16px; line-height: 1.6;">
+Dobry den,
+</p>
+
+3">
+
+<p style="color: #666; font-size: 16px; line-height: 1
+Dékujeme za Va3 zdjem o nd& systém. Na zdkladé analyzy Vast firmy
+<strong>ALL New Development</strong> jsme pripravili ndvrh nového webového sidla.
+
+</p>
+
+<!-- Preview Box -->
+<div style="background: #F5F5FQ; border-radius: 12px; padding: 3@px; margin: 3@px 0; text-align
+<p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+Ndhled webovych stranek
+</p>
+<a href="https://preview-and-deveLopment-1709000000.vercel.app"
+style="display: inline-block; background: #C9A962; color: white; padding: 16px 32px;
+text-decoration: none; border-radius: 8px; font-weight: 600;">
+Zobrazit nahled +
+</a>
+</div>
+
+
+===== PAGE 26 =====
+
+<!-- Key Features -->
+
+<h2 style="color: #1A1A1A; font-size: 2@px; margin-top: 4@px;">
+Co navrh obsahuje:
+
+</h2>
+
+<ul style="color: #666; line-height: 1.8;">
+<li>@ Moderni Hero sekce s video pozadim</li>
+<li> Value Proposition s 4 kliéovymi benefity</li>
+<li>® Portfolio projektu s interaktivnimi kartami</li>
+<li>sg Sekce tymu s fotkami a kontakty</li>
+<li>w Reference spokojenych klientu</li>
+<li>X& Kontaktni formular</li>
+
+</ul>
+
+<!-- CTA
+<div style="text-align: center; margin: 4px 0;">
+<p styl
+Co Fikate navrhu? Domluvime si online call?
+
+color: #666; font-size: 16px;">
+
+</p>
+<a href="https://calendly.com/vertical-studio/30min"
+style="display: inline-block; background: #222d51; color: white; padding: 16px 32px;
+text-decoration: none; border-radius: 8px; font-weight: 600; margin: 10px;">
+Rezervovat call
+</a>
+</div>
+
+<!-- Footer -->
+
+<div style="border-top: 1px solid #eee; padding-top: 2@px; margin-top: 4@px; text-align: center;
+<p>Vertical Studio | info@vertical-studio.dev</p>
+<p>Tento néhled je platny 7 dni</p>
+
+</div>
+
+</body>
+</html>
+
+9.2 Delivery Flow
+
+
+===== PAGE 27 =====
+
+DELIVERY WORKFLOW
+
+(ti,
+
+[22
+
+[TJ
+
+(4.
+
+B.
+
+(6.
+
+[Eo
+
+(8.
+
+GENERATION COMPLETE]
+I
+v
+SEND EMAIL NOTIFICATION]
+- Preview URL
+- Key features
+- Call to action
+I
+v
+WAIT 24H FOR RESPONSE]
+- If no response » follow-up email
+I
+v
+SCHEDULE CALL]
+- Calendly integration
+- 30 min discovery call
+I
+v
+CALL - DISCOVERY]
+- Understand needs
+- Gather feedback on preview
+- Propose customization
+I
+v
+PROPOSAL]
+- Customization scope
+- Timeline
+- Price
+I
+v
+CONTRACT]
+- SOW signing
+- Deposit invoice
+|
+v
+IMPLEMENTATION]
+- Custom development
+- Content updates
+- Launch
+
+10. Metriky Uspéchu
+
+10.1 Dashboard Metrics
+
+
+===== PAGE 28 =====
+
+Metrika Definice
+Generations/month Poéet vygenerovanych webt
+Preview-to-Call Rate (Calls / Previews) x 100
+Call-to-Contract Rate (Contracts / Calls) x 100
+Avg. Deal Value Pr&imérna hodnota zakazky
+Generation Time Cas od spu8téni po preview
+Conversion Rate (Contracts / Previews) x 100
+
+10.2 Funnel Visualization
+
+PREVIEWS CALLS CONTRACTS
+
+I | I
+
+I | I
+
+v v v
+SI ——— —>
+| 100% I | 30% I | 50% |
+| (se) | ——> | (15) | ———> | @.5) |
+I I I I I |
+ry ——y —
+
+Revenue: 5@ x 15% x 15@ @0@ Ké = 1 125 @00 Ké / mésic
+
+10.3 Metrics Collection
+
+Cil
+
+50+
+
+30%
+
+50%
+
+150 000 Ké
+
+<5 min
+
+15%
+
+
+===== PAGE 29 =====
+
+// lib/metrics.js
+class MetricsCollector {
+async trackGeneration(companyId, duration, status) {
+await this.db.insert('generations', {
+
+companyId,
+
+timestamp: new Date(),
+
+duration,
+
+status,
+
+metadata: { version: '1.0.0' }
+D;
+
+async trackConversion(jobId, stage, metadata = {}) {
+await this.db.insert('conversions', {
+jobId,
+stage, // ‘preview_sent', 'preview_viewed', 'call_scheduled', 'call_completed', ‘contract_si
+timestamp: new Date(),
++. -metadata
+
+dD;
+
+async getDashboard() {
+const [generations, conversions, revenue] = await Promise.all1([
+this.getGenerationStats(),
+this.getConversionStatsQ),
+this.getRevenueStats()
+
+D;
+
+return {
+
+generations,
+
+conversions: {
+previewToCalL: conversions.previewToCall,
+callToContract: conversions.callToContract,
+overall: conversions.overall
+
+3,
+
+revenue: {
+total: revenue.total,
+avgDealValue: revenue.avg
+
+35
+
+10.4 Pricing Model
+
+
+===== PAGE 30 =====
+
+tier price
+Basic 49 000 kKé
+Professional 99 000 Ké
+
+Enterprise 199 000 Ké
+
+11. Skdlovani na Desitky Firem Mési
+
+11.1 Automatizace Procesti
+
+Faze
+
+Data extraction
+Content generation
+Template generation
+Image optimization
+Preview deployment
+Email delivery
+Scheduling
+Contract signing
+
+Invoicing
+
+11.2 Capacity Planning
+
+Mésiéni kapacita: 100 webu
+
+Potebné zdroje:
+
+Features
+
+Standard template, zakladni customizace, 1 round revisions
+
+Full customizace, pokroéilé animace, 3 rounds revisions, 1 rok hosting
+
+Kompletni redesign, VIP support, neomezené revisions, 2 roky hosting
+
+né
+
+Automatizace
+
+100% automatické
+90% automatické (Al)
+100% automatické
+100% automatické
+100% automatické
+100% automatické
+100% automatické
+50% automatické
+
+100% automatické
+
+F Server: 2x AWS EC2 (t3.large)
+
+F— Queue: Redis (db.r5.large)
+
+-— Database: PostgreSQL (db.t3.medium)
+
+F— Storage: $3 (100 GB)
+
+-— CDN: Cloudflare (unlimited)
+\— Email: SendGrid (50k/month)
+
+Naklady na infrastrukturu: ~15 000 Ké/mésic
+Marze pri 5@ zakdzkach: ~1 000 @00 Ké/mésic
+
+11.3 Quality Assurance
+
+Nastroje
+Scrapers, APIs
+GPT-4
+
+Generation engine
+Cloudinary
+
+Vercel API
+SendGrid
+Calendly API
+DocuSign
+
+Fakturoid
+
+
+===== PAGE 31 =====
+
+// \ib/qa-automation. js
+class QualityChecker {
+async checkPreview(url) {
+const results = await Promise.all([
+this. checkPerformance(url),
+this.checkAccessibility(url),
+this. checkSeo(url),
+this.checkResponsive(urlL),
+this.checkContent(url)
+D;
+
+return {
+passed: results.every(r => r.passed),
+score: this.calculateScore(results),
+issues: results.flatMap(r => r.issues || [])
+
+async checkPerformance(url) {
+const lighthouse = await this.runLighthouse(url);
+
+return {
+type: ‘performance’,
+passed: Lighthouse.performance >= 90,
+score: lighthouse.performance,
+issues: lighthouse.issues
+
+35
+
+12. Shrnuti Systému
+
+Kliéové Komponenty
+
+Komponent Status Popis
+JSON Schema Hotovo
+
+Data Extraction Hotovo
+
+Generation Engine B Vyvoj
+
+Component System B Vyvoj
+
+Individualizer Vyvoj
+
+Preview Pipeline Hotovo
+
+Email Automation Hotovo
+
+Metrics Hotovo
+
+Nalki veal
+
+Kompletni definice datového modelu
+Automaticky scraping firemnich dat
+Transformace dat na web
+
+Registr komponent s variantami
+Algoritmus uniqueness
+
+Vercel deployment
+
+Delivery workflow
+
+Dashboard a tracking
+
+
+===== PAGE 32 =====
+
+warsr niuny
+
+Vytvorit produkéni prostiedi - Nastavit Vercel, AWS, databazi
+Implementovat generation engine - Postavit core generovaci logiku
+Nastavit monitoring - Sledovat metriky a alerts
+
+Spustit beta program - Testovat s 5-10 firmami
+
+Iterovat a optimalizovat - ZlepSovat kvalitu a rychlost

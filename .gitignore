@@ -1,0 +1,11 @@
+node_modules/
+build-output/
+.runtime*/
+.scratch/
+.venv/
+.env*
+!.env.example
+config/secrets.json
+.DS_Store
+readme-p1.png
+readme-p1-ocr.txt

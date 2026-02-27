@@ -1,0 +1,723 @@
+
+
+===== PAGE 1 =====
+
+all-new-development-spec
+
+Web Redesign Specification: All New Development
+
+Executive Summary
+
+Tento dokument obsahuje kompletni redesign specifikaci pro web allnewdevelopment.cz. Vychazi z vertikalniho
+standardu pro boutique developery a obsahuje detailni analyzu souéasného stavu, gap analysis a konkrétni navrhy
+pro implementaci.
+
+1. Analyza souéasného stavu
+
+1.1 Souasnéa struktura webu
+
+Sekce Status Poznamka
+
+Hero Text "Butikova developerska spoleénost", tmavé modré pozadi
+Navigace Co stavime, Kdo jsme, Aktualné, Kontakt
+
+Portfolio Grid projektd (Vila ROQUE, Villa Gallery, atd.)
+
+O nas 10 let historie, rodina Salda
+
+Aktuality News carousel
+
+Kontakt A Pouze info, Z4dny formula?
+
+Tym x Chybi vizudini sekce
+
+Divéryhodnost x Zadné reference, certifikaty
+
+CTA A Slabé, pouze informaéni
+
+1.2 Branding souéasného webu
+
+Barvy: Deep navy blue (#222d51), bila
+
+Typografie: Clean sans-serif
+
+Styl: Moderni, architektonicky, korporatni-boutique
+Chybi: Elegantni serif (Sotheby's styl), zlaté akcenty
+
+1.3 Key Gaps (Critical)
+
+Zadny kontaktni formulai - nejvét8i konverzni bariéra
+ZAdn4 sekce Tymu - chyb/ personalizace a diivéra
+
+ZAdné reference - nulové socialni dikazy
+
+Slabé CTA - Zadné "Objednat konzultaci", "Stahnout katalog"
+Chybi Value Proposition - neni jasné, proé zvolit AND
+ZAdny proces - neni jasné, jak spoluprace probiha
+
+
+===== PAGE 2 =====
+
+2. Nova struktura webu
+
+2.1 Wireframe (Desktop)
+
+HEADER (sticky)
+
+TANI
+
+ID Logo]
+
+O nds Projekty Tym Kontakt
+
+[Konzultace] |
+
+HERO (100vh)
+
+Video pozadi (interiér/exteriér - kvalita 4K) i]
+
+"VytvaFime domovy, na které jste hrdi" |
+“Prémiové bydleni v srdci Prahy"
+
+[Objednat konzultaci]
+
+[Zobrazit projekty] |
+
+VALUE PROPOSITION
+
+1 oF 1
+
+r
+
+| © Iole¢ 1 1e 1 10 tot
+
+| LOKALITA | | KVALITA | | ORIGINALITA| | ZKUSENOSTI|
+
+I 1 It lot I
+
+| Jedineéné| | Prémiové | | ReSent | | 10 let |
+
+| adresy | | materidly! | namiru | | natrhu |
+
+1
+
+PORTFOLIO PREVIEW
+
+"NaSe realizované projekty" |
+
+r Vor Vr 1
+
+| [IMAGE] Il [IMAGE] Il [IMAGE] |
+
+| It il il
+
+| VILA ROQUE | | VILLA GALLERY | IVILA EPOQUE I
+
+| Malad Strana | | Vinohrady | | Bubeneé |
+
+| It il il
+
+| [Dokonéeno] | | [Dokonéeno] | | [Dokonéeno] |
+
+[Zobrazit vsechny projekty]
+
+PROCES SPOLUPRACE
+"Jak probiha cesta k vaSemu vysnénému domovu"
+
+@ KONZULTACE @ VYBER  @ FINANCovani @ PREDANT
+|Sezndmeni | |Nabidka | |Hypotéka | |Kli¢e |
+Is pot#ebami! Iprojektu | Ipravni | Iservis |
+
+TY
+
+"Lidé za projekty AND"
+
+r
+
+
+===== PAGE 3 =====
+
+Lruiyy bob ruryy bt Lruruy
+
+1 f
+| It il |
+| Jift Saldal | Jana Saldoval| | Martin... |
+| CEO | 1 coo | | Architekt |
+I
+
+| "Co Fikaji nasi klienti" |
+|
+| "AND splnili naSe oéekdvani na 100%. Od prvni |
+
+konzultace az po predani klicu
+
+] - profesiondlni |
+| p®istup a pozornost k detailum." |
+|
+
+- Rodina Novakova
+
+10+ let | + 50+ projektu | 200+ piedanych bytu
+na trhu | dokonéeno | spokojenych klientu
+
+Cin) Ce] | 1 Cin) Ded 1 Cin) Delt
+DUVERYHODNOST 1
+
+CTA SECTION
+
+"Prijdte na osobni konzultaci" |
+
+Radi vam pomtizeme najit vas vysnény domov |
+
+De Email ]
+(Zprava...
+
+|
+|
+I
+I
+| [Jméno J CB Telefon Il
+I
+|
+|
+| [Odeslat dotaz]
+
+FOOTER
+AND development | Zlatnicka 1582/10, Praha 1
++420 220 515 199 | info@and-development.cz
+
+I
+[0 nds] [Projekty] [Kontakt]
+© 2026 AND development | ICO: XXXXXX | GDPR
+
+3. Detailni sekce specification
+
+3.1 Hero Section
+
+
+===== PAGE 4 =====
+
+Prvek Specifikace
+
+Vizual Full-screen video (100vh), autoplay, muted, loop
+Fallback High-res render (1920x1080, WebP)
+
+Overlay Gradient black 40% pro Gitelnost textu
+
+Headline "Vytvatime domovy, na které jste hrdi"
+
+Subhead "Prémiové bydleni v srdci Prahy"
+
+CTA Primary "Objednat konzultaci" - zlaté pozadi (#C9A962), bily text
+CTA Secondary "Zobrazit projekty" - transparent, bily border
+
+Animace Fade-in textu po 0.5s, duration 1.5s
+
+3.2 Value Proposition
+
+Sloupec  iIkonka Nadpis Popis
+= "PeGlivé vybirame mista, ktera jsou sama o sobé unikatni. Adresy, na
+1 we Lokalita . 7 -
+kterych stoji za to Zit."
+. “Nechavame promluvit femeslo. Tradiéni materialy, precizni detaily a
+2 + Kvalita i Pe ‘
+materialy od provérenych dodavatelt.”
+a "KaZdy projekt prizptsobujeme duchu mista a predstavam budoucich
+3 ¢ Originalita ae xen wi
+obyvatel. Vas domov, vaSe vize."
+. . "10 let na trhu, 50+ dokonéenych projekt, 200+ predanych domovu.
+4 fo} ZkuSenosti
+
+ZkuSenost, které milZete vérit."
+
+3.3 Portfolio
+Layout: 3 karty na desktop, 2 na tablet, 1 na mobile
+Karta projektu:
+
+a
+[RENDER 16:9]
+
+I
+
+I
+
+| VILA ROQUE
+
+| Mala Strana, Praha
+I
+
+I
+
+I
+
+e Dokonéeno
+
+[Zobrazit detail +] |
+_—————
+
+Hover state:
+
+
+===== PAGE 5 =====
+
+Image zoom 1.05x
+Overlay gradient zespoda (black 60%)
+Text bily
+CTA button slide-up
+3.4 Proces
+
+Format: Horizontal timeline (desktop), vertical stack (mobile)
+
+Krok Nazev Ikona__ Popis
+
+"Seznamime se s vaSimi predstavami, potfebami a moznostmi. Zjistime, co je
+
+1 Konzultace
+o pro vas idealni."
+
+"Predstavime vam projekty a byty, které odpovidaji vaSim kritériim. Provadime
+
+2 Vybér ® Z
+osobné."
+3 Financovani © "Pomiizeme s hypotékou, pravnimm servisem a vSemi administrativnimi kroky."
+4 Predani @® “Predame vam kliée a zajistime kompletni servis. VaS novy domov je pripraven."
+3.5 Tym
+
+Layout: 3 karty v fadé (desktop), carousel (mobile)
+
+Karta osoby:
+
+[FOTO 4:5]
+
+Jiri Salda
+CEO & Founder
+
+[LinkedIn] [Email]
+
+20+ let v realit
+
+a development
+—— Eee
+
+Doporuéené foto:
+
+Rozmér: 400x500px
+
+Pozadi: Bilé nebo svétle Sedé
+
+Styl: Professional, formalni (oblek/sakko)
+Ofez: Od pasu nahoru
+
+3.6 Divéryhodnost
+
+Sekce Reference:
+
+
+===== PAGE 6 =====
+
+1
+"Co Fikaji nasi klienti" I
+
+|
+"Spoluprace s AND byla vynikajict. Profesionalita, |
+pozornost k detailum a vzdy vcasné dodani. |
+Doporuéujeme vgem, kteFi hledaji kvalitu." |
+
+|
+kk kK I
+
+- Jan Novak, Vila ROQUE |
+
+Gisla (tii sloupce):
+
+"10+ let na trhu"
+"50+ projekti dokonéeno"
+"200+ spokojenych klienti"
+
+3.7 CTA Section (Kontaktni formular)
+Form fields:
+
+Jméno (required, text)
+Telefon (required, tel)
+Email (required, email)
+Zprava (optional, textarea)
+GDPR checkbox (required)
+
+Submit button: "Odeslat dotaz" - zlaté pozadi
+
+Success state: Thank you message "Dékujeme za vas zajem. Ozveme se vam do 24 hodin."
+
+3.8 Footer
+Sloupec Obsah
+Logo AND logo (bila verze)
+Kontakt Telefon, email, adresa
+Navigace O nas, Projekty, Tym, Kontakt
+Social Instagram, Linkedin
+Legal ICO, © rok, GDPR odkaz
+
+4. Vizualni guidelines
+
+4.1 Barevna paleta
+
+
+===== PAGE 7 =====
+
+Barva
+
+Primary Black
+Secondary Gold
+Background White
+Background Beige
+
+Accent Dark
+
+4.2 Typografie
+PouZiti
+H1 Hero
+H2 Section
+H3 Subsection
+Body
+Caption
+
+Button
+
+4.3 Spacing system
+
+Hex
+#IAIAIA
+#C9OA962
+#FAFAFA
+#FOFSFO
+
+#2D3436
+
+Font
+Playfair Display
+Playfair Display
+Playfair Display
+Inter
+Inter
+
+Inter
+
+PouZiti
+
+Nadpisy, text, pozadi
+
+CTA buttons, akcenty, ikony
+
+Sekce pozadi
+
+Alternativni pozadi
+
+Footer, sekundarni text
+
+Weight
+600
+600
+500
+400
+300
+
+500
+
+Sekce padding: 120px top/bottom (desktop), 80px (mobile)
+Container max-width: 1200px
+
+Grid gap: 32px
+
+Element spacing: 24px, 16px, 8px (multiples of 8)
+
+4.4 Animace
+
+Prvek
+
+Hero text
+Section entrance
+Card hover
+Button hover
+
+Scroll reveal
+
+5. Copy guidelines
+
+5.1 Hero
+
+Animace
+
+Fade-in + slide-up
+Fade-in
+
+Scale + shadow
+Background shift
+
+Fade-in up
+
+Duration
+
+1.58
+
+0.8s
+
+0.3s
+
+0.2s
+
+0.6s
+
+Size (desktop)
+56px
+40px
+28px
+16px
+14px
+
+14px uppercase
+
+Easing
+ease-out
+ease-out
+ease
+ease
+
+ease-out
+
+
+===== PAGE 8 =====
+
+Pozice Text
+
+Headline "Vytvarime domovy, na které jste hrdi"
+Subheadline "Prémiové bydleni v srdci Prahy"
+
+CTA Primary “Objednat konzultaci"
+
+CTA Secondary “Zobrazit projekty"
+
+5.2 Value Proposition
+
+Pozice Text
+
+Section title "Proé zvolit AND Development"
+Column 1 title “Lokalita"
+
+Column 1
+
+bod "Peélivé vybirame mista, ktera jsou sama o sobé unikatni. Adresy, na kterych stoji za to Zit."
+'y
+
+Column 2 title = "Kvalita"
+
+Column 2 “Nechavame promluvit femeslo. Tradiéni materidly, precizni detaily a materidly od provéfenych
+body dodavatelt."
+
+Column 3 title "Originalita"
+
+Column 3 "KaZdy projekt prizptsobujeme duchu mista a predstavam budoucich obyvatel. V48 domov,
+body vase vize."
+
+Column 4 title —"ZkuSenosti"
+
+Column 4 "10 let na trhu, 50+ dokonéenych projektd, 200+ pfedanych domovi. ZkuSenost, které miizete
+body vérit."
+5.3 Portfolio
+Pozice Text
+Section title "Nae realizované projekty"”
+CTA "Zobrazit vSechny projekty"
+
+5.4 Proces
+
+
+===== PAGE 9 =====
+
+Pozice Text
+
+Section title "Jak probiha cesta k vaSemu vysnénému domovu"
+Step 1 title “Konzultace"
+Step 1 body "Seznamime se s vaSimi pfedstavami, potfebami a moznostmi. Zjistime, co je pro vas idealni
+Step 2 title "Vybé
+Step 2 body "PFedstavime vam projekty a byty, které odpovidaji vaSim kritériim. Provadime osobné."
+Step 3 title "Financovani"
+Step 3 body "PomiiZeme s hypotékou, pravnim servisem a vSemi administrativnimi kroky."
+Step 4 title "Predani"
+Step 4 body “Prfedame vam kliée a zajistime kompletni servis. Va novy domov je pyipraven."
+5.5 Tym
+Pozice Text
+Section title "Lidé za projekty AND"
+Section subtitle "ZkuSeny tym s vaSni pro kvalitni architekturu"
+
+5.6 Divéryhodnost
+
+Pozice Text
+
+Section title "Co fikaji na&i klienti"
+
+"Spoluprace s AND byla vynikajici. Profesionalita, pozornost k detailim a vzdy véasné dodani.
+
+Reference text
+Doporuéujeme vSem, ktefi hledaji kvalitu."
+
+al "~ Jan Novak, Vila ROQUE"
+5.7 CTA Section
+Pozice Text
+Section title "Pfijdte na osobni konzultaci"
+Section body "Radi vam pomiiZeme najit vas vysnény domov. NapiSte nam a domluvime si osobni setkani."
+Button "Odeslat dotaz"
+
+6. Technické poZadavky
+
+6.1 Frontend
+
+
+===== PAGE 10 =====
+
+Pozadavek
+Framework
+Styling
+Animace
+Images
+
+Responsive
+
+6.2 Integrace
+
+Integrace
+
+Formspree / Contact Form 7
+Google Analytics 4
+
+Google Search Console
+Linkedin
+
+Tawk.to (optional)
+
+6.3 Performance
+
+Metrika
+
+Lighthouse Performance
+LCP
+
+FID
+
+cLSs
+
+Image sizes
+
+Specifikace
+
+Next.js 14+ nebo WordPress
+Tailwind CSS
+
+Framer Motion
+
+Next.js Image component, WebP
+
+Mobile-first, breakpointy: 768px, 1024px
+
+Uéel
+
+Kontaktni formula?
+Analytika
+
+SEO
+
+Social login
+
+Live chat
+
+cil
+
+90+
+<2.5s
+<100ms
+<01
+
+Max 200KB per image
+
+7. Implementaéni checklist
+
+7.1 Faze 1: Zaklad (1-2 tydny)
+
+G
+
+Setup Next.js / WordPress
+
+— Implementovat design system (barvy, typography)
+
+i)
+
+Layout header + footer
+
+Vytvorit komponenty (Button, Card, Section)
+
+7.2 Faze 2: Obsah (1 tyden)
+
+Hero sekce + video/foto
+
+Value Proposition
+
+8 Portfolio grid
+i)
+
+Proces timeline
+
+
+===== PAGE 11 =====
+
+7.3 Faze 3: Divéra (1 tyden)
+(a)
+
+Tym sekce (fotky, bio)
+— Reference sekce
+
+8 CTA formula
+
+7.4 Faze 4: Optimalizace (1 tyden)
+
+Animace a micro-interakce
+Mobile responsive
+SEO meta tags
+
+Performance optimalizace
+
+ie) Testing (cross-browser, device)
+
+8. Success Metrics
+
+8.1 Kvantitativni
+
+Konverze formulafe: Cil +50% (vs. souéasny stav bez formulafe)
+Eas na strance: Cil 3+ minuty
+
+Bounce rate: Cil < 40%
+
+Mobile traffic: Cil 40%+
+
+8.2 Kvalitativni
+
+ZvySeni vnimani premium znaéky
+Jasna komunikace hodnoty
+
+Snadny kontakt pro potencialni klienty
+
+9. DalSi doporuéeni
+
+9.1 Obsahové
+
+Pidat blog sekci s élanky o architekture, designu, trhu
+Vytvorit PDF katalog ke stazeni
+
+Pravideiné aktualizovat reference
+
+9.2 Technické
+
+Implementovat schema.org pro real estate
+Pridat Open Graph meta tags pro social sharing
+Nastavit Google Business Profile pro lokalni SEO
+
+9.3 Marketing
+
+Integrovat chat widget (pro konzultace)
+Pfidat exit-intent popup s katalogem
+Remarketing pixel pro retargeting
