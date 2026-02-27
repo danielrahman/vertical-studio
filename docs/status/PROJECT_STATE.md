@@ -3,34 +3,42 @@
 Last updated: 2026-02-27
 
 ## Current Goal
-Implement Vertical Studio v3 architecture incrementally from the decision pack in `docs/plan/*`.
+
+Move from decision-complete documentation to incremental v3 implementation, preserving v2 compatibility during transition.
 
 ## Done
-1. Decision pack created:
-   1. `docs/plan/00-summary.md`
-   2. `docs/plan/10-architecture.md`
-   3. `docs/plan/20-data-model.md`
-   4. `docs/plan/30-api.md`
-   5. `docs/plan/40-rollout.md`
-   6. `docs/plan/adr-*`
-2. Quality baseline docs created in `docs/quality/*`.
-3. Security baseline docs created in `docs/security/*`.
-4. Repository-level handoff rule file created: `AGENTS.md`.
-5. Persistent status folder created: `docs/status/*`.
-6. `AGENTS.md` upgraded with PRD/plan/spec/quality read flow and mandatory completion self-review gate.
+
+1. v3 plan documentation revised to vertical-intelligence-first architecture.
+2. Plan pack expanded with new ADRs and domain specs:
+  1. `docs/plan/adr-005-evidence-confidence-policy.md`
+  2. `docs/plan/adr-006-component-contracts-and-bounded-copy.md`
+  3. `docs/plan/adr-007-vertical-intelligence-pattern-policy.md`
+  4. `docs/plan/50-component-contracts.md`
+  5. `docs/plan/60-copy-system.md`
+  6. `docs/plan/70-vertical-research-standard.md`
+3. Existing plan docs (`00/10/20/30/40`) aligned to locked decisions.
+4. Quality docs updated with COPY/LAYOUT/MEDIA/LEGAL P0 families and KPI-ready release report sections.
+5. Security docs updated with required JSON findings contract and explicit release gate schema.
+6. Persistent cross-session tracking maintained in `docs/status/*`.
 
 ## In Progress
-1. v3 code implementation has not started yet.
-2. Existing runtime is still current v2 JavaScript architecture.
+
+1. Runtime implementation has not started yet.
+2. Monorepo scaffold and TypeScript migration are pending execution.
 
 ## Next
-1. Bootstrap monorepo structure (`apps/*`, `packages/*`) without breaking current runtime.
-2. Introduce TypeScript config/tooling and workspace scripts.
-3. Implement first v3 shared package: `packages/schema`.
-4. Add v3 additive API routes while preserving existing `/api/v1/*` behavior.
-5. Start `docs/status/BACKLOG.md` execution loop item-by-item.
+
+1. Create monorepo workspace structure (`apps/*`, `packages/*`) without breaking current runtime.
+2. Implement `packages/schema` contracts first, matching plan docs exactly.
+3. Add additive API routes for vertical research, copy lifecycle, overrides, and review transitions.
+4. Implement publish gate skeleton with deterministic blocking reason codes.
+5. Add test harness for documentation acceptance criteria.
 
 ## Known Constraints
+
 1. Keep compatibility with existing generation/extraction endpoints.
-2. No automatic recomposition post publish.
-3. Publish gate must block on quality `P0` and security `critical/high`.
+2. Composition remains deterministic with exactly three curated variants.
+3. Competitor data is pattern-level only (`IA + CTA + trust + tone`).
+4. Publish must block on quality `P0` and unresolved security `critical/high`.
+5. Corpus remains optional and non-blocking in v1.
+
