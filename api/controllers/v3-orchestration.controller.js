@@ -19,6 +19,7 @@ const COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'actorRole'
 ]);
 const COMPOSE_SELECT_ALLOWED_TOP_LEVEL_FIELDS = new Set(['draftId', 'proposalId', 'actorRole']);
+const CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS = new Set(['siteId', 'event']);
 const PUBLISH_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'draftId',
   'proposalId',
@@ -2092,6 +2093,14 @@ function getPublicRuntimeSnapshotByStorageKey(req, res, next) {
 function postCmsPublishWebhook(req, res, next) {
   try {
     assertCmsWebhookSignature(req);
+    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
+      return !CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+    });
+    if (unknownTopLevelFields.length > 0) {
+      throw createError('cms publish webhook payload contains unknown top-level fields', 400, 'validation_error', {
+        unknownFields: unknownTopLevelFields
+      });
+    }
     const state = getState(req);
     const now = new Date().toISOString();
     const jobId = randomUUID();

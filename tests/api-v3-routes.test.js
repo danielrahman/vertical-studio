@@ -380,6 +380,34 @@ test('cms webhook publish ingress requires valid signature and emits audit trail
   }
 });
 
+test('cms webhook publish ingress rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const payload = {
+      siteId: 'site-webhook-unknown',
+      event: 'publish_requested',
+      dryRun: true
+    };
+
+    const response = await fetch(`${baseUrl}/api/v1/cms/webhooks/publish`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-webhook-signature': signCmsWebhookPayload(payload)
+      },
+      body: JSON.stringify(payload)
+    });
+    assert.equal(response.status, 400);
+    const body = await response.json();
+    assert.equal(body.code, 'validation_error');
+    assert.equal(body.message, 'cms publish webhook payload contains unknown top-level fields');
+    assert.deepEqual(body.details.unknownFields, ['dryRun']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('non-public read endpoints require tenant-member or internal_admin role', async () => {
   const { server, baseUrl } = await startServer();
 

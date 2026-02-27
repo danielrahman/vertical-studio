@@ -480,6 +480,7 @@ Auth:
 Behavior:
 1. Queue asynchronous publish-preparation job.
 2. Never perform direct synchronous publish.
+3. Unknown top-level payload fields are rejected with `400 validation_error`.
 
 #### `POST /api/v1/secrets/refs`
 Create/update secret metadata reference.

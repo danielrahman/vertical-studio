@@ -83,6 +83,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 62. Compose-select unknown-field payload guard implemented (`VS3-IMP-055`): compose proposal selection now rejects unknown top-level request keys with deterministic `validation_error` details, enforcing strict request-shape integrity for internal-admin final variant selection.
 63. Review-transition unknown-field payload guard implemented (`VS3-IMP-056`): review transition requests now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict state-transition request-shape integrity before transition guard evaluation.
 64. Publish unknown-field payload guard implemented (`VS3-IMP-057`): publish requests now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict release-gate request-shape integrity before gate evaluation.
+65. CMS publish-webhook unknown-field payload guard implemented (`VS3-IMP-058`): signed CMS webhook ingress now rejects unknown top-level keys with deterministic `validation_error` details, enforcing strict webhook contract request-shape integrity before queueing.
 
 ## In Progress
 
