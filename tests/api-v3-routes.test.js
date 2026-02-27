@@ -1537,6 +1537,71 @@ test('overrides requires at least one non-empty override directive array', async
   }
 });
 
+test('overrides rejects empty string values and trims values before duplicate checks', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-override-string-normalization-1';
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-override-string-normalization/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+
+    const toReviewRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-override-string-normalization/review/transition`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId,
+          fromState: 'proposal_generated',
+          toState: 'review_in_progress',
+          event: 'REVIEW_STARTED'
+        })
+      }
+    );
+    assert.equal(toReviewRes.status, 200);
+
+    const emptyValueRes = await fetch(`${baseUrl}/api/v1/sites/site-override-string-normalization/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        keywords: ['trust', '   ']
+      })
+    });
+    assert.equal(emptyValueRes.status, 400);
+    const emptyValueBody = await emptyValueRes.json();
+    assert.equal(emptyValueBody.code, 'invalid_override_payload');
+    assert.equal(emptyValueBody.message, 'Invalid override payload: keywords must not contain empty values');
+
+    const normalizedDuplicateRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-override-string-normalization/overrides`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId,
+          keywords: ['trust', ' trust ']
+        })
+      }
+    );
+    assert.equal(normalizedDuplicateRes.status, 400);
+    const normalizedDuplicateBody = await normalizedDuplicateRes.json();
+    assert.equal(normalizedDuplicateBody.code, 'invalid_override_payload');
+    assert.deepEqual(normalizedDuplicateBody.details.duplicateValues, ['trust']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('public runtime resolves active site version by host and serves immutable snapshots', async () => {
   const { server, baseUrl } = await startServer();
 

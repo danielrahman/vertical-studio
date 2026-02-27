@@ -75,6 +75,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 54. Override section conflict validation implemented (`VS3-IMP-047`): manual overrides now reject conflicting section directives across required/excluded and pinned/excluded sets, preventing contradictory orchestration intents before compose/copy execution.
 55. Override array uniqueness validation implemented (`VS3-IMP-048`): manual overrides now reject duplicate values within each override array field, tightening deterministic prompt payload inputs and reducing redundant operator directives.
 56. Override no-op payload guard implemented (`VS3-IMP-049`): manual overrides now require at least one non-empty directive array, preventing empty mutation versions and preserving meaningful operator intent per override revision.
+57. Override string normalization + blank-value rejection implemented (`VS3-IMP-050`): manual overrides now trim string-array directives before validation/storage, reject blank or whitespace-only values with deterministic `invalid_override_payload` errors, and enforce duplicate checks on normalized values.
 
 ## In Progress
 
@@ -82,7 +83,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Define and prioritize the next post-harness implementation slice for runtime and rollout hardening.
+1. Backlog currently has no remaining `todo` items; define and prioritize the next post-harness implementation slice for runtime and rollout hardening.
 
 ## Known Constraints
 

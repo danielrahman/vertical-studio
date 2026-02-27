@@ -1357,6 +1357,7 @@ function postOverrides(req, res, next) {
     assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
+    const normalizedOverrideArrays = {};
 
     for (const key of OVERRIDE_ARRAY_KEYS) {
       if (typeof req.body[key] !== 'undefined' && !Array.isArray(req.body[key])) {
@@ -1368,23 +1369,33 @@ function postOverrides(req, res, next) {
       }
 
       if (Array.isArray(req.body[key])) {
-        const duplicateValues = listDuplicateValues(req.body[key]);
+        const normalizedValues = req.body[key].map((item) => item.trim());
+        const hasEmptyValues = normalizedValues.some((value) => value.length === 0);
+        if (hasEmptyValues) {
+          throw createError(`Invalid override payload: ${key} must not contain empty values`, 400, 'invalid_override_payload', {
+            field: key
+          });
+        }
+
+        const duplicateValues = listDuplicateValues(normalizedValues);
         if (duplicateValues.length > 0) {
           throw createError(`Invalid override payload: ${key} must not contain duplicate values`, 400, 'invalid_override_payload', {
             field: key,
             duplicateValues
           });
         }
+
+        normalizedOverrideArrays[key] = normalizedValues;
       }
     }
 
     const state = getState(req);
     for (const field of OVERRIDE_SECTION_FIELDS) {
-      if (!Array.isArray(req.body[field])) {
+      if (!Array.isArray(normalizedOverrideArrays[field])) {
         continue;
       }
 
-      const unknownSections = req.body[field].filter((sectionKey) => {
+      const unknownSections = normalizedOverrideArrays[field].filter((sectionKey) => {
         return !ALLOWED_OVERRIDE_SECTION_KEYS.has(sectionKey);
       });
 
@@ -1396,9 +1407,15 @@ function postOverrides(req, res, next) {
       }
     }
 
-    const requiredSections = Array.isArray(req.body.requiredSections) ? req.body.requiredSections : [];
-    const excludedSections = Array.isArray(req.body.excludedSections) ? req.body.excludedSections : [];
-    const pinnedSections = Array.isArray(req.body.pinnedSections) ? req.body.pinnedSections : [];
+    const requiredSections = Array.isArray(normalizedOverrideArrays.requiredSections)
+      ? normalizedOverrideArrays.requiredSections
+      : [];
+    const excludedSections = Array.isArray(normalizedOverrideArrays.excludedSections)
+      ? normalizedOverrideArrays.excludedSections
+      : [];
+    const pinnedSections = Array.isArray(normalizedOverrideArrays.pinnedSections)
+      ? normalizedOverrideArrays.pinnedSections
+      : [];
 
     const conflictingRequiredExcludedSections = requiredSections.filter((sectionKey) =>
       excludedSections.includes(sectionKey)
@@ -1430,9 +1447,9 @@ function postOverrides(req, res, next) {
       );
     }
 
-    if (Array.isArray(req.body.requiredComponents)) {
+    if (Array.isArray(normalizedOverrideArrays.requiredComponents)) {
       const knownComponentIds = new Set(listComponentContractIds(state));
-      const unknownRequiredComponents = req.body.requiredComponents.filter((componentId) => {
+      const unknownRequiredComponents = normalizedOverrideArrays.requiredComponents.filter((componentId) => {
         return !knownComponentIds.has(componentId);
       });
       if (unknownRequiredComponents.length > 0) {
@@ -1449,7 +1466,7 @@ function postOverrides(req, res, next) {
     }
 
     const hasNonEmptyOverrideDirective = OVERRIDE_ARRAY_KEYS.some((field) => {
-      return Array.isArray(req.body[field]) && req.body[field].length > 0;
+      return Array.isArray(normalizedOverrideArrays[field]) && normalizedOverrideArrays[field].length > 0;
     });
     if (!hasNonEmptyOverrideDirective) {
       throw createError(
@@ -1475,7 +1492,8 @@ function postOverrides(req, res, next) {
     const now = new Date().toISOString();
 
     state.overridesByDraft.set(req.body.draftId, {
-      ...req.body,
+      draftId: req.body.draftId,
+      ...normalizedOverrideArrays,
       version,
       updatedByRole: 'internal_admin',
       updatedAt: now

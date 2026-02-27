@@ -788,6 +788,71 @@ test('WS-D contract: overrides require at least one non-empty directive array', 
   }
 });
 
+test('WS-D contract: override string arrays reject blanks and persist trimmed values', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-wsd-overrides-string-normalization';
+    const composeRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-string-normalization/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(composeRes.status, 200);
+
+    const toReviewRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-wsd-overrides-string-normalization/review/transition`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId,
+          fromState: 'proposal_generated',
+          toState: 'review_in_progress',
+          event: 'REVIEW_STARTED'
+        })
+      }
+    );
+    assert.equal(toReviewRes.status, 200);
+
+    const blankValueRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-string-normalization/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        keywords: ['trust', '']
+      })
+    });
+    assert.equal(blankValueRes.status, 400);
+    const blankValuePayload = await blankValueRes.json();
+    assert.equal(blankValuePayload.code, 'invalid_override_payload');
+
+    const storedOverrideRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-wsd-overrides-string-normalization/overrides`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId,
+          keywords: [' trust ', 'delivery'],
+          tone: [' calm ']
+        })
+      }
+    );
+    assert.equal(storedOverrideRes.status, 200);
+    const storedOverrides = app.locals.v3State.overridesByDraft.get(draftId);
+    assert.deepEqual(storedOverrides.keywords, ['trust', 'delivery']);
+    assert.deepEqual(storedOverrides.tone, ['calm']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy generation rejects unsupported high-impact variant modes', async () => {
   const { server, baseUrl } = await startServer();
 
