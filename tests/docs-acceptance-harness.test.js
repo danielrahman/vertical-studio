@@ -4,6 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { once } = require('events');
+const { performance } = require('perf_hooks');
 const { createApp } = require('../api/server');
 const { getRuntimePaths, ensureRuntimeDirs } = require('../runtime/paths');
 const { createLogger } = require('../runtime/logger');
@@ -431,6 +432,40 @@ test('WS-E invariant: post-publish draft edits do not alter live immutable runti
     assert.equal(postEditSnapshotRes.status, 200);
     const postEditSnapshot = await postEditSnapshotRes.json();
     assert.equal(postEditSnapshot.snapshot.proposalId, 'proposal-wse-v1');
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('WS-E baseline: local runtime resolve+snapshot latency remains within harness threshold', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-latency/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-latency-v1',
+        proposalId: 'proposal-latency-v1',
+        host: 'latency.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+
+    const startedAt = performance.now();
+    const resolveRes = await fetch(`${baseUrl}/api/v1/public/runtime/resolve?host=latency.example.test`);
+    assert.equal(resolveRes.status, 200);
+    const resolved = await resolveRes.json();
+
+    const snapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(resolved.storageKey)}`
+    );
+    assert.equal(snapshotRes.status, 200);
+    await snapshotRes.json();
+    const elapsedMs = performance.now() - startedAt;
+
+    // Local harness threshold only; this is not an SLO for production runtime.
+    assert.equal(elapsedMs < 250, true);
   } finally {
     await stopServer(server);
   }

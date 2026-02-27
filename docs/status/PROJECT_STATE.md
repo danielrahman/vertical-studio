@@ -41,6 +41,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 20. Publish/rollback ACL hardening implemented (`VS3-IMP-013`): state-changing publish endpoints now require `internal_admin`, aligned with architecture actor constraints and API mutating-endpoint rules.
 21. WS-E immutable-live invariant coverage implemented (`VS3-IMP-014`): post-publish draft edits are regression-tested to ensure active runtime resolution and live snapshot content remain pinned to published versions.
 22. Storage-key runtime fetch path implemented (`VS3-IMP-015`): added storage-key-only snapshot endpoint and updated public runtime client/tests to resolve host then fetch immutable snapshot by storage key.
+23. WS-E local latency baseline check implemented (`VS3-IMP-016`): acceptance harness now measures resolve+snapshot runtime path under a local threshold to establish a repeatable baseline.
 
 ## In Progress
 

@@ -29,3 +29,4 @@
 | VS3-IMP-013 | Enforce `internal_admin` ACL for publish and rollback                 | done        | codex | Publish/rollback now require `internal_admin`; regression tests cover forbidden and allowed paths |
 | VS3-IMP-014 | Add runtime invariant test: post-publish draft edits don't change live snapshot | done        | codex | Added API + acceptance harness regression coverage proving live pointer stays on published immutable version |
 | VS3-IMP-015 | Add storage-key-only runtime snapshot fetch path                      | done        | codex | Added `/public/runtime/snapshot/by-storage-key` endpoint and switched runtime client flow to resolve->storageKey fetch |
+| VS3-IMP-016 | Add runtime latency baseline harness check                            | done        | codex | Added executable local resolve+snapshot latency threshold check in WS-E acceptance harness |
