@@ -449,6 +449,84 @@ test('rollback repoints active runtime version to exact prior immutable version'
   }
 });
 
+test('post-publish draft edits do not affect live runtime snapshot pointer', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-live-immutable/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-live-v1',
+        proposalId: 'proposal-live-v1',
+        host: 'live-immutable.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const beforeResolveRes = await fetch(`${baseUrl}/api/v1/public/runtime/resolve?host=live-immutable.example.test`);
+    assert.equal(beforeResolveRes.status, 200);
+    const beforeResolve = await beforeResolveRes.json();
+    assert.equal(beforeResolve.versionId, publishBody.versionId);
+
+    const beforeSnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-live-immutable&versionId=${beforeResolve.versionId}`
+    );
+    assert.equal(beforeSnapshotRes.status, 200);
+    const beforeSnapshot = await beforeSnapshotRes.json();
+    assert.equal(beforeSnapshot.snapshot.proposalId, 'proposal-live-v1');
+
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-live-immutable/compose/propose`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-live-v2',
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-live-immutable/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-live-v2',
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const overrideRes = await fetch(`${baseUrl}/api/v1/sites/site-live-immutable/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-live-v2',
+        tone: ['credible', 'precise']
+      })
+    });
+    assert.equal(overrideRes.status, 200);
+
+    const afterResolveRes = await fetch(`${baseUrl}/api/v1/public/runtime/resolve?host=live-immutable.example.test`);
+    assert.equal(afterResolveRes.status, 200);
+    const afterResolve = await afterResolveRes.json();
+    assert.equal(afterResolve.versionId, beforeResolve.versionId);
+
+    const afterSnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-live-immutable&versionId=${afterResolve.versionId}`
+    );
+    assert.equal(afterSnapshotRes.status, 200);
+    const afterSnapshot = await afterSnapshotRes.json();
+    assert.equal(afterSnapshot.snapshot.proposalId, 'proposal-live-v1');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('publish and rollback endpoints require internal_admin role', async () => {
   const { server, baseUrl } = await startServer();
 

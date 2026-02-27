@@ -39,6 +39,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 18. Runtime rollback repointing implemented (`VS3-IMP-012`) so rollback reactivates an exact prior immutable version and public runtime resolution follows the active pointer.
 19. Environment baseline curation completed (`VS3-OPS-001`): `.env.example` reduced to stable runtime keys, README env reference aligned, and local `.env` prefilled with future-ready placeholders.
 20. Publish/rollback ACL hardening implemented (`VS3-IMP-013`): state-changing publish endpoints now require `internal_admin`, aligned with architecture actor constraints and API mutating-endpoint rules.
+21. WS-E immutable-live invariant coverage implemented (`VS3-IMP-014`): post-publish draft edits are regression-tested to ensure active runtime resolution and live snapshot content remain pinned to published versions.
 
 ## In Progress
 

@@ -379,3 +379,45 @@ test('acceptance scenario 4.4: publish gate blocks on synthetic quality/security
     await stopServer(server);
   }
 });
+
+test('WS-E invariant: post-publish draft edits do not alter live immutable runtime version', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-wse-live/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wse-v1',
+        proposalId: 'proposal-wse-v1',
+        host: 'wse-live.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const preEditResolveRes = await fetch(`${baseUrl}/api/v1/public/runtime/resolve?host=wse-live.example.test`);
+    assert.equal(preEditResolveRes.status, 200);
+    const preEditResolve = await preEditResolveRes.json();
+    assert.equal(preEditResolve.versionId, publishBody.versionId);
+
+    const draftEditRes = await fetch(`${baseUrl}/api/v1/sites/site-wse-live/compose/propose`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-wse-v2',
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(draftEditRes.status, 200);
+
+    const postEditResolveRes = await fetch(`${baseUrl}/api/v1/public/runtime/resolve?host=wse-live.example.test`);
+    assert.equal(postEditResolveRes.status, 200);
+    const postEditResolve = await postEditResolveRes.json();
+    assert.equal(postEditResolve.versionId, publishBody.versionId);
+  } finally {
+    await stopServer(server);
+  }
+});
