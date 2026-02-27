@@ -28,10 +28,43 @@ function isUnresolvedCriticalOrHigh(finding) {
   return unresolved && (severity === 'critical' || severity === 'high');
 }
 
+function isUnresolvedCritical(finding) {
+  if (!finding || typeof finding !== 'object') {
+    return false;
+  }
+
+  const severity = typeof finding.severity === 'string' ? finding.severity.toLowerCase() : '';
+  const unresolved = finding.resolved !== true && finding.status !== 'resolved';
+  return unresolved && severity === 'critical';
+}
+
+function isUnresolvedHigh(finding) {
+  if (!finding || typeof finding !== 'object') {
+    return false;
+  }
+
+  const severity = typeof finding.severity === 'string' ? finding.severity.toLowerCase() : '';
+  const unresolved = finding.resolved !== true && finding.status !== 'resolved';
+  return unresolved && severity === 'high';
+}
+
 class PublishGateService {
   evaluate({ qualityFindings = [], securityFindings = [] }) {
     const hasQualityBlocker = qualityFindings.some((finding) => isQualityP0Finding(finding));
+    const hasSecurityCriticalBlocker = securityFindings.some((finding) => isUnresolvedCritical(finding));
+    const hasSecurityHighBlocker = securityFindings.some((finding) => isUnresolvedHigh(finding));
     const hasSecurityBlocker = securityFindings.some((finding) => isUnresolvedCriticalOrHigh(finding));
+
+    const securityReasonCodes = [];
+    if (hasSecurityCriticalBlocker) {
+      securityReasonCodes.push('security_blocked_critical');
+    }
+    if (hasSecurityHighBlocker) {
+      securityReasonCodes.push('security_blocked_high');
+    }
+    if (!securityReasonCodes.length) {
+      securityReasonCodes.push('security_pass_non_blocking_only');
+    }
 
     const reasons = [];
     if (hasQualityBlocker) {
@@ -44,7 +77,8 @@ class PublishGateService {
     if (!reasons.length) {
       return {
         blocked: false,
-        reasons: []
+        reasons: [],
+        securityReasonCodes
       };
     }
 
@@ -56,7 +90,8 @@ class PublishGateService {
     return {
       blocked: true,
       code,
-      reasons
+      reasons,
+      securityReasonCodes
     };
   }
 }
@@ -64,5 +99,7 @@ class PublishGateService {
 module.exports = {
   PublishGateService,
   isQualityP0Finding,
-  isUnresolvedCriticalOrHigh
+  isUnresolvedCriticalOrHigh,
+  isUnresolvedCritical,
+  isUnresolvedHigh
 };

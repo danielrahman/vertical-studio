@@ -43,6 +43,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 22. Storage-key runtime fetch path implemented (`VS3-IMP-015`): added storage-key-only snapshot endpoint and updated public runtime client/tests to resolve host then fetch immutable snapshot by storage key.
 23. WS-E local latency baseline check implemented (`VS3-IMP-016`): acceptance harness now measures resolve+snapshot runtime path under a local threshold to establish a repeatable baseline.
 24. Audit trail read API implemented (`VS3-IMP-017`): internal-admin endpoint exposes privileged action events with filters/limits to support release/security verification workflows.
+25. Deterministic security gate reason-code output implemented (`VS3-IMP-018`): publish gate now emits explicit security policy codes for `critical/high` blockers and non-blocking pass outcomes.
 
 ## In Progress
 

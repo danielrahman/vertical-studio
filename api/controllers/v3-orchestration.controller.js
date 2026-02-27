@@ -721,7 +721,8 @@ function postPublishSite(req, res, next) {
         siteId: req.params.siteId,
         status: 'blocked',
         code: gate.code,
-        reasons: gate.reasons
+        reasons: gate.reasons,
+        securityReasonCodes: gate.securityReasonCodes
       });
       return;
     }
@@ -763,7 +764,8 @@ function postPublishSite(req, res, next) {
       host: runtimeHost,
       storageKey,
       status: 'published',
-      blocked: false
+      blocked: false,
+      securityReasonCodes: gate.securityReasonCodes
     });
   } catch (error) {
     next(error);

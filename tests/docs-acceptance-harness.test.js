@@ -349,6 +349,7 @@ test('acceptance scenario 4.4: publish gate blocks on synthetic quality/security
     assert.equal(qualityBlockedRes.status, 409);
     const qualityBlocked = await qualityBlockedRes.json();
     assert.equal(qualityBlocked.code, 'publish_blocked_quality');
+    assert.deepEqual(qualityBlocked.securityReasonCodes, ['security_pass_non_blocking_only']);
 
     const securityBlockedRes = await fetch(`${baseUrl}/api/v1/sites/site-gate/publish`, {
       method: 'POST',
@@ -362,6 +363,7 @@ test('acceptance scenario 4.4: publish gate blocks on synthetic quality/security
     assert.equal(securityBlockedRes.status, 409);
     const securityBlocked = await securityBlockedRes.json();
     assert.equal(securityBlocked.code, 'publish_blocked_security');
+    assert.deepEqual(securityBlocked.securityReasonCodes, ['security_blocked_high']);
 
     const nonBlockingPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-gate/publish`, {
       method: 'POST',
@@ -376,6 +378,7 @@ test('acceptance scenario 4.4: publish gate blocks on synthetic quality/security
     assert.equal(nonBlockingPublishRes.status, 200);
     const nonBlockingPublish = await nonBlockingPublishRes.json();
     assert.equal(nonBlockingPublish.blocked, false);
+    assert.deepEqual(nonBlockingPublish.securityReasonCodes, ['security_pass_non_blocking_only']);
   } finally {
     await stopServer(server);
   }
