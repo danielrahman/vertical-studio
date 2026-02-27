@@ -2601,6 +2601,32 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
   }
 });
 
+test('secret refs endpoint rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-secret-unknown',
+        tenantSlug: 'tenant-secret-unknown',
+        ref: 'tenant.tenant-secret-unknown.openai.api',
+        provider: 'openai',
+        key: 'api',
+        rotationWindowDays: 30
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'secret ref payload contains unknown top-level fields');
+    assert.deepEqual(payload.details.unknownFields, ['rotationWindowDays']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('component contract endpoint returns contract and typed not-found code', async () => {
   const { server, baseUrl } = await startServer();
 

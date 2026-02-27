@@ -84,6 +84,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 63. Review-transition unknown-field payload guard implemented (`VS3-IMP-056`): review transition requests now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict state-transition request-shape integrity before transition guard evaluation.
 64. Publish unknown-field payload guard implemented (`VS3-IMP-057`): publish requests now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict release-gate request-shape integrity before gate evaluation.
 65. CMS publish-webhook unknown-field payload guard implemented (`VS3-IMP-058`): signed CMS webhook ingress now rejects unknown top-level keys with deterministic `validation_error` details, enforcing strict webhook contract request-shape integrity before queueing.
+66. Secret-ref unknown-field payload guard implemented (`VS3-IMP-059`): secret metadata writes now reject unknown top-level keys with deterministic `validation_error` details, enforcing strict secret-ref contract request-shape integrity before metadata validation/persistence.
 
 ## In Progress
 

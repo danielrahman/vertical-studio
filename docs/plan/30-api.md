@@ -491,6 +491,7 @@ Auth:
 Contract:
 1. Store reference and metadata only.
 2. Never store or return plaintext secret values.
+3. Unknown top-level payload fields are rejected with `400 validation_error`.
 
 ## 5. Error Codes
 Required additional codes:

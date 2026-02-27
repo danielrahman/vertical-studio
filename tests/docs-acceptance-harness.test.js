@@ -274,6 +274,31 @@ test('WS-C contract: cms publish webhook rejects unknown top-level payload field
   }
 });
 
+test('WS-G contract: secret refs endpoint rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-unknown',
+        tenantSlug: 'tenant-wsg-secret-unknown',
+        ref: 'tenant.tenant-wsg-secret-unknown.openai.api',
+        provider: 'openai',
+        key: 'api',
+        rotationWindowDays: 30
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.deepEqual(payload.details.unknownFields, ['rotationWindowDays']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: non-public read endpoints require tenant-member or internal_admin role', async () => {
   const { server, baseUrl } = await startServer();
 

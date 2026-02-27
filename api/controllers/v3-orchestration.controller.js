@@ -76,6 +76,15 @@ const ALLOWED_OVERRIDE_SECTION_KEYS = new Set([
   'contact',
   'legal'
 ]);
+const SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS = new Set([
+  'tenantId',
+  'tenantSlug',
+  'ref',
+  'provider',
+  'key',
+  'label',
+  'description'
+]);
 const SECRET_REF_PATTERN = /^tenant\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+)$/;
 const SECRET_REF_SEGMENT_PATTERN = /^[a-z0-9-]+$/;
 const SECRET_VALUE_KEYS = ['value', 'secret', 'secretValue', 'plaintext', 'token', 'apiKey', 'privateKey'];
@@ -2093,7 +2102,7 @@ function getPublicRuntimeSnapshotByStorageKey(req, res, next) {
 function postCmsPublishWebhook(req, res, next) {
   try {
     assertCmsWebhookSignature(req);
-    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
+    const unknownTopLevelFields = Object.keys(req.body || {}).filter((field) => {
       return !CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS.has(field);
     });
     if (unknownTopLevelFields.length > 0) {
@@ -2128,6 +2137,14 @@ function postSecretRef(req, res, next) {
   try {
     assertInternalAdmin(req);
     assertNoPlaintextSecretPayload(req.body);
+    const unknownTopLevelFields = Object.keys(req.body || {}).filter((field) => {
+      return !SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+    });
+    if (unknownTopLevelFields.length > 0) {
+      throw createError('secret ref payload contains unknown top-level fields', 400, 'validation_error', {
+        unknownFields: unknownTopLevelFields
+      });
+    }
 
     const ref = normalizeOptionalString(req.body?.ref);
     if (!ref) {
