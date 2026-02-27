@@ -450,6 +450,7 @@ function loadRuntimeSnapshotByStorageKey(req, storageKey) {
 
 function postCreateTenant(req, res, next) {
   try {
+    assertInternalAdmin(req);
     const state = getState(req);
     const tenantId = typeof req.body?.tenantId === 'string' ? req.body.tenantId : randomUUID();
     const createdAt = new Date().toISOString();
@@ -462,6 +463,13 @@ function postCreateTenant(req, res, next) {
     };
 
     state.tenants.set(tenantId, tenant);
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'tenant_created',
+      occurredAt: createdAt,
+      entityType: 'tenant',
+      entityId: tenantId
+    });
     res.status(201).json(tenant);
   } catch (error) {
     next(error);
@@ -484,10 +492,23 @@ function getTenantDetail(req, res, next) {
 
 function postBootstrapFromExtraction(req, res, next) {
   try {
+    assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
 
     const draftId = typeof req.body?.draftId === 'string' ? req.body.draftId : randomUUID();
     const lowConfidence = Boolean(req.body?.lowConfidence);
+    const now = new Date().toISOString();
+
+    const state = getState(req);
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'site_bootstrap_from_extraction',
+      occurredAt: now,
+      entityType: 'draft',
+      entityId: draftId,
+      siteId: req.params.siteId,
+      lowConfidence
+    });
 
     res.status(202).json({
       siteId: req.params.siteId,
@@ -503,6 +524,7 @@ function postBootstrapFromExtraction(req, res, next) {
 
 function postVerticalResearchBuild(req, res, next) {
   try {
+    assertInternalAdmin(req);
     const targetCompetitorCount = Number(req.body?.targetCompetitorCount);
     const sources = Array.isArray(req.body?.sources) ? req.body.sources : [];
 
@@ -552,6 +574,15 @@ function postVerticalResearchBuild(req, res, next) {
       sourceDomains: Array.isArray(req.body?.sourceDomains) ? req.body.sourceDomains : [],
       standard,
       patterns
+    });
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'vertical_research_build_queued',
+      occurredAt: createdAt,
+      entityType: 'vertical',
+      entityId: verticalKey,
+      competitorCount: targetCompetitorCount,
+      jobId
     });
 
     res.status(202).json({

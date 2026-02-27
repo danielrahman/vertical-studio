@@ -82,7 +82,7 @@ test('vertical research build enforces competitor minimum and exposes latest out
   try {
     const invalidRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         targetCompetitorCount: 14,
         sources: ['public_web']
@@ -95,7 +95,7 @@ test('vertical research build enforces competitor minimum and exposes latest out
 
     const validRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         targetCompetitorCount: 15,
         sources: ['public_web', 'legal_pages', 'selected_listings'],
@@ -116,6 +116,85 @@ test('vertical research build enforces competitor minimum and exposes latest out
     assert.equal(standardRes.status, 200);
     const standard = await standardRes.json();
     assert.equal(standard.standard.sourcePolicy, 'public_web_legal_selected_listings');
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('tenant/bootstrap/vertical-build mutating endpoints require internal_admin and emit audit events', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const tenantForbiddenRes = await fetch(`${baseUrl}/api/v1/tenants`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'Tenant NoAuth' })
+    });
+    assert.equal(tenantForbiddenRes.status, 403);
+
+    const bootstrapForbiddenRes = await fetch(`${baseUrl}/api/v1/sites/site-acl/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ draftId: 'draft-acl-bootstrap' })
+    });
+    assert.equal(bootstrapForbiddenRes.status, 403);
+
+    const verticalForbiddenRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings']
+      })
+    });
+    assert.equal(verticalForbiddenRes.status, 403);
+
+    const tenantAllowedRes = await fetch(`${baseUrl}/api/v1/tenants`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({ tenantId: 'tenant-acl-audit', name: 'Tenant Auth' })
+    });
+    assert.equal(tenantAllowedRes.status, 201);
+
+    const bootstrapAllowedRes = await fetch(`${baseUrl}/api/v1/sites/site-acl/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({ draftId: 'draft-acl-bootstrap', lowConfidence: true })
+    });
+    assert.equal(bootstrapAllowedRes.status, 202);
+
+    const verticalAllowedRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings']
+      })
+    });
+    assert.equal(verticalAllowedRes.status, 202);
+
+    const tenantAuditRes = await fetch(`${baseUrl}/api/v1/audit/events?action=tenant_created&limit=10`, {
+      headers: { 'x-user-role': 'internal_admin' }
+    });
+    assert.equal(tenantAuditRes.status, 200);
+    const tenantAudit = await tenantAuditRes.json();
+    assert.equal(tenantAudit.count >= 1, true);
+
+    const bootstrapAuditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=site_bootstrap_from_extraction&siteId=site-acl&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(bootstrapAuditRes.status, 200);
+    const bootstrapAudit = await bootstrapAuditRes.json();
+    assert.equal(bootstrapAudit.count >= 1, true);
+
+    const verticalAuditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=vertical_research_build_queued&entityId=boutique-developers&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(verticalAuditRes.status, 200);
+    const verticalAudit = await verticalAuditRes.json();
+    assert.equal(verticalAudit.count >= 1, true);
   } finally {
     await stopServer(server);
   }
