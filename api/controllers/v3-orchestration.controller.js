@@ -796,6 +796,15 @@ function postCopyGenerate(req, res, next) {
     const state = getState(req);
     state.copySlotsByDraft.set(req.body.draftId, generation.slots);
     state.copyCandidatesByDraft.set(req.body.draftId, generation.candidates);
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'ops_copy_generated',
+      occurredAt: new Date().toISOString(),
+      entityType: 'draft',
+      entityId: req.body.draftId,
+      siteId: req.params.siteId,
+      slotsGenerated: generation.summary.slotsGenerated
+    });
 
     res.status(200).json(generation.summary);
   } catch (error) {

@@ -205,6 +205,14 @@ test('acceptance scenario 4.1: bounded copy generation enforces candidate policy
     assert.equal(candidates.length > 0, true);
     assert.equal(candidates.every((candidate) => candidate.withinLimits), true);
 
+    const generateAuditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=ops_copy_generated&siteId=site-acceptance&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(generateAuditRes.status, 200);
+    const generateAuditPayload = await generateAuditRes.json();
+    assert.equal(generateAuditPayload.count >= 1, true);
+
     const selectRes = await fetch(`${baseUrl}/api/v1/sites/site-acceptance/copy/select`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },

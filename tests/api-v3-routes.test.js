@@ -242,6 +242,20 @@ test('copy selection writes audit trail event for provenance', async () => {
     });
     assert.equal(generateRes.status, 200);
 
+    const generateAuditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=ops_copy_generated&siteId=site-copy-audit&limit=10`,
+      {
+        headers: {
+          'x-user-role': 'internal_admin'
+        }
+      }
+    );
+    assert.equal(generateAuditRes.status, 200);
+    const generateAuditBody = await generateAuditRes.json();
+    assert.equal(generateAuditBody.count >= 1, true);
+    assert.equal(generateAuditBody.items[0].action, 'ops_copy_generated');
+    assert.equal(generateAuditBody.items[0].entityId, draftId);
+
     const candidateId = stableId(`${draftId}|hero.h1|cs-CZ|B`);
     const selectRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-audit/copy/select`, {
       method: 'POST',
