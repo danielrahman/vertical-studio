@@ -679,6 +679,7 @@ function getComponentContractDefinition(req, res, next) {
 
 function postComposePropose(req, res, next) {
   try {
+    assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
     assertString(req.body?.rulesVersion, 'rulesVersion');
@@ -780,6 +781,7 @@ function postComposeSelect(req, res, next) {
 
 function postCopyGenerate(req, res, next) {
   try {
+    assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
 
@@ -835,6 +837,7 @@ function getCopySlots(req, res, next) {
 
 function postCopySelect(req, res, next) {
   try {
+    assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
 

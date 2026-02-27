@@ -54,6 +54,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 33. Latest quality gate report persistence implemented (`VS3-IMP-026`): publish attempts now store normalized quality findings and deterministic gate-family outcomes so `/quality/latest` reflects real blocked or non-blocking gate states.
 34. Tenant/bootstrap/vertical-build ACL + audit hardening implemented (`VS3-IMP-027`): these mutating lifecycle endpoints now enforce `internal_admin` contract auth and emit privileged audit events for WS-B/API traceability.
 35. Copy generation audit provenance implemented (`VS3-IMP-028`): copy generation mutations now emit explicit audit events and API/acceptance coverage confirms privileged provenance trail visibility.
+36. Compose/copy mutation ACL hardening implemented (`VS3-IMP-029`): compose propose and copy generate/select routes now enforce `internal_admin` access, with unauthorized-path and acceptance coverage aligned to API auth contract.
 
 ## In Progress
 

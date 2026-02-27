@@ -184,7 +184,7 @@ test('acceptance scenario 4.1: bounded copy generation enforces candidate policy
   try {
     const response = await fetch(`${baseUrl}/api/v1/sites/site-acceptance/copy/generate`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-copy-1',
         locales: ['cs-CZ', 'en-US']
@@ -215,7 +215,7 @@ test('acceptance scenario 4.1: bounded copy generation enforces candidate policy
 
     const selectRes = await fetch(`${baseUrl}/api/v1/sites/site-acceptance/copy/select`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-copy-1',
         selections: [{ candidateId: candidates[0].candidateId }]
@@ -241,7 +241,7 @@ test('acceptance scenario 4.2: manual overrides are state-gated, stored, and aud
   try {
     const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-acceptance/compose/propose`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-override-1',
         rulesVersion: '1.0.0',
@@ -281,7 +281,7 @@ test('acceptance scenario 4.2: manual overrides are state-gated, stored, and aud
 
     const reRunComposeRes = await fetch(`${baseUrl}/api/v1/sites/site-acceptance/compose/propose`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-override-1',
         rulesVersion: '1.0.0',
@@ -293,7 +293,7 @@ test('acceptance scenario 4.2: manual overrides are state-gated, stored, and aud
 
     const reRunCopyRes = await fetch(`${baseUrl}/api/v1/sites/site-acceptance/copy/generate`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-override-1',
         locales: ['cs-CZ', 'en-US']
@@ -334,7 +334,7 @@ test('acceptance scenario 4.3: vertical standard version is reusable across mult
 
     const composeOneRes = await fetch(`${baseUrl}/api/v1/sites/company-a/compose/propose`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-reuse-a',
         rulesVersion: '1.0.0',
@@ -347,7 +347,7 @@ test('acceptance scenario 4.3: vertical standard version is reusable across mult
 
     const composeTwoRes = await fetch(`${baseUrl}/api/v1/sites/company-b/compose/propose`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-reuse-b',
         rulesVersion: '1.0.0',
@@ -469,7 +469,7 @@ test('WS-E invariant: post-publish draft edits do not alter live immutable runti
 
     const draftEditRes = await fetch(`${baseUrl}/api/v1/sites/site-wse-live/compose/propose`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-wse-v2',
         rulesVersion: '1.0.0',

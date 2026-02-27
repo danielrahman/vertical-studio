@@ -206,7 +206,7 @@ test('compose propose returns deterministic three-variant envelope', async () =>
   try {
     const response = await fetch(`${baseUrl}/api/v1/sites/site-1/compose/propose`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-1',
         rulesVersion: '1.0.0',
@@ -227,6 +227,46 @@ test('compose propose returns deterministic three-variant envelope', async () =>
   }
 });
 
+test('compose/copy mutation endpoints require internal_admin role', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const composeForbiddenRes = await fetch(`${baseUrl}/api/v1/sites/site-acl-compose/compose/propose`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-acl-compose',
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(composeForbiddenRes.status, 403);
+
+    const copyGenerateForbiddenRes = await fetch(`${baseUrl}/api/v1/sites/site-acl-compose/copy/generate`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-acl-compose',
+        locales: ['cs-CZ', 'en-US']
+      })
+    });
+    assert.equal(copyGenerateForbiddenRes.status, 403);
+
+    const copySelectForbiddenRes = await fetch(`${baseUrl}/api/v1/sites/site-acl-compose/copy/select`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-acl-compose',
+        selections: []
+      })
+    });
+    assert.equal(copySelectForbiddenRes.status, 403);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy selection writes audit trail event for provenance', async () => {
   const { server, baseUrl } = await startServer();
 
@@ -234,7 +274,7 @@ test('copy selection writes audit trail event for provenance', async () => {
     const draftId = 'draft-copy-audit-1';
     const generateRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-audit/copy/generate`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
         locales: ['cs-CZ', 'en-US']
@@ -259,7 +299,7 @@ test('copy selection writes audit trail event for provenance', async () => {
     const candidateId = stableId(`${draftId}|hero.h1|cs-CZ|B`);
     const selectRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-audit/copy/select`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
         selections: [
@@ -361,7 +401,7 @@ test('ops review flow enforces internal_admin selection and override state gatin
   try {
     const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-1/compose/propose`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-ops-1',
         rulesVersion: '1.0.0',
@@ -627,7 +667,7 @@ test('post-publish draft edits do not affect live runtime snapshot pointer', asy
 
     const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-live-immutable/compose/propose`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-live-v2',
         rulesVersion: '1.0.0',
