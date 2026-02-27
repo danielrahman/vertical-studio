@@ -709,6 +709,57 @@ test('security latest endpoint reflects latest publish-attempt gate outcome', as
   }
 });
 
+test('publish attempts emit privileged audit events for blocked and successful outcomes', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const blockedPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-publish-audit/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-publish-audit-1',
+        proposalId: 'proposal-publish-audit-1',
+        simulateQualityP0Fail: true
+      })
+    });
+    assert.equal(blockedPublishRes.status, 409);
+
+    const successPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-publish-audit/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-publish-audit-2',
+        proposalId: 'proposal-publish-audit-2'
+      })
+    });
+    assert.equal(successPublishRes.status, 200);
+    const successPublish = await successPublishRes.json();
+
+    const blockedAuditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=ops_publish_blocked&siteId=site-publish-audit&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(blockedAuditRes.status, 200);
+    const blockedAudit = await blockedAuditRes.json();
+    assert.equal(blockedAudit.count >= 1, true);
+    assert.equal(blockedAudit.items[0].action, 'ops_publish_blocked');
+    assert.equal(blockedAudit.items[0].gateCode, 'publish_blocked_quality');
+
+    const successAuditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=ops_publish_succeeded&siteId=site-publish-audit&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(successAuditRes.status, 200);
+    const successAudit = await successAuditRes.json();
+    assert.equal(successAudit.count >= 1, true);
+    assert.equal(successAudit.items[0].action, 'ops_publish_succeeded');
+    assert.equal(successAudit.items[0].entityType, 'site_version');
+    assert.equal(successAudit.items[0].entityId, successPublish.versionId);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('audit events endpoint is internal-admin scoped and returns privileged action trail', async () => {
   const { server, baseUrl } = await startServer();
 

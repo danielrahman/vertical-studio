@@ -49,6 +49,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 28. WS-G secret rotation runbook artifact contract check implemented (`VS3-IMP-021`): added a formal rotation runbook and executable acceptance assertion for naming policy, `internal_admin` scope, and audit trail path presence.
 29. Security findings JSON top-level contract alignment implemented (`VS3-IMP-022`): security latest endpoint now includes required `findings` field and explicit contract assertions for release/site/version metadata in API and acceptance harness coverage.
 30. Latest security gate report persistence implemented (`VS3-IMP-023`): publish attempts now store normalized security findings/severity summaries and deterministic gate decisions so `/security/latest` reflects real blocked or non-blocking outcomes.
+31. Publish audit event hardening implemented (`VS3-IMP-024`): privileged publish attempts now emit explicit blocked/success audit events and acceptance coverage validates audit trail presence for WS-F publish scenarios.
 
 ## In Progress
 

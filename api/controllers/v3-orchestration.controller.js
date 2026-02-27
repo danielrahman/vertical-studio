@@ -856,6 +856,18 @@ function postPublishSite(req, res, next) {
           securityReasonCodes: gate.securityReasonCodes
         })
       );
+      state.auditEvents.push({
+        id: randomUUID(),
+        action: 'ops_publish_blocked',
+        occurredAt: reportGeneratedAt,
+        entityType: 'draft',
+        entityId: req.body.draftId,
+        siteId: req.params.siteId,
+        proposalId: req.body.proposalId,
+        gateCode: gate.code,
+        reasons: gate.reasons,
+        securityReasonCodes: gate.securityReasonCodes
+      });
 
       res.status(409).json({
         siteId: req.params.siteId,
@@ -906,6 +918,17 @@ function postPublishSite(req, res, next) {
         securityReasonCodes: gate.securityReasonCodes
       })
     );
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'ops_publish_succeeded',
+      occurredAt: reportGeneratedAt,
+      entityType: 'site_version',
+      entityId: versionId,
+      siteId: req.params.siteId,
+      draftId: req.body.draftId,
+      proposalId: req.body.proposalId,
+      securityReasonCodes: gate.securityReasonCodes
+    });
 
     res.status(200).json({
       siteId: req.params.siteId,

@@ -392,6 +392,22 @@ test('acceptance scenario 4.4: publish gate blocks on synthetic quality/security
     const nonBlockingPublish = await nonBlockingPublishRes.json();
     assert.equal(nonBlockingPublish.blocked, false);
     assert.deepEqual(nonBlockingPublish.securityReasonCodes, ['security_pass_non_blocking_only']);
+
+    const blockedAuditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=ops_publish_blocked&siteId=site-gate&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(blockedAuditRes.status, 200);
+    const blockedAudit = await blockedAuditRes.json();
+    assert.equal(blockedAudit.count >= 2, true);
+
+    const successAuditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=ops_publish_succeeded&siteId=site-gate&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(successAuditRes.status, 200);
+    const successAudit = await successAuditRes.json();
+    assert.equal(successAudit.count >= 1, true);
   } finally {
     await stopServer(server);
   }
