@@ -8,6 +8,15 @@ const QUALITY_GATE_FAMILIES = ['COPY', 'LAYOUT', 'MEDIA', 'LEGAL'];
 const QUALITY_SEVERITY_LEVELS = new Set(['P0', 'P1', 'P2']);
 const SECURITY_SEVERITY_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
 const TENANT_MEMBER_ROLES = new Set(['internal_admin', 'owner', 'editor', 'viewer']);
+const OVERRIDE_ARRAY_KEYS = [
+  'tone',
+  'keywords',
+  'requiredSections',
+  'excludedSections',
+  'pinnedSections',
+  'requiredComponents',
+  'excludedCompetitorPatterns'
+];
 const SECRET_REF_PATTERN = /^tenant\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+)$/;
 const SECRET_REF_SEGMENT_PATTERN = /^[a-z0-9-]+$/;
 const SECRET_VALUE_KEYS = ['value', 'secret', 'secretValue', 'plaintext', 'token', 'apiKey', 'privateKey'];
@@ -463,6 +472,63 @@ function buildQualityReport({
   };
 }
 
+function listComponentContractVersions(state) {
+  return Array.from(state.componentContracts.values())
+    .map((item) => `${item.componentId}:${item.version}`)
+    .sort();
+}
+
+function normalizeManualOverrides(overrides) {
+  if (!overrides || typeof overrides !== 'object') {
+    return null;
+  }
+
+  const normalized = {};
+  for (const key of OVERRIDE_ARRAY_KEYS) {
+    if (Array.isArray(overrides[key])) {
+      normalized[key] = [...overrides[key]];
+    }
+  }
+
+  return Object.keys(normalized).length > 0 ? normalized : null;
+}
+
+function normalizePromptSlotDefinitions(slotDefinitions) {
+  const slots = Array.isArray(slotDefinitions) ? slotDefinitions : [];
+  return slots.map((slot) => ({
+    slotId: typeof slot?.slotId === 'string' ? slot.slotId : '',
+    sectionType: typeof slot?.sectionType === 'string' ? slot.sectionType : '',
+    highImpact: slot?.highImpact === true,
+    maxChars: Number.isFinite(Number(slot?.maxChars)) ? Number(slot.maxChars) : 0,
+    maxLines: Number.isFinite(Number(slot?.maxLines)) ? Number(slot.maxLines) : 0,
+    required: slot?.required === true,
+    localeRequired: Array.isArray(slot?.localeRequired) ? [...slot.localeRequired] : []
+  }));
+}
+
+function buildPromptPayloadAuditRecord({
+  state,
+  draftId,
+  verticalStandardVersion,
+  slotDefinitions
+}) {
+  const manualOverrides = normalizeManualOverrides(state.overridesByDraft.get(draftId));
+  const disallowedPatterns = Array.isArray(manualOverrides?.excludedCompetitorPatterns)
+    ? [...manualOverrides.excludedCompetitorPatterns]
+    : [];
+
+  return {
+    verticalStandardVersion:
+      typeof verticalStandardVersion === 'string' && verticalStandardVersion.trim()
+        ? verticalStandardVersion.trim()
+        : 'version-unknown',
+    componentContractVersions: listComponentContractVersions(state),
+    slotDefinitions: normalizePromptSlotDefinitions(slotDefinitions),
+    manualOverrides,
+    disallowedPatterns
+  };
+}
+
 function buildRuntimeSnapshot({ siteId, versionId, draftId, proposalId }) {
   return {
     siteId,
@@ -762,6 +828,12 @@ function postComposePropose(req, res, next) {
 
     const state = getState(req);
     const now = new Date().toISOString();
+    const promptPayload = buildPromptPayloadAuditRecord({
+      state,
+      draftId: req.body.draftId,
+      verticalStandardVersion: req.body.verticalStandardVersion,
+      slotDefinitions: composeCopyService.getSlotDefinitions()
+    });
     state.proposalsByDraft.set(req.body.draftId, response.variants);
     state.reviewStatesByDraft.set(req.body.draftId, 'proposal_generated');
     state.auditEvents.push({
@@ -770,7 +842,8 @@ function postComposePropose(req, res, next) {
       occurredAt: now,
       entityType: 'draft',
       entityId: req.body.draftId,
-      siteId: req.params.siteId
+      siteId: req.params.siteId,
+      promptPayload
     });
 
     res.status(200).json(response);
@@ -862,6 +935,12 @@ function postCopyGenerate(req, res, next) {
     });
 
     const state = getState(req);
+    const promptPayload = buildPromptPayloadAuditRecord({
+      state,
+      draftId: req.body.draftId,
+      verticalStandardVersion: req.body?.verticalStandardVersion,
+      slotDefinitions: generation.slots
+    });
     state.copySlotsByDraft.set(req.body.draftId, generation.slots);
     state.copyCandidatesByDraft.set(req.body.draftId, generation.candidates);
     state.auditEvents.push({
@@ -871,7 +950,8 @@ function postCopyGenerate(req, res, next) {
       entityType: 'draft',
       entityId: req.body.draftId,
       siteId: req.params.siteId,
-      slotsGenerated: generation.summary.slotsGenerated
+      slotsGenerated: generation.summary.slotsGenerated,
+      promptPayload
     });
 
     res.status(200).json(generation.summary);
@@ -950,17 +1030,7 @@ function postOverrides(req, res, next) {
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
 
-    const listKeys = [
-      'tone',
-      'keywords',
-      'requiredSections',
-      'excludedSections',
-      'pinnedSections',
-      'requiredComponents',
-      'excludedCompetitorPatterns'
-    ];
-
-    for (const key of listKeys) {
+    for (const key of OVERRIDE_ARRAY_KEYS) {
       if (typeof req.body[key] !== 'undefined' && !Array.isArray(req.body[key])) {
         throw createError(`Invalid override payload: ${key} must be an array`, 400, 'invalid_override_payload');
       }

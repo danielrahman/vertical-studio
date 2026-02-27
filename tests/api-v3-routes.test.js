@@ -416,6 +416,42 @@ test('compose propose returns deterministic three-variant envelope', async () =>
   }
 });
 
+test('compose propose audit event persists structured prompt payload contract fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-compose-prompt-audit';
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-compose-audit/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(response.status, 200);
+
+    const auditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=ops_proposals_generated&siteId=site-compose-audit&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(auditRes.status, 200);
+    const auditBody = await auditRes.json();
+    assert.equal(auditBody.count >= 1, true);
+    assert.equal(auditBody.items[0].entityId, draftId);
+    assert.equal(auditBody.items[0].promptPayload.verticalStandardVersion, '2026.02');
+    assert.equal(Array.isArray(auditBody.items[0].promptPayload.componentContractVersions), true);
+    assert.equal(auditBody.items[0].promptPayload.componentContractVersions.includes('hero:1.0.0'), true);
+    assert.equal(Array.isArray(auditBody.items[0].promptPayload.slotDefinitions), true);
+    assert.equal(auditBody.items[0].promptPayload.slotDefinitions.length > 0, true);
+    assert.equal(Array.isArray(auditBody.items[0].promptPayload.disallowedPatterns), true);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('compose/copy mutation endpoints require internal_admin role', async () => {
   const { server, baseUrl } = await startServer();
 
@@ -466,7 +502,8 @@ test('copy selection writes audit trail event for provenance', async () => {
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        locales: ['cs-CZ', 'en-US']
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(generateRes.status, 200);
@@ -484,6 +521,10 @@ test('copy selection writes audit trail event for provenance', async () => {
     assert.equal(generateAuditBody.count >= 1, true);
     assert.equal(generateAuditBody.items[0].action, 'ops_copy_generated');
     assert.equal(generateAuditBody.items[0].entityId, draftId);
+    assert.equal(generateAuditBody.items[0].promptPayload.verticalStandardVersion, '2026.02');
+    assert.equal(Array.isArray(generateAuditBody.items[0].promptPayload.componentContractVersions), true);
+    assert.equal(Array.isArray(generateAuditBody.items[0].promptPayload.slotDefinitions), true);
+    assert.equal(Array.isArray(generateAuditBody.items[0].promptPayload.disallowedPatterns), true);
 
     const candidateId = stableId(`${draftId}|hero.h1|cs-CZ|B`);
     const selectRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-audit/copy/select`, {

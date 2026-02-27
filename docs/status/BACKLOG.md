@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-032 | Persist structured compose/copy prompt payloads in audit trail        | done        | codex | Compose/copy audit events now persist structured prompt payload contract fields with API/acceptance assertions |
 | VS3-IMP-031 | Enforce auth for non-public v3 read endpoints                         | done        | codex | Added tenant-member/internal-admin role guard to non-public GET surfaces with API/WS-B coverage |
 | VS3-IMP-030 | Enforce signed webhook verification and audit for CMS publish ingress | done        | codex | Added HMAC signature guard + `cms_publish_webhook_queued` audit trail with API/acceptance coverage |
 | VS3-OPS-001 | Curate `.env` baseline from docs/plan and current runtime usage       | done        | codex | Trimmed `.env.example`, aligned README env docs, and prefilled local `.env` baseline   |

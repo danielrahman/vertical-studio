@@ -380,7 +380,8 @@ test('acceptance scenario 4.2: manual overrides are state-gated, stored, and aud
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-override-1',
-        locales: ['cs-CZ', 'en-US']
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
       })
     });
     assert.equal(reRunCopyRes.status, 200);
@@ -390,8 +391,24 @@ test('acceptance scenario 4.2: manual overrides are state-gated, stored, and aud
     assert.deepEqual(storedOverrides.tone, ['credible', 'calm']);
     assert.deepEqual(storedOverrides.requiredSections, ['hero', 'contact']);
 
-    const auditEvents = app.locals.v3State.auditEvents.filter((item) => item.action === 'ops_overrides_stored');
-    assert.equal(auditEvents.length >= 1, true);
+    const overrideAuditEvents = app.locals.v3State.auditEvents.filter((item) => item.action === 'ops_overrides_stored');
+    assert.equal(overrideAuditEvents.length >= 1, true);
+
+    const proposalPromptAudit = app.locals.v3State.auditEvents
+      .filter((item) => item.action === 'ops_proposals_generated')
+      .at(-1);
+    assert.equal(typeof proposalPromptAudit?.promptPayload?.verticalStandardVersion, 'string');
+    assert.equal(
+      Array.isArray(proposalPromptAudit?.promptPayload?.componentContractVersions),
+      true
+    );
+    assert.equal(Array.isArray(proposalPromptAudit?.promptPayload?.slotDefinitions), true);
+
+    const copyPromptAudit = app.locals.v3State.auditEvents
+      .filter((item) => item.action === 'ops_copy_generated')
+      .at(-1);
+    assert.equal(copyPromptAudit?.promptPayload?.verticalStandardVersion, '2026.02');
+    assert.deepEqual(copyPromptAudit?.promptPayload?.disallowedPatterns, ['aggressive-discount-banner']);
   } finally {
     await stopServer(server);
   }
