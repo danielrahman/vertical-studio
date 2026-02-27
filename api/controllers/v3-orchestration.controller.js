@@ -995,6 +995,12 @@ function postVerticalResearchBuild(req, res, next) {
         allowedSources: Array.from(SUPPORTED_RESEARCH_SOURCES).sort()
       });
     }
+    const duplicateSources = Array.from(new Set(sources.filter((source, index) => sources.indexOf(source) !== index)));
+    if (duplicateSources.length > 0) {
+      throw createError('sources must not contain duplicate values', 400, 'validation_error', {
+        duplicateSources
+      });
+    }
     const normalizedSourceDomains = rawSourceDomains.map((domain) => {
       return typeof domain === 'string' ? domain.trim().toLowerCase() : domain;
     });

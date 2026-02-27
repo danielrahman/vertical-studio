@@ -208,6 +208,28 @@ test('vertical research build enforces supported source classes with determinist
   }
 });
 
+test('vertical research build rejects duplicate source classes with deterministic validation details', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const duplicateSourcesRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'public_web']
+      })
+    });
+    assert.equal(duplicateSourcesRes.status, 400);
+    const duplicateSourcesPayload = await duplicateSourcesRes.json();
+    assert.equal(duplicateSourcesPayload.code, 'validation_error');
+    assert.equal(duplicateSourcesPayload.message, 'sources must not contain duplicate values');
+    assert.deepEqual(duplicateSourcesPayload.details.duplicateSources, ['public_web']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('vertical research build validates sourceDomains entries and persists normalized unique values', async () => {
   const { server, baseUrl } = await startServer();
 

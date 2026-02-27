@@ -421,6 +421,28 @@ test('WS-B contract: vertical research build enforces supported source classes',
   }
 });
 
+test('WS-B contract: vertical research build rejects duplicate source classes', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'public_web']
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'sources must not contain duplicate values');
+    assert.deepEqual(payload.details.duplicateSources, ['public_web']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: vertical research build validates and normalizes sourceDomains', async () => {
   const { server, baseUrl } = await startServer();
 
