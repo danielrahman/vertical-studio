@@ -106,6 +106,18 @@ test('vertical research build enforces competitor minimum and exposes latest out
     const invalidBody = await invalidRes.json();
     assert.equal(invalidBody.code, 'insufficient_competitor_sample');
 
+    const invalidTypeRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: '15',
+        sources: ['public_web']
+      })
+    });
+    assert.equal(invalidTypeRes.status, 400);
+    const invalidTypeBody = await invalidTypeRes.json();
+    assert.equal(invalidTypeBody.code, 'insufficient_competitor_sample');
+
     const validRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

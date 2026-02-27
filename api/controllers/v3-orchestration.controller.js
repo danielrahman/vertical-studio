@@ -978,11 +978,11 @@ function postVerticalResearchBuild(req, res, next) {
         unknownFields: unknownTopLevelFields
       });
     }
-    const targetCompetitorCount = Number(req.body?.targetCompetitorCount);
+    const targetCompetitorCount = req.body?.targetCompetitorCount;
     const sources = Array.isArray(req.body?.sources) ? req.body.sources : [];
     const rawSourceDomains = Array.isArray(req.body?.sourceDomains) ? req.body.sourceDomains : [];
 
-    if (!Number.isInteger(targetCompetitorCount) || targetCompetitorCount < 15) {
+    if (typeof targetCompetitorCount !== 'number' || !Number.isInteger(targetCompetitorCount) || targetCompetitorCount < 15) {
       throw createError('targetCompetitorCount must be >= 15', 400, 'insufficient_competitor_sample');
     }
 

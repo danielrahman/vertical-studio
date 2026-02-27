@@ -398,6 +398,27 @@ test('WS-B contract: vertical research build rejects unknown top-level payload f
   }
 });
 
+test('WS-B contract: vertical research build requires numeric targetCompetitorCount type', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: '15',
+        sources: ['public_web', 'legal_pages', 'selected_listings']
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'insufficient_competitor_sample');
+    assert.equal(payload.message, 'targetCompetitorCount must be >= 15');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: vertical research build enforces supported source classes', async () => {
   const { server, baseUrl } = await startServer();
 
