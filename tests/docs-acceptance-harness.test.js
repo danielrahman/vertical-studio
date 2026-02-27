@@ -666,6 +666,64 @@ test('WS-D contract: override section directives cannot conflict across arrays',
   }
 });
 
+test('WS-D contract: override arrays must not contain duplicate values', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-wsd-overrides-duplicates';
+    const composeRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-duplicates/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(composeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-duplicates/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const duplicateOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-duplicates/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredComponents: ['cards-3up', 'cards-3up']
+      })
+    });
+    assert.equal(duplicateOverrideRes.status, 400);
+    const duplicateOverridePayload = await duplicateOverrideRes.json();
+    assert.equal(duplicateOverridePayload.code, 'invalid_override_payload');
+    assert.equal(duplicateOverridePayload.details.field, 'requiredComponents');
+    assert.deepEqual(duplicateOverridePayload.details.duplicateValues, ['cards-3up']);
+
+    const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-duplicates/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredComponents: ['cards-3up'],
+        keywords: ['trust', 'delivery']
+      })
+    });
+    assert.equal(validOverrideRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy generation rejects unsupported high-impact variant modes', async () => {
   const { server, baseUrl } = await startServer();
 

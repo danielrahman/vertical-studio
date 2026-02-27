@@ -1405,6 +1405,67 @@ test('overrides rejects conflicting section directives across arrays', async () 
   }
 });
 
+test('overrides rejects duplicate values inside override arrays', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-override-duplicates-1';
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-override-duplicates/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-override-duplicates/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const duplicateOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-duplicates/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        keywords: ['trust', 'trust']
+      })
+    });
+    assert.equal(duplicateOverrideRes.status, 400);
+    const duplicateOverrideBody = await duplicateOverrideRes.json();
+    assert.equal(duplicateOverrideBody.code, 'invalid_override_payload');
+    assert.equal(
+      duplicateOverrideBody.message,
+      'Invalid override payload: keywords must not contain duplicate values'
+    );
+    assert.deepEqual(duplicateOverrideBody.details.duplicateValues, ['trust']);
+
+    const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-duplicates/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        keywords: ['trust', 'delivery'],
+        requiredSections: ['hero', 'contact']
+      })
+    });
+    assert.equal(validOverrideRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('public runtime resolves active site version by host and serves immutable snapshots', async () => {
   const { server, baseUrl } = await startServer();
 

@@ -372,9 +372,10 @@ Request:
 Rules:
 1. Override fields in this payload are arrays of strings when provided.
 2. `requiredSections`, `excludedSections`, and `pinnedSections` must use allowed section keys (`hero`, `value_props`, `about`, `process`, `timeline`, `portfolio`, `team`, `testimonials`, `stats`, `faq`, `cta`, `contact`, `legal`); unknown values return `400 invalid_override_payload`.
-3. `requiredSections` must not overlap with `excludedSections`.
-4. `pinnedSections` must not overlap with `excludedSections`.
-5. `requiredComponents` must reference loaded component contract IDs; unknown IDs return `400 invalid_override_payload`.
+3. Override arrays must not contain duplicate values.
+4. `requiredSections` must not overlap with `excludedSections`.
+5. `pinnedSections` must not overlap with `excludedSections`.
+6. `requiredComponents` must reference loaded component contract IDs; unknown IDs return `400 invalid_override_payload`.
 
 ### 4.7 Review State Lifecycle
 

@@ -73,6 +73,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 52. Override required-component validation implemented (`VS3-IMP-045`): manual overrides now validate `requiredComponents` against loaded component contracts and reject unknown IDs with deterministic `invalid_override_payload` details.
 53. Override section taxonomy validation implemented (`VS3-IMP-046`): manual override section arrays now enforce an explicit allowed section-key set and reject unknown values with deterministic `invalid_override_payload` details for contract-safe orchestration inputs.
 54. Override section conflict validation implemented (`VS3-IMP-047`): manual overrides now reject conflicting section directives across required/excluded and pinned/excluded sets, preventing contradictory orchestration intents before compose/copy execution.
+55. Override array uniqueness validation implemented (`VS3-IMP-048`): manual overrides now reject duplicate values within each override array field, tightening deterministic prompt payload inputs and reducing redundant operator directives.
 
 ## In Progress
 

@@ -660,6 +660,21 @@ function listComponentContractIds(state) {
   return Array.from(state.componentContracts.values()).map((item) => item.componentId);
 }
 
+function listDuplicateValues(values) {
+  const seen = new Set();
+  const duplicates = new Set();
+
+  for (const value of values) {
+    if (seen.has(value)) {
+      duplicates.add(value);
+      continue;
+    }
+    seen.add(value);
+  }
+
+  return Array.from(duplicates);
+}
+
 function normalizeManualOverrides(overrides) {
   if (!overrides || typeof overrides !== 'object') {
     return null;
@@ -1350,6 +1365,16 @@ function postOverrides(req, res, next) {
 
       if (Array.isArray(req.body[key]) && req.body[key].some((item) => typeof item !== 'string')) {
         throw createError(`Invalid override payload: ${key} must be an array of strings`, 400, 'invalid_override_payload');
+      }
+
+      if (Array.isArray(req.body[key])) {
+        const duplicateValues = listDuplicateValues(req.body[key]);
+        if (duplicateValues.length > 0) {
+          throw createError(`Invalid override payload: ${key} must not contain duplicate values`, 400, 'invalid_override_payload', {
+            field: key,
+            duplicateValues
+          });
+        }
       }
     }
 
