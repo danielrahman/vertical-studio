@@ -530,6 +530,65 @@ test('WS-D contract: overrides requiredComponents must reference loaded componen
   }
 });
 
+test('WS-D contract: override section arrays must use allowed section keys', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-wsd-overrides-sections';
+    const composeRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-sections/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(composeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-sections/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const invalidOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-sections/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        excludedSections: ['invalid-section']
+      })
+    });
+    assert.equal(invalidOverrideRes.status, 400);
+    const invalidOverridePayload = await invalidOverrideRes.json();
+    assert.equal(invalidOverridePayload.code, 'invalid_override_payload');
+    assert.equal(invalidOverridePayload.details.field, 'excludedSections');
+    assert.deepEqual(invalidOverridePayload.details.unknownSections, ['invalid-section']);
+
+    const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-sections/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredSections: ['hero', 'contact'],
+        excludedSections: ['timeline'],
+        pinnedSections: ['hero']
+      })
+    });
+    assert.equal(validOverrideRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy generation rejects unsupported high-impact variant modes', async () => {
   const { server, baseUrl } = await startServer();
 

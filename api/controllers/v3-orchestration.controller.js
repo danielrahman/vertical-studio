@@ -21,6 +21,22 @@ const OVERRIDE_ARRAY_KEYS = [
   'requiredComponents',
   'excludedCompetitorPatterns'
 ];
+const OVERRIDE_SECTION_FIELDS = ['requiredSections', 'excludedSections', 'pinnedSections'];
+const ALLOWED_OVERRIDE_SECTION_KEYS = new Set([
+  'hero',
+  'value_props',
+  'about',
+  'process',
+  'timeline',
+  'portfolio',
+  'team',
+  'testimonials',
+  'stats',
+  'faq',
+  'cta',
+  'contact',
+  'legal'
+]);
 const SECRET_REF_PATTERN = /^tenant\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+)$/;
 const SECRET_REF_SEGMENT_PATTERN = /^[a-z0-9-]+$/;
 const SECRET_VALUE_KEYS = ['value', 'secret', 'secretValue', 'plaintext', 'token', 'apiKey', 'privateKey'];
@@ -1338,6 +1354,23 @@ function postOverrides(req, res, next) {
     }
 
     const state = getState(req);
+    for (const field of OVERRIDE_SECTION_FIELDS) {
+      if (!Array.isArray(req.body[field])) {
+        continue;
+      }
+
+      const unknownSections = req.body[field].filter((sectionKey) => {
+        return !ALLOWED_OVERRIDE_SECTION_KEYS.has(sectionKey);
+      });
+
+      if (unknownSections.length > 0) {
+        throw createError(`Invalid override payload: ${field} contains unknown section values`, 400, 'invalid_override_payload', {
+          field,
+          unknownSections
+        });
+      }
+    }
+
     if (Array.isArray(req.body.requiredComponents)) {
       const knownComponentIds = new Set(listComponentContractIds(state));
       const unknownRequiredComponents = req.body.requiredComponents.filter((componentId) => {

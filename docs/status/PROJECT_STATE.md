@@ -71,6 +71,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 50. Copy-select actor provenance enforcement implemented (`VS3-IMP-043`): copy selection now validates optional request `selectedBy` against authenticated actor role and persists server-derived selector identity for deterministic auditability.
 51. Catalog-version component contract validation implemented (`VS3-IMP-044`): compose now rejects unknown `catalogVersion` values with typed contract-not-found errors, and component contract listing now supports deterministic catalog-version filtering for WS-D contract alignment.
 52. Override required-component validation implemented (`VS3-IMP-045`): manual overrides now validate `requiredComponents` against loaded component contracts and reject unknown IDs with deterministic `invalid_override_payload` details.
+53. Override section taxonomy validation implemented (`VS3-IMP-046`): manual override section arrays now enforce an explicit allowed section-key set and reject unknown values with deterministic `invalid_override_payload` details for contract-safe orchestration inputs.
 
 ## In Progress
 

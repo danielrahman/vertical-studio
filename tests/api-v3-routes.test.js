@@ -1259,6 +1259,68 @@ test('overrides rejects unknown requiredComponents values', async () => {
   }
 });
 
+test('overrides rejects unknown section values in section arrays', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-override-sections-1';
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-override-sections/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-override-sections/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const invalidOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-sections/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredSections: ['hero', 'unknown-section']
+      })
+    });
+    assert.equal(invalidOverrideRes.status, 400);
+    const invalidOverrideBody = await invalidOverrideRes.json();
+    assert.equal(invalidOverrideBody.code, 'invalid_override_payload');
+    assert.equal(
+      invalidOverrideBody.message,
+      'Invalid override payload: requiredSections contains unknown section values'
+    );
+    assert.deepEqual(invalidOverrideBody.details.unknownSections, ['unknown-section']);
+
+    const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-sections/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredSections: ['hero', 'contact'],
+        excludedSections: ['timeline'],
+        pinnedSections: ['hero']
+      })
+    });
+    assert.equal(validOverrideRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('public runtime resolves active site version by host and serves immutable snapshots', async () => {
   const { server, baseUrl } = await startServer();
 
