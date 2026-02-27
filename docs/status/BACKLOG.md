@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-OPS-001 | Curate `.env` baseline from docs/plan and current runtime usage       | in_progress | codex | Remove low-value keys, keep stable core, and prefill near-term v3 placeholders         |
 | VS3-DOC-001 | Revise plan/quality/security docs to vertical-intelligence-first spec | done        | codex | Includes ADR-005..007 and plan files 50/60/70                                           |
 | VS3-DOC-002 | Cross-file naming consistency check (`00/10/20/30`)                   | done        | codex | Types and endpoint families aligned in docs                                             |
 | VS3-IMP-001 | Create monorepo workspace structure (`apps/*`, `packages/*`)          | done        | codex | Scaffolded with workspace bridges; legacy runtime preserved                             |
@@ -23,4 +24,4 @@
 | VS3-IMP-008 | Implement secret-ref metadata model and ACL (`internal_admin`)        | done        | codex | Added strict secret metadata validation, `internal_admin` ACL, and no-plaintext payload guard |
 | VS3-IMP-009 | Implement ops review flow for variant selection and overrides         | done        | codex | Added proposal tracking, state-gated selection/overrides, and `internal_admin` transition ACL |
 | VS3-IMP-010 | Implement public runtime snapshot rendering skeleton                  | done        | codex | Added host->active version resolution, immutable snapshot fetch endpoints, and public-web runtime client skeleton |
-| VS3-IMP-011 | Add documentation acceptance test harness                             | todo        | codex | Cover rollout acceptance scenarios from `docs/plan/40-rollout.md`                      |
+| VS3-IMP-011 | Add documentation acceptance test harness                             | done        | codex | Added executable docs+API acceptance harness covering rollout tests 1-8 and scenarios 4.1-4.4 |
