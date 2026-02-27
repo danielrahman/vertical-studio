@@ -252,6 +252,73 @@ test('tenant/bootstrap/vertical-build mutating endpoints require internal_admin 
   }
 });
 
+test('bootstrap-from-extraction normalizes low-confidence fields into TODO entries', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-bootstrap-model',
+        extractedFields: [
+          {
+            fieldPath: 'brand.tagline',
+            value: 'Premium development team',
+            sourceUrl: 'https://example.test/about',
+            method: 'dom',
+            confidence: 0.91,
+            required: true
+          },
+          {
+            fieldPath: 'contact.phone',
+            value: '+420123456789',
+            sourceUrl: 'https://example.test/contact',
+            method: 'dom',
+            confidence: 0.2,
+            required: true
+          },
+          {
+            fieldPath: 'footer.note',
+            value: 'Legacy office label',
+            sourceUrl: 'https://example.test/legal',
+            method: 'manual',
+            confidence: 0.35,
+            required: false
+          }
+        ]
+      })
+    });
+    assert.equal(response.status, 202);
+    const payload = await response.json();
+    assert.equal(payload.lowConfidence, true);
+    assert.equal(payload.requiredTodoCount, 1);
+    assert.equal(Array.isArray(payload.extractedFields), true);
+    assert.equal(payload.extractedFields.length, 3);
+
+    const lowConfidenceRequiredField = payload.extractedFields.find((field) => field.fieldPath === 'contact.phone');
+    assert.equal(lowConfidenceRequiredField.todo, true);
+    assert.equal(lowConfidenceRequiredField.value, null);
+    assert.equal(lowConfidenceRequiredField.required, true);
+
+    const nonRequiredLowConfidenceField = payload.extractedFields.find((field) => field.fieldPath === 'footer.note');
+    assert.equal(nonRequiredLowConfidenceField.todo, true);
+    assert.equal(nonRequiredLowConfidenceField.required, false);
+
+    const auditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=site_bootstrap_from_extraction&siteId=site-bootstrap-model&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(auditRes.status, 200);
+    const auditPayload = await auditRes.json();
+    assert.equal(auditPayload.count >= 1, true);
+    assert.equal(auditPayload.items[0].requiredTodoCount, 1);
+    assert.equal(auditPayload.items[0].extractedFieldCount, 3);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('cms webhook publish ingress requires valid signature and emits audit trail event', async () => {
   const { server, baseUrl } = await startServer();
 

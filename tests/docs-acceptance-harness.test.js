@@ -281,6 +281,51 @@ test('WS-B contract: non-public read endpoints require tenant-member or internal
   }
 });
 
+test('WS-B contract: low-confidence required extraction fields are stored as TODO and mark draft lowConfidence', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-1',
+        extractedFields: [
+          {
+            fieldPath: 'meta.companyName',
+            value: 'Studio One',
+            sourceUrl: 'https://example.test',
+            method: 'dom',
+            confidence: 0.95,
+            required: true
+          },
+          {
+            fieldPath: 'contact.email',
+            value: 'hello@example.test',
+            sourceUrl: 'https://example.test/contact',
+            method: 'dom',
+            confidence: 0.33,
+            required: true
+          }
+        ]
+      })
+    });
+    assert.equal(response.status, 202);
+    const payload = await response.json();
+    assert.equal(payload.lowConfidence, true);
+    assert.equal(payload.requiredTodoCount, 1);
+
+    const storedFields = app.locals.v3State.extractedFieldsByDraft.get('draft-wsb-bootstrap-1');
+    assert.equal(Array.isArray(storedFields), true);
+    assert.equal(storedFields.length, 2);
+    const todoField = storedFields.find((field) => field.fieldPath === 'contact.email');
+    assert.equal(todoField.todo, true);
+    assert.equal(todoField.value, null);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 

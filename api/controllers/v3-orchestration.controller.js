@@ -8,6 +8,8 @@ const QUALITY_GATE_FAMILIES = ['COPY', 'LAYOUT', 'MEDIA', 'LEGAL'];
 const QUALITY_SEVERITY_LEVELS = new Set(['P0', 'P1', 'P2']);
 const SECURITY_SEVERITY_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
 const TENANT_MEMBER_ROLES = new Set(['internal_admin', 'owner', 'editor', 'viewer']);
+const EXTRACTION_METHODS = new Set(['dom', 'ocr', 'inference', 'manual']);
+const LOW_CONFIDENCE_THRESHOLD = 0.5;
 const OVERRIDE_ARRAY_KEYS = [
   'tone',
   'keywords',
@@ -48,6 +50,7 @@ function getState(req) {
     req.app.locals.v3State = {
       tenants: new Map(),
       verticalResearch: new Map(),
+      extractedFieldsByDraft: new Map(),
       componentContracts: new Map(),
       reviewStatesByDraft: new Map(),
       proposalsByDraft: new Map(),
@@ -175,6 +178,38 @@ function normalizeHost(rawHost) {
   const withoutProtocol = trimmed.replace(/^https?:\/\//, '');
   const host = withoutProtocol.split('/')[0];
   return host.split(':')[0] || null;
+}
+
+function normalizeExtractedField(input, index) {
+  const defaultFieldPath = `field_${index + 1}`;
+  const fieldPath =
+    typeof input?.fieldPath === 'string' && input.fieldPath.trim() ? input.fieldPath.trim() : defaultFieldPath;
+  const confidenceNumber = Number(input?.confidence);
+  const confidence = Number.isFinite(confidenceNumber) ? Math.min(Math.max(confidenceNumber, 0), 1) : 0;
+  const method = typeof input?.method === 'string' ? input.method.trim() : '';
+  const normalizedMethod = EXTRACTION_METHODS.has(method) ? method : 'inference';
+  const extractedAt =
+    typeof input?.extractedAt === 'string' && input.extractedAt.trim()
+      ? input.extractedAt.trim()
+      : new Date().toISOString();
+  const todo = confidence < LOW_CONFIDENCE_THRESHOLD;
+  const required = input?.required !== false;
+
+  let value = Object.hasOwn(input || {}, 'value') ? input.value : null;
+  if (todo) {
+    value = null;
+  }
+
+  return {
+    fieldPath,
+    required,
+    value,
+    sourceUrl: normalizeOptionalString(input?.sourceUrl),
+    method: normalizedMethod,
+    confidence,
+    extractedAt,
+    todo
+  };
 }
 
 function getCmsWebhookSecret(req) {
@@ -624,10 +659,15 @@ function postBootstrapFromExtraction(req, res, next) {
     assertString(req.params.siteId, 'siteId');
 
     const draftId = typeof req.body?.draftId === 'string' ? req.body.draftId : randomUUID();
-    const lowConfidence = Boolean(req.body?.lowConfidence);
+    const rawExtractedFields = Array.isArray(req.body?.extractedFields) ? req.body.extractedFields : [];
+    const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
+    const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;
+    const lowConfidence = Boolean(req.body?.lowConfidence) || requiredTodoCount > 0;
     const now = new Date().toISOString();
 
     const state = getState(req);
+    state.extractedFieldsByDraft.set(draftId, extractedFields);
+    state.reviewStatesByDraft.set(draftId, 'draft');
     state.auditEvents.push({
       id: randomUUID(),
       action: 'site_bootstrap_from_extraction',
@@ -635,7 +675,9 @@ function postBootstrapFromExtraction(req, res, next) {
       entityType: 'draft',
       entityId: draftId,
       siteId: req.params.siteId,
-      lowConfidence
+      lowConfidence,
+      extractedFieldCount: extractedFields.length,
+      requiredTodoCount
     });
 
     res.status(202).json({
@@ -643,7 +685,9 @@ function postBootstrapFromExtraction(req, res, next) {
       draftId,
       status: 'bootstrapped',
       lowConfidence,
-      reviewState: 'draft'
+      reviewState: 'draft',
+      requiredTodoCount,
+      extractedFields
     });
   } catch (error) {
     next(error);
