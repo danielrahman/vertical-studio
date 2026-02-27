@@ -1112,6 +1112,56 @@ test('WS-D contract: copy selection selectedBy must match authenticated actor', 
   }
 });
 
+test('WS-D contract: copy selection rejects unknown payload fields', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-wsd-select-unknown-fields';
+    const draftId = 'draft-wsd-select-unknown-fields-1';
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(generateRes.status, 200);
+    const candidateId = app.locals.v3State.copyCandidatesByDraft.get(draftId)[0].candidateId;
+
+    const unknownTopLevelRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId }],
+        unknown: true
+      })
+    });
+    assert.equal(unknownTopLevelRes.status, 400);
+    const unknownTopLevelPayload = await unknownTopLevelRes.json();
+    assert.equal(unknownTopLevelPayload.code, 'validation_error');
+    assert.deepEqual(unknownTopLevelPayload.details.unknownFields, ['unknown']);
+
+    const unknownSelectionFieldRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId, notes: 'unexpected' }]
+      })
+    });
+    assert.equal(unknownSelectionFieldRes.status, 400);
+    const unknownSelectionFieldPayload = await unknownSelectionFieldRes.json();
+    assert.equal(unknownSelectionFieldPayload.code, 'validation_error');
+    assert.equal(unknownSelectionFieldPayload.details.field, 'selections[0]');
+    assert.deepEqual(unknownSelectionFieldPayload.details.unknownFields, ['notes']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 

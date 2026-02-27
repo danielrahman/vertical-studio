@@ -77,6 +77,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 56. Override no-op payload guard implemented (`VS3-IMP-049`): manual overrides now require at least one non-empty directive array, preventing empty mutation versions and preserving meaningful operator intent per override revision.
 57. Override string normalization + blank-value rejection implemented (`VS3-IMP-050`): manual overrides now trim string-array directives before validation/storage, reject blank or whitespace-only values with deterministic `invalid_override_payload` errors, and enforce duplicate checks on normalized values.
 58. Override unknown-field payload guard implemented (`VS3-IMP-051`): manual overrides now reject unexpected top-level payload keys with deterministic `invalid_override_payload` details, ensuring strict override request-shape compliance and preventing silently ignored operator directives.
+59. Copy-select unknown-field payload guard implemented (`VS3-IMP-052`): copy selection now rejects unknown top-level request keys and unknown per-selection object fields with deterministic `validation_error` details, enforcing strict request-shape integrity for selection provenance workflows.
 
 ## In Progress
 

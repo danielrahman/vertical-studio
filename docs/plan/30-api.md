@@ -346,6 +346,7 @@ Rules:
 4. A request must not contain duplicate `slotId`+`locale` tuples.
 5. `selections` must contain at least one item.
 6. If `selectedBy` is provided, it must match the authenticated actor role; server-side actor identity remains source of truth.
+7. Unknown top-level payload fields and unknown per-selection object fields are rejected with `400 validation_error`.
 
 ### 4.6 Manual Override Lifecycle
 

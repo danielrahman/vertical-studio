@@ -895,6 +895,58 @@ test('copy select selectedBy must match authenticated actor role', async () => {
   }
 });
 
+test('copy select rejects unknown payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-copy-select-unknown-fields';
+    const draftId = 'draft-copy-select-unknown-fields';
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(generateRes.status, 200);
+
+    const candidateId = stableId(`${draftId}|hero.h1|cs-CZ|B`);
+    const unknownTopLevelRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId }],
+        unexpectedField: true
+      })
+    });
+    assert.equal(unknownTopLevelRes.status, 400);
+    const unknownTopLevelBody = await unknownTopLevelRes.json();
+    assert.equal(unknownTopLevelBody.code, 'validation_error');
+    assert.equal(unknownTopLevelBody.message, 'copy select payload contains unknown top-level fields');
+    assert.deepEqual(unknownTopLevelBody.details.unknownFields, ['unexpectedField']);
+
+    const unknownSelectionFieldRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId, notes: 'manual note' }]
+      })
+    });
+    assert.equal(unknownSelectionFieldRes.status, 400);
+    const unknownSelectionFieldBody = await unknownSelectionFieldRes.json();
+    assert.equal(unknownSelectionFieldBody.code, 'validation_error');
+    assert.equal(unknownSelectionFieldBody.message, 'selection item contains unknown fields');
+    assert.equal(unknownSelectionFieldBody.details.field, 'selections[0]');
+    assert.deepEqual(unknownSelectionFieldBody.details.unknownFields, ['notes']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select allows owner only when site policy enables draft copy edits', async () => {
   const { server, baseUrl } = await startServer();
 

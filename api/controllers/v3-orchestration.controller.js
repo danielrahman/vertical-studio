@@ -11,6 +11,8 @@ const TENANT_MEMBER_ROLES = new Set(['internal_admin', 'owner', 'editor', 'viewe
 const EXTRACTION_METHODS = new Set(['dom', 'ocr', 'inference', 'manual']);
 const COPY_LOCALES = new Set(['cs-CZ', 'en-US']);
 const COPY_SELECT_ACTOR_ROLES = new Set(['internal_admin', 'owner']);
+const COPY_SELECT_ALLOWED_TOP_LEVEL_FIELDS = new Set(['draftId', 'selections', 'actorRole']);
+const COPY_SELECT_ALLOWED_SELECTION_FIELDS = new Set(['slotId', 'locale', 'candidateId', 'selectedBy']);
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
 const OVERRIDE_ARRAY_KEYS = [
   'tone',
@@ -248,6 +250,16 @@ function assertCopySelectionShape(selection, index) {
   if (!selection || typeof selection !== 'object' || Array.isArray(selection)) {
     throw createError('selection item must be an object', 400, 'validation_error', {
       field: `selections[${index}]`
+    });
+  }
+
+  const unknownSelectionFields = Object.keys(selection).filter((field) => {
+    return !COPY_SELECT_ALLOWED_SELECTION_FIELDS.has(field);
+  });
+  if (unknownSelectionFields.length > 0) {
+    throw createError('selection item contains unknown fields', 400, 'validation_error', {
+      field: `selections[${index}]`,
+      unknownFields: unknownSelectionFields
     });
   }
 
@@ -1256,6 +1268,15 @@ function postCopySelect(req, res, next) {
   try {
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
+    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
+      return !COPY_SELECT_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+    });
+    if (unknownTopLevelFields.length > 0) {
+      throw createError('copy select payload contains unknown top-level fields', 400, 'validation_error', {
+        unknownFields: unknownTopLevelFields
+      });
+    }
+
     const state = getState(req);
     const selectedByRole = assertCopySelectActorRole(req, state, req.params.siteId);
 

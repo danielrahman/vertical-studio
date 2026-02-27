@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-052 | Reject unknown `copy/select` payload fields                           | done        | codex | `POST /copy/select` now rejects unknown top-level keys and unknown per-selection fields with deterministic `validation_error` details; API/WS-D coverage added |
 | VS3-IMP-051 | Reject unknown top-level fields in override payloads                  | done        | codex | `POST /overrides` now rejects unexpected top-level keys with deterministic `invalid_override_payload` details to prevent silent operator input drift; API/WS-D coverage added |
 | VS3-IMP-050 | Reject blank override string values and normalize override arrays     | done        | codex | `POST /overrides` now trims override string-array values before validation/storage and rejects blank/whitespace entries with deterministic `invalid_override_payload` details; API/WS-D coverage added |
 | VS3-IMP-049 | Require at least one non-empty override directive array               | done        | codex | `POST /overrides` now rejects no-op payloads that provide no non-empty override arrays with deterministic `invalid_override_payload` details; API/WS-D coverage added |
