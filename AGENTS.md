@@ -50,6 +50,6 @@ Before sending a final response:
    - Risks/regressions
    - Smallest next step
 4. If gaps remain and there is no blocker, continue implementation immediately.
-5. Repeat review-then-continue loop up to 3 cycles maximum.
+5. Repeat review-then-continue loop up to 5 cycles maximum.
 6. If acceptance is met, commit and push before final response (unless user explicitly says not to).
 7. Finish only when acceptance is met, or clearly report blocker + exact required input.
