@@ -589,6 +589,83 @@ test('WS-D contract: override section arrays must use allowed section keys', asy
   }
 });
 
+test('WS-D contract: override section directives cannot conflict across arrays', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-wsd-overrides-section-conflicts';
+    const composeRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-section-conflicts/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(composeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-section-conflicts/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const requiredExcludedConflictRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-wsd-overrides-section-conflicts/overrides`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId,
+          requiredSections: ['hero'],
+          excludedSections: ['hero']
+        })
+      }
+    );
+    assert.equal(requiredExcludedConflictRes.status, 400);
+    const requiredExcludedConflictPayload = await requiredExcludedConflictRes.json();
+    assert.equal(requiredExcludedConflictPayload.code, 'invalid_override_payload');
+
+    const pinnedExcludedConflictRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-wsd-overrides-section-conflicts/overrides`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId,
+          pinnedSections: ['contact'],
+          excludedSections: ['contact']
+        })
+      }
+    );
+    assert.equal(pinnedExcludedConflictRes.status, 400);
+    const pinnedExcludedConflictPayload = await pinnedExcludedConflictRes.json();
+    assert.equal(pinnedExcludedConflictPayload.code, 'invalid_override_payload');
+
+    const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-section-conflicts/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredSections: ['hero', 'contact'],
+        excludedSections: ['timeline'],
+        pinnedSections: ['hero']
+      })
+    });
+    assert.equal(validOverrideRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy generation rejects unsupported high-impact variant modes', async () => {
   const { server, baseUrl } = await startServer();
 

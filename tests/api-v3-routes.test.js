@@ -1321,6 +1321,90 @@ test('overrides rejects unknown section values in section arrays', async () => {
   }
 });
 
+test('overrides rejects conflicting section directives across arrays', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-override-section-conflicts-1';
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-override-section-conflicts/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-override-section-conflicts/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const requiredExcludedConflictRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-override-section-conflicts/overrides`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId,
+          requiredSections: ['hero', 'contact'],
+          excludedSections: ['contact']
+        })
+      }
+    );
+    assert.equal(requiredExcludedConflictRes.status, 400);
+    const requiredExcludedConflictBody = await requiredExcludedConflictRes.json();
+    assert.equal(requiredExcludedConflictBody.code, 'invalid_override_payload');
+    assert.equal(
+      requiredExcludedConflictBody.message,
+      'Invalid override payload: requiredSections and excludedSections must not overlap'
+    );
+    assert.deepEqual(requiredExcludedConflictBody.details.conflictingSections, ['contact']);
+
+    const pinnedExcludedConflictRes = await fetch(`${baseUrl}/api/v1/sites/site-override-section-conflicts/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        pinnedSections: ['hero'],
+        excludedSections: ['hero']
+      })
+    });
+    assert.equal(pinnedExcludedConflictRes.status, 400);
+    const pinnedExcludedConflictBody = await pinnedExcludedConflictRes.json();
+    assert.equal(pinnedExcludedConflictBody.code, 'invalid_override_payload');
+    assert.equal(
+      pinnedExcludedConflictBody.message,
+      'Invalid override payload: pinnedSections and excludedSections must not overlap'
+    );
+    assert.deepEqual(pinnedExcludedConflictBody.details.conflictingSections, ['hero']);
+
+    const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-section-conflicts/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredSections: ['hero', 'contact'],
+        excludedSections: ['timeline'],
+        pinnedSections: ['hero']
+      })
+    });
+    assert.equal(validOverrideRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('public runtime resolves active site version by host and serves immutable snapshots', async () => {
   const { server, baseUrl } = await startServer();
 

@@ -72,6 +72,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 51. Catalog-version component contract validation implemented (`VS3-IMP-044`): compose now rejects unknown `catalogVersion` values with typed contract-not-found errors, and component contract listing now supports deterministic catalog-version filtering for WS-D contract alignment.
 52. Override required-component validation implemented (`VS3-IMP-045`): manual overrides now validate `requiredComponents` against loaded component contracts and reject unknown IDs with deterministic `invalid_override_payload` details.
 53. Override section taxonomy validation implemented (`VS3-IMP-046`): manual override section arrays now enforce an explicit allowed section-key set and reject unknown values with deterministic `invalid_override_payload` details for contract-safe orchestration inputs.
+54. Override section conflict validation implemented (`VS3-IMP-047`): manual overrides now reject conflicting section directives across required/excluded and pinned/excluded sets, preventing contradictory orchestration intents before compose/copy execution.
 
 ## In Progress
 

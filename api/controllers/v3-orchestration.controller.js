@@ -1371,6 +1371,40 @@ function postOverrides(req, res, next) {
       }
     }
 
+    const requiredSections = Array.isArray(req.body.requiredSections) ? req.body.requiredSections : [];
+    const excludedSections = Array.isArray(req.body.excludedSections) ? req.body.excludedSections : [];
+    const pinnedSections = Array.isArray(req.body.pinnedSections) ? req.body.pinnedSections : [];
+
+    const conflictingRequiredExcludedSections = requiredSections.filter((sectionKey) =>
+      excludedSections.includes(sectionKey)
+    );
+    if (conflictingRequiredExcludedSections.length > 0) {
+      throw createError(
+        'Invalid override payload: requiredSections and excludedSections must not overlap',
+        400,
+        'invalid_override_payload',
+        {
+          field: 'requiredSections',
+          conflictingSections: conflictingRequiredExcludedSections
+        }
+      );
+    }
+
+    const conflictingPinnedExcludedSections = pinnedSections.filter((sectionKey) =>
+      excludedSections.includes(sectionKey)
+    );
+    if (conflictingPinnedExcludedSections.length > 0) {
+      throw createError(
+        'Invalid override payload: pinnedSections and excludedSections must not overlap',
+        400,
+        'invalid_override_payload',
+        {
+          field: 'pinnedSections',
+          conflictingSections: conflictingPinnedExcludedSections
+        }
+      );
+    }
+
     if (Array.isArray(req.body.requiredComponents)) {
       const knownComponentIds = new Set(listComponentContractIds(state));
       const unknownRequiredComponents = req.body.requiredComponents.filter((componentId) => {
