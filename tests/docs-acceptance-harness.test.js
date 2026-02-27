@@ -398,6 +398,28 @@ test('WS-B contract: bootstrap-from-extraction requires extractedFields array ty
   }
 });
 
+test('WS-B contract: bootstrap-from-extraction requires lowConfidence boolean type when provided', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap-shape/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-shape-2',
+        lowConfidence: 'true'
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'lowConfidence must be a boolean when provided');
+    assert.equal(payload.details.invalidField, 'lowConfidence');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: vertical research build rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 

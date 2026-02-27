@@ -923,7 +923,13 @@ function postBootstrapFromExtraction(req, res, next) {
     const rawExtractedFields = Array.isArray(req.body?.extractedFields) ? req.body.extractedFields : [];
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
     const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;
-    const lowConfidence = Boolean(req.body?.lowConfidence) || requiredTodoCount > 0;
+    const lowConfidenceProvided = Object.prototype.hasOwnProperty.call(req.body || {}, 'lowConfidence');
+    if (lowConfidenceProvided && typeof req.body?.lowConfidence !== 'boolean') {
+      throw createError('lowConfidence must be a boolean when provided', 400, 'validation_error', {
+        invalidField: 'lowConfidence'
+      });
+    }
+    const lowConfidence = req.body?.lowConfidence === true || requiredTodoCount > 0;
     const hasSitePolicyValue = typeof req.body?.sitePolicy?.allowOwnerDraftCopyEdits !== 'undefined';
     if (hasSitePolicyValue && typeof req.body?.sitePolicy?.allowOwnerDraftCopyEdits !== 'boolean') {
       throw createError('sitePolicy.allowOwnerDraftCopyEdits must be a boolean', 400, 'validation_error', {
