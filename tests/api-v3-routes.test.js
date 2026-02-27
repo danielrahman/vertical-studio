@@ -777,6 +777,28 @@ test('copy select rejects duplicate slotId/locale selections in one request', as
   }
 });
 
+test('copy select rejects empty selections array for internal_admin requests', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-copy-select-empty/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-select-empty',
+        selections: []
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'selections array must contain at least one item');
+    assert.equal(payload.details.field, 'selections');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select allows owner only when site policy enables draft copy edits', async () => {
   const { server, baseUrl } = await startServer();
 

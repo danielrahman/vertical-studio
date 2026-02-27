@@ -578,6 +578,27 @@ test('WS-D contract: copy selection enforces unique slot-locale tuples per reque
   }
 });
 
+test('WS-D contract: copy selection rejects empty selection arrays', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const emptySelectRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-empty/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-select-empty-1',
+        selections: []
+      })
+    });
+    assert.equal(emptySelectRes.status, 400);
+    const emptySelectPayload = await emptySelectRes.json();
+    assert.equal(emptySelectPayload.code, 'validation_error');
+    assert.equal(emptySelectPayload.message, 'selections array must contain at least one item');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 

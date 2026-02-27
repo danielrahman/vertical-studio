@@ -1130,14 +1130,18 @@ function postCopySelect(req, res, next) {
   try {
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
+    const state = getState(req);
+    const selectedByRole = assertCopySelectActorRole(req, state, req.params.siteId);
 
     if (!Array.isArray(req.body?.selections)) {
       throw createError('selections array is required', 400, 'validation_error');
     }
+    if (req.body.selections.length === 0) {
+      throw createError('selections array must contain at least one item', 400, 'validation_error', {
+        field: 'selections'
+      });
+    }
     req.body.selections.forEach((selection, index) => assertCopySelectionShape(selection, index));
-
-    const state = getState(req);
-    const selectedByRole = assertCopySelectActorRole(req, state, req.params.siteId);
     const candidates = state.copyCandidatesByDraft.get(req.body.draftId) || [];
     const candidateById = new Map(candidates.map((candidate) => [candidate.candidateId, candidate]));
 

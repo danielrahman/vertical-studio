@@ -67,6 +67,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 46. Copy-generate locale contract hardening implemented (`VS3-IMP-039`): copy generation now accepts only `cs-CZ` and `en-US` locales, rejects unsupported locale values with validation details, and de-duplicates locale input before candidate generation.
 47. Copy-select tuple uniqueness enforcement implemented (`VS3-IMP-040`): copy selection now rejects duplicate `slotId`+`locale` tuples in a single request to preserve one final recommendation per slot-locale pair.
 48. Copy-generate prompt-version requirement implemented (`VS3-IMP-041`): copy generation now requires explicit `verticalStandardVersion`, tightening prompt/audit reproducibility and aligning WS-D copy contract coverage.
+49. Copy-select non-empty request enforcement implemented (`VS3-IMP-042`): copy selection now rejects empty selection arrays, preserving deterministic non-noop selection semantics and maintaining unauthorized-first auth response behavior.
 
 ## In Progress
 
