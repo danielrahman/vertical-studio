@@ -95,6 +95,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 74. Vertical research duplicate-source validation implemented (`VS3-IMP-067`): vertical research build now rejects duplicate `sources` class values with deterministic `validation_error` details (`duplicateSources`), enforcing unambiguous source-policy input shape.
 75. Vertical research duplicate-sourceDomain validation implemented (`VS3-IMP-068`): vertical research build now rejects duplicate `sourceDomains` values after trim/lowercase normalization with deterministic `validation_error` details (`duplicateSourceDomains`), enforcing unambiguous competitor-domain sampling inputs.
 76. Vertical research numeric-competitor-count contract enforcement implemented (`VS3-IMP-069`): vertical research build now requires `targetCompetitorCount` to be a numeric integer `>= 15` and rejects string-coerced values to preserve strict request-shape semantics.
+77. Vertical research `sourceDomains` array-type enforcement implemented (`VS3-IMP-070`): vertical research build now rejects non-array `sourceDomains` payload values with deterministic `validation_error` details (`invalidField`) instead of silently treating them as omitted.
 
 ## In Progress
 

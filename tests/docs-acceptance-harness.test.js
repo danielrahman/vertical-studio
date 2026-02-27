@@ -468,6 +468,21 @@ test('WS-B contract: vertical research build validates and normalizes sourceDoma
   const { server, baseUrl } = await startServer();
 
   try {
+    const nonArrayResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings'],
+        sourceDomains: 'example-1.com'
+      })
+    });
+    assert.equal(nonArrayResponse.status, 400);
+    const nonArrayPayload = await nonArrayResponse.json();
+    assert.equal(nonArrayPayload.code, 'validation_error');
+    assert.equal(nonArrayPayload.message, 'sourceDomains must be an array when provided');
+    assert.equal(nonArrayPayload.details.invalidField, 'sourceDomains');
+
     const invalidResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

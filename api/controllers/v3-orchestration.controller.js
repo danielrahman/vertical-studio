@@ -978,9 +978,16 @@ function postVerticalResearchBuild(req, res, next) {
         unknownFields: unknownTopLevelFields
       });
     }
-    const targetCompetitorCount = req.body?.targetCompetitorCount;
-    const sources = Array.isArray(req.body?.sources) ? req.body.sources : [];
-    const rawSourceDomains = Array.isArray(req.body?.sourceDomains) ? req.body.sourceDomains : [];
+    const payload = req.body || {};
+    const targetCompetitorCount = payload.targetCompetitorCount;
+    const sources = Array.isArray(payload.sources) ? payload.sources : [];
+    const sourceDomainsProvided = Object.prototype.hasOwnProperty.call(payload, 'sourceDomains');
+    if (sourceDomainsProvided && !Array.isArray(payload.sourceDomains)) {
+      throw createError('sourceDomains must be an array when provided', 400, 'validation_error', {
+        invalidField: 'sourceDomains'
+      });
+    }
+    const rawSourceDomains = Array.isArray(payload.sourceDomains) ? payload.sourceDomains : [];
 
     if (typeof targetCompetitorCount !== 'number' || !Number.isInteger(targetCompetitorCount) || targetCompetitorCount < 15) {
       throw createError('targetCompetitorCount must be >= 15', 400, 'insufficient_competitor_sample');

@@ -246,6 +246,21 @@ test('vertical research build validates sourceDomains entries and persists norma
   const { server, baseUrl } = await startServer();
 
   try {
+    const nonArrayDomainsRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        targetCompetitorCount: 15,
+        sources: ['public_web', 'legal_pages', 'selected_listings'],
+        sourceDomains: 'example-1.com'
+      })
+    });
+    assert.equal(nonArrayDomainsRes.status, 400);
+    const nonArrayDomainsPayload = await nonArrayDomainsRes.json();
+    assert.equal(nonArrayDomainsPayload.code, 'validation_error');
+    assert.equal(nonArrayDomainsPayload.message, 'sourceDomains must be an array when provided');
+    assert.equal(nonArrayDomainsPayload.details.invalidField, 'sourceDomains');
+
     const invalidDomainsRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
