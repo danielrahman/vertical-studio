@@ -55,6 +55,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 34. Tenant/bootstrap/vertical-build ACL + audit hardening implemented (`VS3-IMP-027`): these mutating lifecycle endpoints now enforce `internal_admin` contract auth and emit privileged audit events for WS-B/API traceability.
 35. Copy generation audit provenance implemented (`VS3-IMP-028`): copy generation mutations now emit explicit audit events and API/acceptance coverage confirms privileged provenance trail visibility.
 36. Compose/copy mutation ACL hardening implemented (`VS3-IMP-029`): compose propose and copy generate/select routes now enforce `internal_admin` access, with unauthorized-path and acceptance coverage aligned to API auth contract.
+37. CMS webhook signed-ingress hardening implemented (`VS3-IMP-030`): `POST /cms/webhooks/publish` now enforces HMAC signature verification, emits `cms_publish_webhook_queued` audit events, and is covered by API + WS-C acceptance tests.
 
 ## In Progress
 

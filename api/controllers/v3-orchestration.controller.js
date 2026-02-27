@@ -1,4 +1,4 @@
-const { randomUUID } = require('crypto');
+const { createHmac, randomUUID, timingSafeEqual } = require('crypto');
 const { ReviewTransitionGuardService } = require('../../services/review-transition-guard-service');
 const { ComposeCopyService } = require('../../services/compose-copy-service');
 const { PublishGateService, isQualityP0Finding } = require('../../services/publish-gate-service');
@@ -152,6 +152,53 @@ function normalizeHost(rawHost) {
   const withoutProtocol = trimmed.replace(/^https?:\/\//, '');
   const host = withoutProtocol.split('/')[0];
   return host.split(':')[0] || null;
+}
+
+function getCmsWebhookSecret(req) {
+  const appSecret =
+    typeof req.app?.locals?.cmsWebhookSecret === 'string' ? req.app.locals.cmsWebhookSecret.trim() : null;
+  if (appSecret) {
+    return appSecret;
+  }
+
+  if (typeof process.env.CMS_WEBHOOK_SECRET === 'string' && process.env.CMS_WEBHOOK_SECRET.trim()) {
+    return process.env.CMS_WEBHOOK_SECRET.trim();
+  }
+
+  return null;
+}
+
+function signCmsWebhookPayload(payload, secret) {
+  return `sha256=${createHmac('sha256', secret).update(payload).digest('hex')}`;
+}
+
+function secureCompare(value, expected) {
+  const valueBuffer = Buffer.from(value, 'utf8');
+  const expectedBuffer = Buffer.from(expected, 'utf8');
+  if (valueBuffer.length !== expectedBuffer.length) {
+    return false;
+  }
+
+  return timingSafeEqual(valueBuffer, expectedBuffer);
+}
+
+function assertCmsWebhookSignature(req) {
+  const secret = getCmsWebhookSecret(req);
+  if (!secret) {
+    throw createError('CMS webhook secret is not configured', 500, 'webhook_secret_not_configured');
+  }
+
+  const signature =
+    typeof req.headers['x-webhook-signature'] === 'string' ? req.headers['x-webhook-signature'].trim() : '';
+  if (!signature) {
+    throw createError('Missing webhook signature', 401, 'webhook_signature_missing');
+  }
+
+  const payload = JSON.stringify(req.body || {});
+  const expectedSignature = signCmsWebhookPayload(payload, secret);
+  if (!secureCompare(signature, expectedSignature)) {
+    throw createError('Invalid webhook signature', 401, 'webhook_signature_invalid');
+  }
 }
 
 function normalizeSecurityFindingStatus(finding) {
@@ -1379,9 +1426,24 @@ function getPublicRuntimeSnapshotByStorageKey(req, res, next) {
 
 function postCmsPublishWebhook(req, res, next) {
   try {
+    assertCmsWebhookSignature(req);
+    const state = getState(req);
+    const now = new Date().toISOString();
+    const jobId = randomUUID();
+    const siteId = normalizeOptionalString(req.body?.siteId);
+
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'cms_publish_webhook_queued',
+      occurredAt: now,
+      entityType: 'webhook_job',
+      entityId: jobId,
+      siteId
+    });
+
     res.status(202).json({
       status: 'queued',
-      jobId: randomUUID()
+      jobId
     });
   } catch (error) {
     next(error);

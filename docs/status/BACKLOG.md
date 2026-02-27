@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-030 | Enforce signed webhook verification and audit for CMS publish ingress | done        | codex | Added HMAC signature guard + `cms_publish_webhook_queued` audit trail with API/acceptance coverage |
 | VS3-OPS-001 | Curate `.env` baseline from docs/plan and current runtime usage       | done        | codex | Trimmed `.env.example`, aligned README env docs, and prefilled local `.env` baseline   |
 | VS3-DOC-001 | Revise plan/quality/security docs to vertical-intelligence-first spec | done        | codex | Includes ADR-005..007 and plan files 50/60/70                                           |
 | VS3-DOC-002 | Cross-file naming consistency check (`00/10/20/30`)                   | done        | codex | Types and endpoint families aligned in docs                                             |

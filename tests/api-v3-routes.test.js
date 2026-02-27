@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createHash } = require('crypto');
+const { createHash, createHmac } = require('crypto');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -43,6 +43,7 @@ async function startServer() {
       apiKeys: []
     }
   });
+  app.locals.cmsWebhookSecret = CMS_WEBHOOK_SECRET;
 
   const server = app.listen(0);
   await once(server, 'listening');
@@ -70,10 +71,15 @@ const INTERNAL_ADMIN_HEADERS = {
   'content-type': 'application/json',
   'x-user-role': 'internal_admin'
 };
+const CMS_WEBHOOK_SECRET = 'test-cms-webhook-secret';
 
 function stableId(seed) {
   const digest = createHash('sha256').update(seed).digest('hex').slice(0, 32);
   return `${digest.slice(0, 8)}-${digest.slice(8, 12)}-${digest.slice(12, 16)}-${digest.slice(16, 20)}-${digest.slice(20, 32)}`;
+}
+
+function signCmsWebhookPayload(payload, secret = CMS_WEBHOOK_SECRET) {
+  return `sha256=${createHmac('sha256', secret).update(JSON.stringify(payload)).digest('hex')}`;
 }
 
 test('vertical research build enforces competitor minimum and exposes latest output', async () => {
@@ -195,6 +201,63 @@ test('tenant/bootstrap/vertical-build mutating endpoints require internal_admin 
     assert.equal(verticalAuditRes.status, 200);
     const verticalAudit = await verticalAuditRes.json();
     assert.equal(verticalAudit.count >= 1, true);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('cms webhook publish ingress requires valid signature and emits audit trail event', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const payload = {
+      siteId: 'site-webhook-audit',
+      event: 'publish_requested'
+    };
+
+    const missingSignatureRes = await fetch(`${baseUrl}/api/v1/cms/webhooks/publish`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    assert.equal(missingSignatureRes.status, 401);
+    const missingSignatureBody = await missingSignatureRes.json();
+    assert.equal(missingSignatureBody.code, 'webhook_signature_missing');
+
+    const invalidSignatureRes = await fetch(`${baseUrl}/api/v1/cms/webhooks/publish`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-webhook-signature': 'sha256=invalid'
+      },
+      body: JSON.stringify(payload)
+    });
+    assert.equal(invalidSignatureRes.status, 401);
+    const invalidSignatureBody = await invalidSignatureRes.json();
+    assert.equal(invalidSignatureBody.code, 'webhook_signature_invalid');
+
+    const validSignatureRes = await fetch(`${baseUrl}/api/v1/cms/webhooks/publish`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-webhook-signature': signCmsWebhookPayload(payload)
+      },
+      body: JSON.stringify(payload)
+    });
+    assert.equal(validSignatureRes.status, 202);
+    const validSignatureBody = await validSignatureRes.json();
+    assert.equal(validSignatureBody.status, 'queued');
+    assert.equal(typeof validSignatureBody.jobId, 'string');
+
+    const auditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=cms_publish_webhook_queued&siteId=site-webhook-audit&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(auditRes.status, 200);
+    const auditBody = await auditRes.json();
+    assert.equal(auditBody.count >= 1, true);
+    assert.equal(auditBody.items[0].action, 'cms_publish_webhook_queued');
+    assert.equal(auditBody.items[0].entityId, validSignatureBody.jobId);
   } finally {
     await stopServer(server);
   }

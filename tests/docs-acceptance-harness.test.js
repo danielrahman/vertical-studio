@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { createHmac } = require('crypto');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -16,6 +17,7 @@ const INTERNAL_ADMIN_HEADERS = {
   'content-type': 'application/json',
   'x-user-role': 'internal_admin'
 };
+const CMS_WEBHOOK_SECRET = 'test-cms-webhook-secret';
 
 function readRepoFile(relativePath) {
   return fs.readFileSync(path.join(REPO_ROOT, relativePath), 'utf8');
@@ -76,6 +78,7 @@ async function startServer() {
       apiKeys: []
     }
   });
+  app.locals.cmsWebhookSecret = CMS_WEBHOOK_SECRET;
 
   const server = app.listen(0);
   await once(server, 'listening');
@@ -86,6 +89,10 @@ async function startServer() {
     server,
     baseUrl: `http://127.0.0.1:${address.port}`
   };
+}
+
+function signCmsWebhookPayload(payload, secret = CMS_WEBHOOK_SECRET) {
+  return `sha256=${createHmac('sha256', secret).update(JSON.stringify(payload)).digest('hex')}`;
 }
 
 async function stopServer(server) {
@@ -176,6 +183,46 @@ test('WS-G contract: secret rotation runbook and audit trail path are documented
   mustContain(runbook, 'internal_admin');
   mustContain(runbook, 'GET /api/v1/audit/events');
   mustContain(runbook, 'Never store plaintext secret values in app tables.');
+});
+
+test('WS-C contract: cms publish webhook requires a valid signature and enqueues an audited job', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const payload = {
+      siteId: 'site-wsc-webhook',
+      event: 'publish_requested'
+    };
+
+    const missingSignatureRes = await fetch(`${baseUrl}/api/v1/cms/webhooks/publish`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    assert.equal(missingSignatureRes.status, 401);
+
+    const validRes = await fetch(`${baseUrl}/api/v1/cms/webhooks/publish`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-webhook-signature': signCmsWebhookPayload(payload)
+      },
+      body: JSON.stringify(payload)
+    });
+    assert.equal(validRes.status, 202);
+    const validBody = await validRes.json();
+    assert.equal(validBody.status, 'queued');
+
+    const auditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=cms_publish_webhook_queued&siteId=site-wsc-webhook&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(auditRes.status, 200);
+    const auditPayload = await auditRes.json();
+    assert.equal(auditPayload.count >= 1, true);
+  } finally {
+    await stopServer(server);
+  }
 });
 
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
