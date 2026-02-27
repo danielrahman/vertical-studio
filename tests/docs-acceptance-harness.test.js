@@ -165,6 +165,19 @@ test('docs completion Test 7/8: rollout checklists and status tracking files are
   mustContain(sessionLog, 'documentation-revision-vertical-orchestrator');
 });
 
+test('WS-G contract: secret rotation runbook and audit trail path are documented', () => {
+  const securityReadme = readRepoFile('docs/security/README.md');
+  const runbook = readRepoFile('docs/security/SECRET_ROTATION_RUNBOOK.md');
+  const rollout = readRepoFile('docs/plan/40-rollout.md');
+
+  mustContain(securityReadme, 'SECRET_ROTATION_RUNBOOK.md');
+  mustContain(rollout, 'rotation runbook and audit trail are present');
+  mustContain(runbook, 'tenant.<slug>.<provider>.<key>');
+  mustContain(runbook, 'internal_admin');
+  mustContain(runbook, 'GET /api/v1/audit/events');
+  mustContain(runbook, 'Never store plaintext secret values in app tables.');
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 

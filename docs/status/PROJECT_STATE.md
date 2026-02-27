@@ -46,6 +46,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 25. Deterministic security gate reason-code output implemented (`VS3-IMP-018`): publish gate now emits explicit security policy codes for `critical/high` blockers and non-blocking pass outcomes.
 26. Quality gate-family output contract implemented (`VS3-IMP-019`): quality latest report now includes COPY/LAYOUT/MEDIA/LEGAL family outcomes for WS-F checklist compatibility.
 27. Security report artifact+gate output contract implemented (`VS3-IMP-020`): security latest report now includes deterministic gate decision/reason code, severity counts, and required JSON+markdown+gate artifact references.
+28. WS-G secret rotation runbook artifact contract check implemented (`VS3-IMP-021`): added a formal rotation runbook and executable acceptance assertion for naming policy, `internal_admin` scope, and audit trail path presence.
 
 ## In Progress
 
