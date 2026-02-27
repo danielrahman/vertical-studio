@@ -166,7 +166,8 @@ Contract:
 4. If `extractedFields` is provided, it must be an array.
 5. If `lowConfidence` is provided, it must be a boolean.
 6. If `sitePolicy` is provided, it must be an object.
-7. Unknown top-level payload fields are rejected with `400 validation_error`.
+7. `sitePolicy` may contain only `allowOwnerDraftCopyEdits`.
+8. Unknown top-level payload fields are rejected with `400 validation_error`.
 
 ### 4.2 Vertical Intelligence Lifecycle
 

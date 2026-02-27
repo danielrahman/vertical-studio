@@ -531,6 +531,27 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(nonObjectSitePolicyPayload.message, 'sitePolicy must be an object when provided');
     assert.equal(nonObjectSitePolicyPayload.details.invalidField, 'sitePolicy');
 
+    const unknownSitePolicyFieldResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          sitePolicy: {
+            allowOwnerDraftCopyEdits: true,
+            policyVersion: 'v1'
+          }
+        })
+      }
+    );
+    assert.equal(unknownSitePolicyFieldResponse.status, 400);
+    const unknownSitePolicyFieldPayload = await unknownSitePolicyFieldResponse.json();
+    assert.equal(unknownSitePolicyFieldPayload.code, 'validation_error');
+    assert.equal(unknownSitePolicyFieldPayload.message, 'sitePolicy contains unknown fields');
+    assert.equal(unknownSitePolicyFieldPayload.details.invalidField, 'sitePolicy');
+    assert.deepEqual(unknownSitePolicyFieldPayload.details.unknownFields, ['policyVersion']);
+
     const nonArrayFieldsResponse = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

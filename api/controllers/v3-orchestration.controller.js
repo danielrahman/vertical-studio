@@ -21,6 +21,7 @@ const COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
 ]);
 const TENANT_CREATE_ALLOWED_TOP_LEVEL_FIELDS = new Set(['tenantId', 'name', 'slug']);
 const BOOTSTRAP_ALLOWED_TOP_LEVEL_FIELDS = new Set(['draftId', 'extractedFields', 'lowConfidence', 'sitePolicy']);
+const BOOTSTRAP_SITE_POLICY_ALLOWED_FIELDS = new Set(['allowOwnerDraftCopyEdits']);
 const VERTICAL_RESEARCH_BUILD_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'targetCompetitorCount',
   'sources',
@@ -936,6 +937,15 @@ function postBootstrapFromExtraction(req, res, next) {
     ) {
       throw createError('sitePolicy must be an object when provided', 400, 'validation_error', {
         invalidField: 'sitePolicy'
+      });
+    }
+    const unknownSitePolicyFields = sitePolicyProvided
+      ? Object.keys(req.body.sitePolicy).filter((field) => !BOOTSTRAP_SITE_POLICY_ALLOWED_FIELDS.has(field))
+      : [];
+    if (unknownSitePolicyFields.length > 0) {
+      throw createError('sitePolicy contains unknown fields', 400, 'validation_error', {
+        invalidField: 'sitePolicy',
+        unknownFields: unknownSitePolicyFields
       });
     }
     const lowConfidence = req.body?.lowConfidence === true || requiredTodoCount > 0;
