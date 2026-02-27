@@ -1602,6 +1602,54 @@ test('overrides rejects empty string values and trims values before duplicate ch
   }
 });
 
+test('overrides rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-override-unknown-fields-1';
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-override-unknown-fields/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-override-unknown-fields/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const invalidOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-unknown-fields/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        tone: ['credible'],
+        unsupportedDirective: ['unexpected']
+      })
+    });
+    assert.equal(invalidOverrideRes.status, 400);
+    const invalidOverrideBody = await invalidOverrideRes.json();
+    assert.equal(invalidOverrideBody.code, 'invalid_override_payload');
+    assert.equal(invalidOverrideBody.message, 'Invalid override payload: contains unknown top-level fields');
+    assert.deepEqual(invalidOverrideBody.details.unknownFields, ['unsupportedDirective']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('public runtime resolves active site version by host and serves immutable snapshots', async () => {
   const { server, baseUrl } = await startServer();
 

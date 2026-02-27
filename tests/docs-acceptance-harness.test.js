@@ -853,6 +853,56 @@ test('WS-D contract: override string arrays reject blanks and persist trimmed va
   }
 });
 
+test('WS-D contract: override payload rejects unknown top-level fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-wsd-overrides-unknown-fields';
+    const composeRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-unknown-fields/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(composeRes.status, 200);
+
+    const toReviewRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-wsd-overrides-unknown-fields/review/transition`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId,
+          fromState: 'proposal_generated',
+          toState: 'review_in_progress',
+          event: 'REVIEW_STARTED'
+        })
+      }
+    );
+    assert.equal(toReviewRes.status, 200);
+
+    const invalidOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-unknown-fields/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        tone: ['credible'],
+        unexpectedField: ['x']
+      })
+    });
+    assert.equal(invalidOverrideRes.status, 400);
+    const invalidOverridePayload = await invalidOverrideRes.json();
+    assert.equal(invalidOverridePayload.code, 'invalid_override_payload');
+    assert.deepEqual(invalidOverridePayload.details.unknownFields, ['unexpectedField']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy generation rejects unsupported high-impact variant modes', async () => {
   const { server, baseUrl } = await startServer();
 

@@ -21,6 +21,7 @@ const OVERRIDE_ARRAY_KEYS = [
   'requiredComponents',
   'excludedCompetitorPatterns'
 ];
+const OVERRIDE_ALLOWED_TOP_LEVEL_FIELDS = new Set(['draftId', 'actorRole', ...OVERRIDE_ARRAY_KEYS]);
 const OVERRIDE_SECTION_FIELDS = ['requiredSections', 'excludedSections', 'pinnedSections'];
 const ALLOWED_OVERRIDE_SECTION_KEYS = new Set([
   'hero',
@@ -1357,6 +1358,15 @@ function postOverrides(req, res, next) {
     assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
+    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
+      return !OVERRIDE_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+    });
+    if (unknownTopLevelFields.length > 0) {
+      throw createError('Invalid override payload: contains unknown top-level fields', 400, 'invalid_override_payload', {
+        unknownFields: unknownTopLevelFields
+      });
+    }
+
     const normalizedOverrideArrays = {};
 
     for (const key of OVERRIDE_ARRAY_KEYS) {
