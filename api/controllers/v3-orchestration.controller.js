@@ -52,6 +52,7 @@ function getState(req) {
       verticalResearch: new Map(),
       extractedFieldsByDraft: new Map(),
       componentContracts: new Map(),
+      sitePoliciesBySite: new Map(),
       reviewStatesByDraft: new Map(),
       proposalsByDraft: new Map(),
       selectedProposalByDraft: new Map(),
@@ -141,17 +142,41 @@ function assertInternalAdmin(req) {
   }
 }
 
-function assertTenantMemberOrInternalAdmin(req) {
+function getActorRole(req) {
   const headerRole =
     typeof req.headers['x-user-role'] === 'string' ? req.headers['x-user-role'].trim() : null;
   const bodyRole = typeof req.body?.actorRole === 'string' ? req.body.actorRole.trim() : null;
-  const role = headerRole || bodyRole;
+  return headerRole || bodyRole || null;
+}
+
+function assertTenantMemberOrInternalAdmin(req) {
+  const role = getActorRole(req);
 
   if (!TENANT_MEMBER_ROLES.has(role)) {
     throw createError('tenant member or internal_admin role required', 403, 'forbidden', {
       requiredRoles: ['internal_admin', 'owner', 'editor', 'viewer']
     });
   }
+}
+
+function assertCopySelectActorRole(req, state, siteId) {
+  const role = getActorRole(req);
+  if (role === 'internal_admin') {
+    return role;
+  }
+
+  if (role === 'owner') {
+    const sitePolicy = state.sitePoliciesBySite.get(siteId);
+    if (sitePolicy?.allowOwnerDraftCopyEdits === true) {
+      return role;
+    }
+  }
+
+  throw createError('internal_admin role required for copy selection unless owner draft edit policy is enabled', 403, 'forbidden', {
+    requiredRole: 'internal_admin',
+    allowedAlternativeRole: 'owner',
+    policyField: 'sitePolicy.allowOwnerDraftCopyEdits'
+  });
 }
 
 function assertNoPlaintextSecretPayload(body) {
@@ -663,10 +688,26 @@ function postBootstrapFromExtraction(req, res, next) {
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
     const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;
     const lowConfidence = Boolean(req.body?.lowConfidence) || requiredTodoCount > 0;
+    const hasSitePolicyValue = typeof req.body?.sitePolicy?.allowOwnerDraftCopyEdits !== 'undefined';
+    if (hasSitePolicyValue && typeof req.body?.sitePolicy?.allowOwnerDraftCopyEdits !== 'boolean') {
+      throw createError('sitePolicy.allowOwnerDraftCopyEdits must be a boolean', 400, 'validation_error', {
+        field: 'sitePolicy.allowOwnerDraftCopyEdits'
+      });
+    }
     const now = new Date().toISOString();
 
     const state = getState(req);
+    const existingSitePolicy = state.sitePoliciesBySite.get(req.params.siteId) || {
+      allowOwnerDraftCopyEdits: false
+    };
+    const nextSitePolicy = hasSitePolicyValue
+      ? {
+          ...existingSitePolicy,
+          allowOwnerDraftCopyEdits: req.body.sitePolicy.allowOwnerDraftCopyEdits
+        }
+      : existingSitePolicy;
     state.extractedFieldsByDraft.set(draftId, extractedFields);
+    state.sitePoliciesBySite.set(req.params.siteId, nextSitePolicy);
     state.reviewStatesByDraft.set(draftId, 'draft');
     state.auditEvents.push({
       id: randomUUID(),
@@ -677,7 +718,8 @@ function postBootstrapFromExtraction(req, res, next) {
       siteId: req.params.siteId,
       lowConfidence,
       extractedFieldCount: extractedFields.length,
-      requiredTodoCount
+      requiredTodoCount,
+      sitePolicy: nextSitePolicy
     });
 
     res.status(202).json({
@@ -687,7 +729,8 @@ function postBootstrapFromExtraction(req, res, next) {
       lowConfidence,
       reviewState: 'draft',
       requiredTodoCount,
-      extractedFields
+      extractedFields,
+      sitePolicy: nextSitePolicy
     });
   } catch (error) {
     next(error);
@@ -1028,7 +1071,6 @@ function getCopySlots(req, res, next) {
 
 function postCopySelect(req, res, next) {
   try {
-    assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
 
@@ -1037,6 +1079,7 @@ function postCopySelect(req, res, next) {
     }
 
     const state = getState(req);
+    const selectedByRole = assertCopySelectActorRole(req, state, req.params.siteId);
     const candidates = state.copyCandidatesByDraft.get(req.body.draftId) || [];
     const candidateIds = new Set(candidates.map((candidate) => candidate.candidateId));
 
@@ -1056,12 +1099,14 @@ function postCopySelect(req, res, next) {
       entityType: 'draft',
       entityId: req.body.draftId,
       siteId: req.params.siteId,
-      selectedCount: req.body.selections.length
+      selectedCount: req.body.selections.length,
+      selectedByRole
     });
 
     res.status(200).json({
       draftId: req.body.draftId,
-      selected: req.body.selections.length
+      selected: req.body.selections.length,
+      selectedByRole
     });
   } catch (error) {
     next(error);

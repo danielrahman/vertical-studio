@@ -71,6 +71,10 @@ const INTERNAL_ADMIN_HEADERS = {
   'content-type': 'application/json',
   'x-user-role': 'internal_admin'
 };
+const OWNER_HEADERS = {
+  'content-type': 'application/json',
+  'x-user-role': 'owner'
+};
 const TENANT_MEMBER_HEADERS = {
   'x-user-role': 'viewer'
 };
@@ -592,6 +596,71 @@ test('compose/copy mutation endpoints require internal_admin role', async () => 
       })
     });
     assert.equal(copySelectForbiddenRes.status, 403);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('copy select allows owner only when site policy enables draft copy edits', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-copy-owner-policy';
+    const draftId = 'draft-copy-owner-policy';
+
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US']
+      })
+    });
+    assert.equal(generateRes.status, 200);
+    const candidateId = stableId(`${draftId}|hero.h1|cs-CZ|B`);
+
+    const ownerForbiddenRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: OWNER_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ candidateId }]
+      })
+    });
+    assert.equal(ownerForbiddenRes.status, 403);
+
+    const bootstrapPolicyRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        sitePolicy: {
+          allowOwnerDraftCopyEdits: true
+        }
+      })
+    });
+    assert.equal(bootstrapPolicyRes.status, 202);
+
+    const ownerAllowedRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: OWNER_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ candidateId }]
+      })
+    });
+    assert.equal(ownerAllowedRes.status, 200);
+    const ownerAllowedBody = await ownerAllowedRes.json();
+    assert.equal(ownerAllowedBody.selectedByRole, 'owner');
+
+    const auditRes = await fetch(
+      `${baseUrl}/api/v1/audit/events?action=ops_copy_selected&siteId=${siteId}&limit=10`,
+      { headers: { 'x-user-role': 'internal_admin' } }
+    );
+    assert.equal(auditRes.status, 200);
+    const auditPayload = await auditRes.json();
+    assert.equal(auditPayload.count >= 1, true);
+    assert.equal(auditPayload.items[0].selectedByRole, 'owner');
   } finally {
     await stopServer(server);
   }

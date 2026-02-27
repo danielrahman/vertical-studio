@@ -326,6 +326,65 @@ test('WS-B contract: low-confidence required extraction fields are stored as TOD
   }
 });
 
+test('WS-B contract: owner copy selection is blocked unless site policy allows draft copy edits', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-wsb-owner-copy';
+    const draftId = 'draft-wsb-owner-copy';
+
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US']
+      })
+    });
+    assert.equal(generateRes.status, 200);
+
+    const ownerDeniedRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-user-role': 'owner'
+      },
+      body: JSON.stringify({
+        draftId,
+        selections: [{ candidateId: `missing-${draftId}` }]
+      })
+    });
+    assert.equal(ownerDeniedRes.status, 403);
+
+    const policySetRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        sitePolicy: {
+          allowOwnerDraftCopyEdits: true
+        }
+      })
+    });
+    assert.equal(policySetRes.status, 202);
+
+    const ownerAllowedRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-user-role': 'owner'
+      },
+      body: JSON.stringify({
+        draftId,
+        selections: [{ candidateId: app.locals.v3State.copyCandidatesByDraft.get(draftId)[0].candidateId }]
+      })
+    });
+    assert.equal(ownerAllowedRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 

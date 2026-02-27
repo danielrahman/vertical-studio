@@ -60,6 +60,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 39. Compose/copy prompt audit-contract persistence implemented (`VS3-IMP-032`): compose/copy audit events now store structured prompt payloads (`verticalStandardVersion`, component versions, slot definitions, manual overrides, disallowed patterns) with API + acceptance assertions.
 40. Error envelope contract hardening implemented (`VS3-IMP-033`): all API error paths now consistently return `code`, `message`, `requestId`, and `details` (including 404 middleware responses), with API + WS-A regression coverage.
 41. Extraction bootstrap evidence normalization implemented (`VS3-IMP-034`): bootstrap now normalizes and stores `ExtractedField` evidence metadata, enforces low-confidence TODO nulling for required fields, and persists audit counters for required TODO review signals.
+42. Copy selection policy exception implemented (`VS3-IMP-035`): `owner` role is now permitted on copy selection only when site policy enables draft copy edits; default remains internal-admin-only and audit trail captures selecting role.
 
 ## In Progress
 
