@@ -34,16 +34,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 13. Publish gate skeleton implemented with deterministic blocking logic for quality `P0` and unresolved security `critical/high`.
 14. Secret-ref metadata model and ACL implemented (`VS3-IMP-008`): enforced `internal_admin` access, strict `tenant.<slug>.<provider>.<key>` validation, metadata-only persistence, and plaintext secret payload rejection.
 15. Ops review flow implemented (`VS3-IMP-009`) with proposal tracking, `internal_admin`-only review transitions, state-gated variant selection, and state-gated manual overrides with versioned metadata.
+16. Public runtime snapshot rendering skeleton implemented (`VS3-IMP-010`) with host-based active-version resolution, immutable storage-key snapshot fetch APIs, and a public-web runtime client/HTML renderer module.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. Public runtime snapshot rendering skeleton (`VS3-IMP-010`) is the immediate next execution step.
+2. Documentation acceptance test harness (`VS3-IMP-011`) is the immediate next execution step.
 
 ## Next
 
-1. Implement public runtime snapshot rendering skeleton.
-2. Add test harness for documentation acceptance criteria.
+1. Add test harness for documentation acceptance criteria.
 
 ## Known Constraints
 

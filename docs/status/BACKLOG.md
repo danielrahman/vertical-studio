@@ -22,4 +22,5 @@
 | VS3-IMP-007 | Implement publish gate skeleton (quality/security blockers)           | done        | codex | Added publish gate evaluator for quality `P0` and unresolved security `critical/high` |
 | VS3-IMP-008 | Implement secret-ref metadata model and ACL (`internal_admin`)        | done        | codex | Added strict secret metadata validation, `internal_admin` ACL, and no-plaintext payload guard |
 | VS3-IMP-009 | Implement ops review flow for variant selection and overrides         | done        | codex | Added proposal tracking, state-gated selection/overrides, and `internal_admin` transition ACL |
-| VS3-IMP-010 | Implement public runtime snapshot rendering skeleton                  | in_progress | codex | Dynamic immutable version fetch                                                         |
+| VS3-IMP-010 | Implement public runtime snapshot rendering skeleton                  | done        | codex | Added host->active version resolution, immutable snapshot fetch endpoints, and public-web runtime client skeleton |
+| VS3-IMP-011 | Add documentation acceptance test harness                             | todo        | codex | Cover rollout acceptance scenarios from `docs/plan/40-rollout.md`                      |

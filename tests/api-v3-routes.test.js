@@ -310,6 +310,76 @@ test('ops review flow enforces internal_admin selection and override state gatin
   }
 });
 
+test('public runtime resolves active site version by host and serves immutable snapshots', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const firstPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-1/publish`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-runtime-1',
+        proposalId: 'proposal-runtime-a',
+        host: 'runtime-tenant.example.test'
+      })
+    });
+    assert.equal(firstPublishRes.status, 200);
+    const firstPublishBody = await firstPublishRes.json();
+
+    const firstResolveRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/resolve?host=runtime-tenant.example.test`
+    );
+    assert.equal(firstResolveRes.status, 200);
+    const firstResolveBody = await firstResolveRes.json();
+    assert.equal(firstResolveBody.versionId, firstPublishBody.versionId);
+    assert.equal(firstResolveBody.storageKey, firstPublishBody.storageKey);
+
+    const firstSnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-runtime-1&versionId=${firstPublishBody.versionId}`
+    );
+    assert.equal(firstSnapshotRes.status, 200);
+    const firstSnapshotBody = await firstSnapshotRes.json();
+    assert.equal(firstSnapshotBody.immutable, true);
+    assert.equal(firstSnapshotBody.snapshot.proposalId, 'proposal-runtime-a');
+
+    const secondPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-1/publish`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-runtime-2',
+        proposalId: 'proposal-runtime-b',
+        host: 'runtime-tenant.example.test'
+      })
+    });
+    assert.equal(secondPublishRes.status, 200);
+    const secondPublishBody = await secondPublishRes.json();
+
+    const secondResolveRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/resolve?host=runtime-tenant.example.test`
+    );
+    assert.equal(secondResolveRes.status, 200);
+    const secondResolveBody = await secondResolveRes.json();
+    assert.equal(secondResolveBody.versionId, secondPublishBody.versionId);
+    assert.notEqual(secondResolveBody.versionId, firstPublishBody.versionId);
+
+    const immutableFirstSnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-runtime-1&versionId=${firstPublishBody.versionId}`
+    );
+    assert.equal(immutableFirstSnapshotRes.status, 200);
+    const immutableFirstSnapshotBody = await immutableFirstSnapshotRes.json();
+    assert.equal(immutableFirstSnapshotBody.snapshot.proposalId, 'proposal-runtime-a');
+
+    const latestSnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-runtime-1&versionId=${secondPublishBody.versionId}`
+    );
+    assert.equal(latestSnapshotRes.status, 200);
+    const latestSnapshotBody = await latestSnapshotRes.json();
+    assert.equal(latestSnapshotBody.snapshot.proposalId, 'proposal-runtime-b');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('secret refs endpoint enforces internal_admin ACL, naming policy, and metadata-only payloads', async () => {
   const { server, baseUrl } = await startServer();
 

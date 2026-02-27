@@ -40,6 +40,8 @@ function getState(req) {
       proposalsByDraft: new Map(),
       selectedProposalByDraft: new Map(),
       siteVersions: new Map(),
+      runtimeHostToSite: new Map(),
+      runtimeSnapshotsByStorageKey: new Map(),
       copySlotsByDraft: new Map(),
       copyCandidatesByDraft: new Map(),
       overridesByDraft: new Map(),
@@ -130,6 +132,51 @@ function assertNoPlaintextSecretPayload(body) {
       field: forbiddenField
     });
   }
+}
+
+function normalizeHost(rawHost) {
+  if (typeof rawHost !== 'string') {
+    return null;
+  }
+
+  const trimmed = rawHost.trim().toLowerCase();
+  if (!trimmed) {
+    return null;
+  }
+
+  const withoutProtocol = trimmed.replace(/^https?:\/\//, '');
+  const host = withoutProtocol.split('/')[0];
+  return host.split(':')[0] || null;
+}
+
+function buildRuntimeSnapshot({ siteId, versionId, draftId, proposalId }) {
+  return {
+    siteId,
+    versionId,
+    draftId,
+    proposalId,
+    generatedAt: new Date().toISOString(),
+    sections: [
+      {
+        sectionId: 'hero',
+        componentId: 'hero',
+        variant: 'split-media',
+        slots: {
+          h1: 'Runtime snapshot placeholder headline',
+          subhead: 'Immutable runtime payload served by storage key'
+        }
+      },
+      {
+        sectionId: 'contact',
+        componentId: 'cta-form',
+        variant: 'default',
+        slots: {
+          headline: 'Contact our team',
+          primaryCtaLabel: 'Book consultation'
+        }
+      }
+    ]
+  };
 }
 
 function postCreateTenant(req, res, next) {
@@ -664,20 +711,40 @@ function postPublishSite(req, res, next) {
 
     const versionId = randomUUID();
     const state = getState(req);
+    const runtimeHost = normalizeHost(req.body?.host) || `${req.params.siteId}.public.vertical-studio.local`;
+    const storageKey = `site-versions/${req.params.siteId}/${versionId}.json`;
     const versions = state.siteVersions.get(req.params.siteId) || [];
+    for (const version of versions) {
+      version.active = false;
+    }
 
-    versions.push({
+    const versionRecord = {
       versionId,
       draftId: req.body.draftId,
       proposalId: req.body.proposalId,
+      storageKey,
+      host: runtimeHost,
       createdAt: new Date().toISOString(),
       active: true
-    });
+    };
+    versions.push(versionRecord);
     state.siteVersions.set(req.params.siteId, versions);
+    state.runtimeHostToSite.set(runtimeHost, req.params.siteId);
+    state.runtimeSnapshotsByStorageKey.set(
+      storageKey,
+      buildRuntimeSnapshot({
+        siteId: req.params.siteId,
+        versionId,
+        draftId: req.body.draftId,
+        proposalId: req.body.proposalId
+      })
+    );
 
     res.status(200).json({
       siteId: req.params.siteId,
       versionId,
+      host: runtimeHost,
+      storageKey,
       status: 'published',
       blocked: false
     });
@@ -735,6 +802,73 @@ function getLatestSecurityReport(req, res, next) {
       generatedAt: new Date().toISOString(),
       status: 'pending',
       unresolvedFindings: []
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+function getPublicRuntimeResolve(req, res, next) {
+  try {
+    const host = normalizeHost(req.query.host) || normalizeHost(req.headers.host);
+    if (!host) {
+      throw createError('host is required', 400, 'validation_error', {
+        field: 'host'
+      });
+    }
+
+    const state = getState(req);
+    const mappedSiteId = state.runtimeHostToSite.get(host);
+    const inferredSiteId = mappedSiteId || host.split('.')[0];
+    if (!inferredSiteId) {
+      throw createError('Unable to resolve host to site', 404, 'runtime_site_not_found', {
+        host
+      });
+    }
+
+    const versions = state.siteVersions.get(inferredSiteId) || [];
+    const activeVersion = versions.find((item) => item.active);
+    if (!activeVersion) {
+      throw createError('No active version for resolved site', 404, 'runtime_site_not_found', {
+        host,
+        siteId: inferredSiteId
+      });
+    }
+
+    res.status(200).json({
+      host,
+      siteId: inferredSiteId,
+      versionId: activeVersion.versionId,
+      storageKey: activeVersion.storageKey
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+function getPublicRuntimeSnapshot(req, res, next) {
+  try {
+    assertString(req.query.siteId, 'siteId');
+    assertString(req.query.versionId, 'versionId');
+
+    const state = getState(req);
+    const versions = state.siteVersions.get(req.query.siteId) || [];
+    const version = versions.find((item) => item.versionId === req.query.versionId);
+    if (!version) {
+      throw createError('Runtime version not found', 404, 'runtime_version_not_found');
+    }
+
+    const snapshot = state.runtimeSnapshotsByStorageKey.get(version.storageKey);
+    if (!snapshot) {
+      throw createError('Runtime snapshot not found', 404, 'runtime_snapshot_not_found');
+    }
+
+    res.status(200).json({
+      siteId: req.query.siteId,
+      versionId: req.query.versionId,
+      storageKey: version.storageKey,
+      immutable: true,
+      snapshot
     });
   } catch (error) {
     next(error);
@@ -850,6 +984,8 @@ module.exports = {
   getSiteVersions,
   getLatestQualityReport,
   getLatestSecurityReport,
+  getPublicRuntimeResolve,
+  getPublicRuntimeSnapshot,
   postCmsPublishWebhook,
   postSecretRef
 };
