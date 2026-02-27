@@ -428,6 +428,39 @@ test('WS-B contract: publish is blocked when required low-confidence extraction 
   }
 });
 
+test('WS-D contract: copy generation rejects unsupported high-impact variant modes', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const invalidModeRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-copy/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-copy-1',
+        locales: ['cs-CZ', 'en-US'],
+        highImpactOnlyThreeVariants: false
+      })
+    });
+    assert.equal(invalidModeRes.status, 400);
+    const invalidMode = await invalidModeRes.json();
+    assert.equal(invalidMode.code, 'validation_error');
+    assert.equal(invalidMode.details.field, 'highImpactOnlyThreeVariants');
+
+    const validModeRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-copy/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-copy-1',
+        locales: ['cs-CZ', 'en-US'],
+        highImpactOnlyThreeVariants: true
+      })
+    });
+    assert.equal(validModeRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('acceptance scenario 4.1: bounded copy generation enforces candidate policy and limits', async () => {
   const { app, server, baseUrl } = await startServer();
 

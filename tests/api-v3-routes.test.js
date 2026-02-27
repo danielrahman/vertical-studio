@@ -601,6 +601,41 @@ test('compose/copy mutation endpoints require internal_admin role', async () => 
   }
 });
 
+test('copy generate rejects unsupported highImpactOnlyThreeVariants mode when provided and not true', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const invalidFlagRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-mode/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-mode',
+        locales: ['cs-CZ', 'en-US'],
+        highImpactOnlyThreeVariants: false
+      })
+    });
+    assert.equal(invalidFlagRes.status, 400);
+    const invalidFlagBody = await invalidFlagRes.json();
+    assert.equal(invalidFlagBody.code, 'validation_error');
+    assert.equal(invalidFlagBody.message, 'highImpactOnlyThreeVariants must be true when provided');
+    assert.equal(invalidFlagBody.details.field, 'highImpactOnlyThreeVariants');
+    assert.equal(invalidFlagBody.details.allowedValue, true);
+
+    const validFlagRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-mode/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-mode',
+        locales: ['cs-CZ', 'en-US'],
+        highImpactOnlyThreeVariants: true
+      })
+    });
+    assert.equal(validFlagRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select allows owner only when site policy enables draft copy edits', async () => {
   const { server, baseUrl } = await startServer();
 

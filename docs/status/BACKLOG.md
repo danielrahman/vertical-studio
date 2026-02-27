@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-037 | Enforce `highImpactOnlyThreeVariants` copy-generate request contract  | done        | codex | `POST /copy/generate` now rejects non-`true` values when flag is provided; API/WS-D coverage added |
 | VS3-IMP-036 | Enforce low-confidence review-required publish pre-gate               | done        | codex | Publish now blocks with `low_confidence_review_required` when required extraction TODOs remain; API/WS-B coverage added |
 | VS3-IMP-035 | Allow owner copy selection only when site policy enables draft edits  | done        | codex | `POST /copy/select` now allows `owner` only when `sitePolicy.allowOwnerDraftCopyEdits` is enabled; API/WS-B coverage added |
 | VS3-IMP-034 | Implement extraction bootstrap evidence normalization and TODO policy  | done        | codex | Bootstrap now stores normalized `ExtractedField` records, enforces low-confidence TODO nulling, and audits required TODO counts |
