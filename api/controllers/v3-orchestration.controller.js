@@ -758,10 +758,35 @@ function postRollbackVersion(req, res, next) {
     assertString(req.params.siteId, 'siteId');
     assertString(req.params.versionId, 'versionId');
 
-    res.status(202).json({
+    const state = getState(req);
+    const versions = state.siteVersions.get(req.params.siteId) || [];
+    const targetVersion = versions.find((version) => version.versionId === req.params.versionId);
+    if (!targetVersion) {
+      throw createError('Version not found for rollback', 404, 'runtime_version_not_found', {
+        siteId: req.params.siteId,
+        versionId: req.params.versionId
+      });
+    }
+
+    for (const version of versions) {
+      version.active = version.versionId === targetVersion.versionId;
+    }
+
+    const now = new Date().toISOString();
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'ops_runtime_rollback_repointed',
+      occurredAt: now,
+      entityType: 'site_version',
+      entityId: targetVersion.versionId,
+      siteId: req.params.siteId
+    });
+
+    res.status(200).json({
       siteId: req.params.siteId,
       versionId: req.params.versionId,
-      status: 'rollback_pending'
+      status: 'rolled_back',
+      activeVersionId: targetVersion.versionId
     });
   } catch (error) {
     next(error);

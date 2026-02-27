@@ -380,6 +380,75 @@ test('public runtime resolves active site version by host and serves immutable s
   }
 });
 
+test('rollback repoints active runtime version to exact prior immutable version', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const firstPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-rollback/publish`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-rollback-1',
+        proposalId: 'proposal-rollback-a',
+        host: 'rollback-tenant.example.test'
+      })
+    });
+    assert.equal(firstPublishRes.status, 200);
+    const firstPublish = await firstPublishRes.json();
+
+    const secondPublishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-rollback/publish`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-rollback-2',
+        proposalId: 'proposal-rollback-b',
+        host: 'rollback-tenant.example.test'
+      })
+    });
+    assert.equal(secondPublishRes.status, 200);
+    const secondPublish = await secondPublishRes.json();
+
+    const beforeRollbackResolveRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/resolve?host=rollback-tenant.example.test`
+    );
+    assert.equal(beforeRollbackResolveRes.status, 200);
+    const beforeRollbackResolve = await beforeRollbackResolveRes.json();
+    assert.equal(beforeRollbackResolve.versionId, secondPublish.versionId);
+
+    const rollbackRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-runtime-rollback/rollback/${firstPublish.versionId}`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS
+      }
+    );
+    assert.equal(rollbackRes.status, 200);
+    const rollbackBody = await rollbackRes.json();
+    assert.equal(rollbackBody.status, 'rolled_back');
+    assert.equal(rollbackBody.activeVersionId, firstPublish.versionId);
+
+    const afterRollbackResolveRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/resolve?host=rollback-tenant.example.test`
+    );
+    assert.equal(afterRollbackResolveRes.status, 200);
+    const afterRollbackResolve = await afterRollbackResolveRes.json();
+    assert.equal(afterRollbackResolve.versionId, firstPublish.versionId);
+
+    const missingRollbackRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-runtime-rollback/rollback/version-missing`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS
+      }
+    );
+    assert.equal(missingRollbackRes.status, 404);
+    const missingRollback = await missingRollbackRes.json();
+    assert.equal(missingRollback.code, 'runtime_version_not_found');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('secret refs endpoint enforces internal_admin ACL, naming policy, and metadata-only payloads', async () => {
   const { server, baseUrl } = await startServer();
 
