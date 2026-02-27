@@ -1448,6 +1448,20 @@ function postOverrides(req, res, next) {
       }
     }
 
+    const hasNonEmptyOverrideDirective = OVERRIDE_ARRAY_KEYS.some((field) => {
+      return Array.isArray(req.body[field]) && req.body[field].length > 0;
+    });
+    if (!hasNonEmptyOverrideDirective) {
+      throw createError(
+        'Invalid override payload: at least one non-empty override array is required',
+        400,
+        'invalid_override_payload',
+        {
+          fields: OVERRIDE_ARRAY_KEYS
+        }
+      );
+    }
+
     const reviewState = state.reviewStatesByDraft.get(req.body.draftId);
     if (reviewState !== 'review_in_progress' && reviewState !== 'proposal_selected') {
       throw createError('Invalid review transition', 409, 'invalid_transition', {

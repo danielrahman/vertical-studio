@@ -1466,6 +1466,77 @@ test('overrides rejects duplicate values inside override arrays', async () => {
   }
 });
 
+test('overrides requires at least one non-empty override directive array', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-override-non-empty-1';
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-override-non-empty/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-override-non-empty/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const emptyOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-non-empty/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId
+      })
+    });
+    assert.equal(emptyOverrideRes.status, 400);
+    const emptyOverrideBody = await emptyOverrideRes.json();
+    assert.equal(emptyOverrideBody.code, 'invalid_override_payload');
+    assert.equal(
+      emptyOverrideBody.message,
+      'Invalid override payload: at least one non-empty override array is required'
+    );
+
+    const emptyArraysRes = await fetch(`${baseUrl}/api/v1/sites/site-override-non-empty/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        tone: [],
+        keywords: []
+      })
+    });
+    assert.equal(emptyArraysRes.status, 400);
+    const emptyArraysBody = await emptyArraysRes.json();
+    assert.equal(emptyArraysBody.code, 'invalid_override_payload');
+
+    const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-non-empty/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        tone: ['credible']
+      })
+    });
+    assert.equal(validOverrideRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('public runtime resolves active site version by host and serves immutable snapshots', async () => {
   const { server, baseUrl } = await startServer();
 
