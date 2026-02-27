@@ -65,6 +65,11 @@ async function stopServer(server) {
   });
 }
 
+const INTERNAL_ADMIN_HEADERS = {
+  'content-type': 'application/json',
+  'x-user-role': 'internal_admin'
+};
+
 test('vertical research build enforces competitor minimum and exposes latest output', async () => {
   const { server, baseUrl } = await startServer();
 
@@ -141,9 +146,21 @@ test('review transition validates allowed state movement and returns invalid_tra
   const { server, baseUrl } = await startServer();
 
   try {
-    const invalidRes = await fetch(`${baseUrl}/api/v1/sites/site-1/review/transition`, {
+    const forbiddenRes = await fetch(`${baseUrl}/api/v1/sites/site-1/review/transition`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-1',
+        fromState: 'draft',
+        toState: 'proposal_generated',
+        event: 'PROPOSALS_READY'
+      })
+    });
+    assert.equal(forbiddenRes.status, 403);
+
+    const invalidRes = await fetch(`${baseUrl}/api/v1/sites/site-1/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-1',
         fromState: 'draft',
@@ -159,7 +176,7 @@ test('review transition validates allowed state movement and returns invalid_tra
 
     const validRes = await fetch(`${baseUrl}/api/v1/sites/site-1/review/transition`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-1',
         fromState: 'draft',
@@ -172,7 +189,7 @@ test('review transition validates allowed state movement and returns invalid_tra
 
     const staleStateRes = await fetch(`${baseUrl}/api/v1/sites/site-1/review/transition`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-1',
         fromState: 'draft',
@@ -185,6 +202,109 @@ test('review transition validates allowed state movement and returns invalid_tra
     const staleBody = await staleStateRes.json();
     assert.equal(staleBody.code, 'invalid_transition');
     assert.equal(staleBody.details.reasonCode, 'state_mismatch');
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('ops review flow enforces internal_admin selection and override state gating', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-1/compose/propose`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-ops-1',
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+    const proposeBody = await proposeRes.json();
+
+    const forbiddenSelectRes = await fetch(`${baseUrl}/api/v1/sites/site-1/compose/select`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-ops-1',
+        proposalId: proposeBody.variants[0].proposalId
+      })
+    });
+    assert.equal(forbiddenSelectRes.status, 403);
+
+    const blockedOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-1/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-ops-1',
+        tone: ['credible']
+      })
+    });
+    assert.equal(blockedOverrideRes.status, 409);
+    const blockedOverrideBody = await blockedOverrideRes.json();
+    assert.equal(blockedOverrideBody.code, 'invalid_transition');
+    assert.equal(blockedOverrideBody.details.reasonCode, 'override_state_invalid');
+
+    const toReviewRes = await fetch(`${baseUrl}/api/v1/sites/site-1/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-ops-1',
+        fromState: 'proposal_generated',
+        toState: 'review_in_progress',
+        event: 'REVIEW_STARTED'
+      })
+    });
+    assert.equal(toReviewRes.status, 200);
+
+    const storedOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-1/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-ops-1',
+        tone: ['credible'],
+        requiredSections: ['hero', 'contact']
+      })
+    });
+    assert.equal(storedOverrideRes.status, 200);
+    const storedOverrideBody = await storedOverrideRes.json();
+    assert.equal(storedOverrideBody.version, 1);
+
+    const invalidProposalRes = await fetch(`${baseUrl}/api/v1/sites/site-1/compose/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-ops-1',
+        proposalId: 'proposal-missing'
+      })
+    });
+    assert.equal(invalidProposalRes.status, 404);
+
+    const selectedProposalRes = await fetch(`${baseUrl}/api/v1/sites/site-1/compose/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-ops-1',
+        proposalId: proposeBody.variants[1].proposalId
+      })
+    });
+    assert.equal(selectedProposalRes.status, 200);
+    const selectedProposalBody = await selectedProposalRes.json();
+    assert.equal(selectedProposalBody.reviewState, 'proposal_selected');
+
+    const updatedOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-1/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-ops-1',
+        keywords: ['trust', 'delivery']
+      })
+    });
+    assert.equal(updatedOverrideRes.status, 200);
+    const updatedOverrideBody = await updatedOverrideRes.json();
+    assert.equal(updatedOverrideBody.version, 2);
   } finally {
     await stopServer(server);
   }
@@ -209,14 +329,9 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     const nonAdminBody = await nonAdminRes.json();
     assert.equal(nonAdminBody.code, 'forbidden');
 
-    const internalAdminHeaders = {
-      'content-type': 'application/json',
-      'x-user-role': 'internal_admin'
-    };
-
     const invalidRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
-      headers: internalAdminHeaders,
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         tenantId: 'tenant-1',
         ref: 'captcha.2captcha',
@@ -231,7 +346,7 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
 
     const plaintextRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
-      headers: internalAdminHeaders,
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         tenantId: 'tenant-1',
         ref: 'tenant.tenant-1.openai.api',
@@ -248,7 +363,7 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
 
     const mismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
-      headers: internalAdminHeaders,
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         tenantId: 'tenant-1',
         tenantSlug: 'tenant-1',
@@ -265,7 +380,7 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
 
     const validRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
-      headers: internalAdminHeaders,
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         tenantId: 'tenant-1',
         tenantSlug: 'tenant-1',
@@ -286,7 +401,7 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
 
     const updatedRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
-      headers: internalAdminHeaders,
+      headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         tenantId: 'tenant-1',
         tenantSlug: 'tenant-1',

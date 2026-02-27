@@ -33,17 +33,17 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 12. Compose/copy skeleton implemented with deterministic proposal IDs plus bounded slot definitions and candidate generation policy (high-impact `A/B/C`, non-high-impact `SINGLE`).
 13. Publish gate skeleton implemented with deterministic blocking logic for quality `P0` and unresolved security `critical/high`.
 14. Secret-ref metadata model and ACL implemented (`VS3-IMP-008`): enforced `internal_admin` access, strict `tenant.<slug>.<provider>.<key>` validation, metadata-only persistence, and plaintext secret payload rejection.
+15. Ops review flow implemented (`VS3-IMP-009`) with proposal tracking, `internal_admin`-only review transitions, state-gated variant selection, and state-gated manual overrides with versioned metadata.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. Ops review flow for variant selection and overrides (`VS3-IMP-009`) is the immediate next execution step.
+2. Public runtime snapshot rendering skeleton (`VS3-IMP-010`) is the immediate next execution step.
 
 ## Next
 
-1. Implement ops review flow for variant selection and overrides.
-2. Implement public runtime snapshot rendering skeleton.
-3. Add test harness for documentation acceptance criteria.
+1. Implement public runtime snapshot rendering skeleton.
+2. Add test harness for documentation acceptance criteria.
 
 ## Known Constraints
 

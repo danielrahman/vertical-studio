@@ -37,6 +37,8 @@ function getState(req) {
       verticalResearch: new Map(),
       componentContracts: new Map(),
       reviewStatesByDraft: new Map(),
+      proposalsByDraft: new Map(),
+      selectedProposalByDraft: new Map(),
       siteVersions: new Map(),
       copySlotsByDraft: new Map(),
       copyCandidatesByDraft: new Map(),
@@ -344,6 +346,19 @@ function postComposePropose(req, res, next) {
       verticalStandardVersion: req.body.verticalStandardVersion
     });
 
+    const state = getState(req);
+    const now = new Date().toISOString();
+    state.proposalsByDraft.set(req.body.draftId, response.variants);
+    state.reviewStatesByDraft.set(req.body.draftId, 'proposal_generated');
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'ops_proposals_generated',
+      occurredAt: now,
+      entityType: 'draft',
+      entityId: req.body.draftId,
+      siteId: req.params.siteId
+    });
+
     res.status(200).json(response);
   } catch (error) {
     next(error);
@@ -352,15 +367,64 @@ function postComposePropose(req, res, next) {
 
 function postComposeSelect(req, res, next) {
   try {
+    assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
     assertString(req.body?.proposalId, 'proposalId');
+
+    const state = getState(req);
+    const currentState = state.reviewStatesByDraft.get(req.body.draftId);
+    const proposals = state.proposalsByDraft.get(req.body.draftId) || [];
+    if (!proposals.length) {
+      throw createError('No generated proposals available for this draft', 409, 'invalid_transition', {
+        reasonCode: 'proposals_missing'
+      });
+    }
+
+    const selectedProposal = proposals.find((proposal) => proposal.proposalId === req.body.proposalId);
+    if (!selectedProposal) {
+      throw createError('proposal not found', 404, 'proposal_not_found');
+    }
+
+    const decision = reviewTransitionGuard.evaluate({
+      currentState,
+      fromState: 'review_in_progress',
+      toState: 'proposal_selected',
+      event: 'PROPOSAL_SELECTED'
+    });
+
+    if (!decision.ok) {
+      throw createError('Invalid review transition', 409, 'invalid_transition', {
+        reasonCode: decision.reasonCode,
+        fromState: 'review_in_progress',
+        toState: 'proposal_selected'
+      });
+    }
+
+    const now = new Date().toISOString();
+    state.selectedProposalByDraft.set(req.body.draftId, {
+      ...selectedProposal,
+      selectedAt: now,
+      selectedByRole: 'internal_admin'
+    });
+    state.reviewStatesByDraft.set(req.body.draftId, 'proposal_selected');
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'ops_proposal_selected',
+      occurredAt: now,
+      entityType: 'draft',
+      entityId: req.body.draftId,
+      siteId: req.params.siteId,
+      proposalId: req.body.proposalId
+    });
 
     res.status(200).json({
       siteId: req.params.siteId,
       draftId: req.body.draftId,
       proposalId: req.body.proposalId,
-      status: 'selected'
+      variantKey: selectedProposal.variantKey,
+      status: 'selected',
+      reviewState: 'proposal_selected'
     });
   } catch (error) {
     next(error);
@@ -447,6 +511,7 @@ function postCopySelect(req, res, next) {
 
 function postOverrides(req, res, next) {
   try {
+    assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
 
@@ -464,17 +529,45 @@ function postOverrides(req, res, next) {
       if (typeof req.body[key] !== 'undefined' && !Array.isArray(req.body[key])) {
         throw createError(`Invalid override payload: ${key} must be an array`, 400, 'invalid_override_payload');
       }
+
+      if (Array.isArray(req.body[key]) && req.body[key].some((item) => typeof item !== 'string')) {
+        throw createError(`Invalid override payload: ${key} must be an array of strings`, 400, 'invalid_override_payload');
+      }
     }
 
     const state = getState(req);
+    const reviewState = state.reviewStatesByDraft.get(req.body.draftId);
+    if (reviewState !== 'review_in_progress' && reviewState !== 'proposal_selected') {
+      throw createError('Invalid review transition', 409, 'invalid_transition', {
+        reasonCode: 'override_state_invalid',
+        requiredStates: ['review_in_progress', 'proposal_selected']
+      });
+    }
+
+    const existingOverrides = state.overridesByDraft.get(req.body.draftId);
+    const version = existingOverrides?.version ? Number(existingOverrides.version) + 1 : 1;
+    const now = new Date().toISOString();
+
     state.overridesByDraft.set(req.body.draftId, {
       ...req.body,
-      updatedAt: new Date().toISOString()
+      version,
+      updatedByRole: 'internal_admin',
+      updatedAt: now
+    });
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'ops_overrides_stored',
+      occurredAt: now,
+      entityType: 'draft',
+      entityId: req.body.draftId,
+      siteId: req.params.siteId,
+      version
     });
 
     res.status(200).json({
       draftId: req.body.draftId,
-      status: 'stored'
+      status: 'stored',
+      version
     });
   } catch (error) {
     next(error);
@@ -483,6 +576,7 @@ function postOverrides(req, res, next) {
 
 function postReviewTransition(req, res, next) {
   try {
+    assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
     assertString(req.body?.fromState, 'fromState');
@@ -508,6 +602,17 @@ function postReviewTransition(req, res, next) {
     }
 
     state.reviewStatesByDraft.set(req.body.draftId, req.body.toState);
+    state.auditEvents.push({
+      id: randomUUID(),
+      action: 'ops_review_transition',
+      occurredAt: new Date().toISOString(),
+      entityType: 'draft',
+      entityId: req.body.draftId,
+      siteId: req.params.siteId,
+      fromState: req.body.fromState,
+      toState: req.body.toState,
+      event: req.body.event
+    });
 
     res.status(200).json({
       draftId: req.body.draftId,

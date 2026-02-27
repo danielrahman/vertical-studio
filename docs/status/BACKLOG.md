@@ -21,5 +21,5 @@
 | VS3-IMP-006 | Implement compose/copy skeleton with bounded slot validation          | done        | codex | Added deterministic compose IDs, slot model, and bounded candidate generation (`A/B/C` vs `SINGLE`) |
 | VS3-IMP-007 | Implement publish gate skeleton (quality/security blockers)           | done        | codex | Added publish gate evaluator for quality `P0` and unresolved security `critical/high` |
 | VS3-IMP-008 | Implement secret-ref metadata model and ACL (`internal_admin`)        | done        | codex | Added strict secret metadata validation, `internal_admin` ACL, and no-plaintext payload guard |
-| VS3-IMP-009 | Implement ops review flow for variant selection and overrides         | in_progress | codex | Internal admin only transitions                                                         |
-| VS3-IMP-010 | Implement public runtime snapshot rendering skeleton                  | todo        | codex | Dynamic immutable version fetch                                                         |
+| VS3-IMP-009 | Implement ops review flow for variant selection and overrides         | done        | codex | Added proposal tracking, state-gated selection/overrides, and `internal_admin` transition ACL |
+| VS3-IMP-010 | Implement public runtime snapshot rendering skeleton                  | in_progress | codex | Dynamic immutable version fetch                                                         |
