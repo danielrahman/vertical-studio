@@ -4,6 +4,7 @@ const { ComposeCopyService } = require('../../services/compose-copy-service');
 const { PublishGateService } = require('../../services/publish-gate-service');
 
 const SUPPORTED_RESEARCH_SOURCES = new Set(['public_web', 'legal_pages', 'selected_listings']);
+const QUALITY_GATE_FAMILIES = ['COPY', 'LAYOUT', 'MEDIA', 'LEGAL'];
 const SECRET_REF_PATTERN = /^tenant\.([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]+)$/;
 const SECRET_REF_SEGMENT_PATTERN = /^[a-z0-9-]+$/;
 const SECRET_VALUE_KEYS = ['value', 'secret', 'secretValue', 'plaintext', 'token', 'apiKey', 'privateKey'];
@@ -829,11 +830,19 @@ function getSiteVersions(req, res, next) {
 
 function getLatestQualityReport(req, res, next) {
   try {
+    const gateOutcomes = QUALITY_GATE_FAMILIES.map((family) => ({
+      family,
+      status: 'pending',
+      blockingFailures: 0,
+      nonBlockingFindings: 0
+    }));
+
     res.status(200).json({
       siteId: req.params.siteId,
       generatedAt: new Date().toISOString(),
       status: 'pending',
-      blockingFailures: []
+      blockingFailures: [],
+      gateOutcomes
     });
   } catch (error) {
     next(error);

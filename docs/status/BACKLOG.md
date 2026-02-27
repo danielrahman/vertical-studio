@@ -32,3 +32,4 @@
 | VS3-IMP-016 | Add runtime latency baseline harness check                            | done        | codex | Added executable local resolve+snapshot latency threshold check in WS-E acceptance harness |
 | VS3-IMP-017 | Add internal-admin audit event read endpoint                          | done        | codex | Added `/api/v1/audit/events` with internal-admin ACL and filter/limit support for privileged action trail inspection |
 | VS3-IMP-018 | Add deterministic security gate reason-code output                    | done        | codex | Added `securityReasonCodes` (`security_blocked_critical|security_blocked_high|security_pass_non_blocking_only`) to publish gate results while preserving existing fields |
+| VS3-IMP-019 | Add quality report gate-family output contract                        | done        | codex | Quality latest endpoint now returns deterministic COPY/LAYOUT/MEDIA/LEGAL gate outcomes and acceptance coverage |

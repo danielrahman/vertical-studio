@@ -44,6 +44,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 23. WS-E local latency baseline check implemented (`VS3-IMP-016`): acceptance harness now measures resolve+snapshot runtime path under a local threshold to establish a repeatable baseline.
 24. Audit trail read API implemented (`VS3-IMP-017`): internal-admin endpoint exposes privileged action events with filters/limits to support release/security verification workflows.
 25. Deterministic security gate reason-code output implemented (`VS3-IMP-018`): publish gate now emits explicit security policy codes for `critical/high` blockers and non-blocking pass outcomes.
+26. Quality gate-family output contract implemented (`VS3-IMP-019`): quality latest report now includes COPY/LAYOUT/MEDIA/LEGAL family outcomes for WS-F checklist compatibility.
 
 ## In Progress
 

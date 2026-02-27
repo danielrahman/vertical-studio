@@ -473,3 +473,22 @@ test('WS-E baseline: local runtime resolve+snapshot latency remains within harne
     await stopServer(server);
   }
 });
+
+test('WS-F contract: quality report exposes COPY/LAYOUT/MEDIA/LEGAL gate outcomes', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsf-quality/quality/latest`);
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.deepEqual(
+      payload.gateOutcomes.map((outcome) => outcome.family),
+      ['COPY', 'LAYOUT', 'MEDIA', 'LEGAL']
+    );
+    assert.equal(payload.gateOutcomes.every((outcome) => typeof outcome.blockingFailures === 'number'), true);
+    assert.equal(payload.gateOutcomes.every((outcome) => typeof outcome.nonBlockingFindings === 'number'), true);
+  } finally {
+    await stopServer(server);
+  }
+});

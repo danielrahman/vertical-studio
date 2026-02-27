@@ -605,6 +605,25 @@ test('public runtime snapshot by storage key returns immutable payload and 404 f
   }
 });
 
+test('quality latest endpoint returns required COPY/LAYOUT/MEDIA/LEGAL gate outcomes', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-quality/quality/latest`);
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+    assert.equal(payload.status, 'pending');
+    assert.equal(Array.isArray(payload.gateOutcomes), true);
+    assert.deepEqual(
+      payload.gateOutcomes.map((item) => item.family),
+      ['COPY', 'LAYOUT', 'MEDIA', 'LEGAL']
+    );
+    assert.equal(payload.gateOutcomes.every((item) => item.status === 'pending'), true);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('audit events endpoint is internal-admin scoped and returns privileged action trail', async () => {
   const { server, baseUrl } = await startServer();
 
