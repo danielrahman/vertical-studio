@@ -914,6 +914,12 @@ function postBootstrapFromExtraction(req, res, next) {
     }
 
     const draftId = typeof req.body?.draftId === 'string' ? req.body.draftId : randomUUID();
+    const extractedFieldsProvided = Object.prototype.hasOwnProperty.call(req.body || {}, 'extractedFields');
+    if (extractedFieldsProvided && !Array.isArray(req.body?.extractedFields)) {
+      throw createError('extractedFields must be an array when provided', 400, 'validation_error', {
+        invalidField: 'extractedFields'
+      });
+    }
     const rawExtractedFields = Array.isArray(req.body?.extractedFields) ? req.body.extractedFields : [];
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
     const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;

@@ -98,6 +98,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 77. Vertical research `sourceDomains` array-type enforcement implemented (`VS3-IMP-070`): vertical research build now rejects non-array `sourceDomains` payload values with deterministic `validation_error` details (`invalidField`) instead of silently treating them as omitted.
 78. Vertical research `sources` array-type enforcement implemented (`VS3-IMP-071`): vertical research build now rejects non-array `sources` payload values with deterministic `validation_error` details (`invalidField`) instead of coercing to empty arrays.
 79. Vertical research competitor-minimum validation details implemented (`VS3-IMP-072`): vertical research build now returns deterministic `insufficient_competitor_sample` details (`minimumTargetCompetitorCount`, `receivedTargetCompetitorCount`) when `targetCompetitorCount` violates the `>= 15` contract.
+80. Bootstrap `extractedFields` array-type enforcement implemented (`VS3-IMP-073`): bootstrap-from-extraction now rejects non-array `extractedFields` payload values with deterministic `validation_error` details (`invalidField`) instead of coercing to empty arrays.
 
 ## In Progress
 

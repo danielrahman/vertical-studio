@@ -497,6 +497,20 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
   const { server, baseUrl } = await startServer();
 
   try {
+    const nonArrayFieldsResponse = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-bootstrap-model',
+        extractedFields: 'not-an-array'
+      })
+    });
+    assert.equal(nonArrayFieldsResponse.status, 400);
+    const nonArrayFieldsPayload = await nonArrayFieldsResponse.json();
+    assert.equal(nonArrayFieldsPayload.code, 'validation_error');
+    assert.equal(nonArrayFieldsPayload.message, 'extractedFields must be an array when provided');
+    assert.equal(nonArrayFieldsPayload.details.invalidField, 'extractedFields');
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

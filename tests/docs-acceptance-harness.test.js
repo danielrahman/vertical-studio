@@ -376,6 +376,28 @@ test('WS-B contract: bootstrap-from-extraction rejects unknown top-level payload
   }
 });
 
+test('WS-B contract: bootstrap-from-extraction requires extractedFields array type when provided', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap-shape/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-shape-1',
+        extractedFields: 'not-an-array'
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'extractedFields must be an array when provided');
+    assert.equal(payload.details.invalidField, 'extractedFields');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: vertical research build rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 

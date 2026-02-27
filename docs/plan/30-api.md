@@ -163,7 +163,8 @@ Contract:
 1. Store extracted fields as `ExtractedField<T>`.
 2. If confidence below threshold, set `todo=true` and keep `value` empty.
 3. Set `site_drafts.low_confidence=true` when any required field is TODO.
-4. Unknown top-level payload fields are rejected with `400 validation_error`.
+4. If `extractedFields` is provided, it must be an array.
+5. Unknown top-level payload fields are rejected with `400 validation_error`.
 
 ### 4.2 Vertical Intelligence Lifecycle
 
