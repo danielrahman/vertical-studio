@@ -355,6 +355,27 @@ test('WS-B contract: tenant create rejects unknown top-level payload fields', as
   }
 });
 
+test('WS-B contract: bootstrap-from-extraction rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap-unknown/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-unknown-1',
+        previewOnly: true
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.deepEqual(payload.details.unknownFields, ['previewOnly']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: low-confidence required extraction fields are stored as TODO and mark draft lowConfidence', async () => {
   const { app, server, baseUrl } = await startServer();
 

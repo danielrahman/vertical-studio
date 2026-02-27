@@ -346,6 +346,28 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
   }
 });
 
+test('bootstrap-from-extraction rejects unknown top-level payload fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-unknown/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-bootstrap-unknown-1',
+        previewOnly: true
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'bootstrap payload contains unknown top-level fields');
+    assert.deepEqual(payload.details.unknownFields, ['previewOnly']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('cms webhook publish ingress requires valid signature and emits audit trail event', async () => {
   const { server, baseUrl } = await startServer();
 

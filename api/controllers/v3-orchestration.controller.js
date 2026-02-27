@@ -19,6 +19,7 @@ const COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'actorRole'
 ]);
 const TENANT_CREATE_ALLOWED_TOP_LEVEL_FIELDS = new Set(['tenantId', 'name', 'slug']);
+const BOOTSTRAP_ALLOWED_TOP_LEVEL_FIELDS = new Set(['draftId', 'extractedFields', 'lowConfidence', 'sitePolicy']);
 const COMPOSE_SELECT_ALLOWED_TOP_LEVEL_FIELDS = new Set(['draftId', 'proposalId', 'actorRole']);
 const CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS = new Set(['siteId', 'event']);
 const PUBLISH_ALLOWED_TOP_LEVEL_FIELDS = new Set([
@@ -892,6 +893,14 @@ function postBootstrapFromExtraction(req, res, next) {
   try {
     assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
+    const unknownTopLevelFields = Object.keys(req.body || {}).filter((field) => {
+      return !BOOTSTRAP_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+    });
+    if (unknownTopLevelFields.length > 0) {
+      throw createError('bootstrap payload contains unknown top-level fields', 400, 'validation_error', {
+        unknownFields: unknownTopLevelFields
+      });
+    }
 
     const draftId = typeof req.body?.draftId === 'string' ? req.body.draftId : randomUUID();
     const rawExtractedFields = Array.isArray(req.body?.extractedFields) ? req.body.extractedFields : [];
