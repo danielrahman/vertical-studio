@@ -29,19 +29,21 @@ Move from decision-complete documentation to incremental v3 implementation, pres
   5. root scripts (`typecheck`, `lint`, `format:check`, `test:vitest`)
 9. `packages/schema` canonical contracts implemented (TypeScript + Zod) for extraction evidence, vertical standards, component contracts, copy lifecycle, review transition requests, and manual overrides.
 10. Additive v3 API route families registered under `/api/v1/*` with deterministic skeleton handlers for tenant, vertical research, component contracts, compose/copy, overrides, review transitions, publish/rollback, cms webhook, and secret refs.
+11. Review transition guard service implemented with explicit reason-code outcomes for invalid transitions (`transition_not_allowed`, `state_mismatch`, `event_mismatch`, `reason_required`).
+12. Compose/copy skeleton implemented with deterministic proposal IDs plus bounded slot definitions and candidate generation policy (high-impact `A/B/C`, non-high-impact `SINGLE`).
+13. Publish gate skeleton implemented with deterministic blocking logic for quality `P0` and unresolved security `critical/high`.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. Review transition guard service extraction (`VS3-IMP-005`) is the immediate next execution step.
+2. Secret-ref metadata ACL hardening (`VS3-IMP-008`) is the immediate next execution step.
 
 ## Next
 
-1. Implement review state transition guard service with documented reason codes.
-2. Implement compose/copy skeleton with bounded slot validation.
-3. Implement publish gate skeleton with deterministic blocking reason codes.
-4. Implement secret-ref metadata model and ACL (`internal_admin`) beyond current skeleton.
-5. Add test harness for documentation acceptance criteria.
+1. Implement secret-ref metadata model and ACL (`internal_admin`) beyond current skeleton.
+2. Implement ops review flow for variant selection and overrides.
+3. Implement public runtime snapshot rendering skeleton.
+4. Add test harness for documentation acceptance criteria.
 
 ## Known Constraints
 

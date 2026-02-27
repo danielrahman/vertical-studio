@@ -1,20 +1,13 @@
 const { randomUUID } = require('crypto');
+const { ReviewTransitionGuardService } = require('../../services/review-transition-guard-service');
+const { ComposeCopyService } = require('../../services/compose-copy-service');
+const { PublishGateService } = require('../../services/publish-gate-service');
 
 const SUPPORTED_RESEARCH_SOURCES = new Set(['public_web', 'legal_pages', 'selected_listings']);
 const SECRET_REF_PATTERN = /^tenant\.[a-z0-9-]+\.[a-z0-9-]+\.[a-z0-9-]+$/;
-
-const ALLOWED_REVIEW_TRANSITIONS = new Set([
-  'draft->proposal_generated',
-  'proposal_generated->review_in_progress',
-  'review_in_progress->proposal_selected',
-  'proposal_selected->quality_checking',
-  'quality_checking->security_checking',
-  'quality_checking->publish_blocked',
-  'security_checking->published',
-  'security_checking->publish_blocked',
-  'published->rollback_pending',
-  'rollback_pending->rolled_back'
-]);
+const reviewTransitionGuard = new ReviewTransitionGuardService();
+const composeCopyService = new ComposeCopyService();
+const publishGateService = new PublishGateService();
 
 function createError(message, statusCode, code, details) {
   const error = new Error(message);
@@ -35,7 +28,9 @@ function getState(req) {
       reviewStatesByDraft: new Map(),
       siteVersions: new Map(),
       copySlotsByDraft: new Map(),
+      copyCandidatesByDraft: new Map(),
       overridesByDraft: new Map(),
+      copySelectionsByDraft: new Map(),
       secretRefs: new Map()
     };
 
@@ -282,14 +277,15 @@ function postComposePropose(req, res, next) {
     assertString(req.body?.catalogVersion, 'catalogVersion');
     assertString(req.body?.verticalStandardVersion, 'verticalStandardVersion');
 
-    res.status(200).json({
+    const response = composeCopyService.proposeVariants({
+      siteId: req.params.siteId,
       draftId: req.body.draftId,
-      variants: [
-        { proposalId: randomUUID(), variantKey: 'A' },
-        { proposalId: randomUUID(), variantKey: 'B' },
-        { proposalId: randomUUID(), variantKey: 'C' }
-      ]
+      rulesVersion: req.body.rulesVersion,
+      catalogVersion: req.body.catalogVersion,
+      verticalStandardVersion: req.body.verticalStandardVersion
     });
+
+    res.status(200).json(response);
   } catch (error) {
     next(error);
   }
@@ -322,41 +318,16 @@ function postCopyGenerate(req, res, next) {
       throw createError('locales must include cs-CZ and en-US', 400, 'validation_error');
     }
 
-    const state = getState(req);
-    const slots = [
-      {
-        slotId: 'hero.h1',
-        sectionType: 'hero',
-        highImpact: true,
-        maxChars: 80,
-        maxLines: 2,
-        localeRequired: ['cs-CZ', 'en-US'],
-        required: true
-      },
-      {
-        slotId: 'hero.subhead',
-        sectionType: 'hero',
-        highImpact: true,
-        maxChars: 220,
-        maxLines: 4,
-        localeRequired: ['cs-CZ', 'en-US'],
-        required: true
-      }
-    ];
-
-    state.copySlotsByDraft.set(req.body.draftId, slots);
-
-    res.status(200).json({
+    const generation = composeCopyService.generateCopy({
       draftId: req.body.draftId,
-      slotsGenerated: 28,
-      highImpactSlots: 6,
-      candidateCounts: {
-        A: 6,
-        B: 6,
-        C: 6,
-        SINGLE: 22
-      }
+      locales
     });
+
+    const state = getState(req);
+    state.copySlotsByDraft.set(req.body.draftId, generation.slots);
+    state.copyCandidatesByDraft.set(req.body.draftId, generation.candidates);
+
+    res.status(200).json(generation.summary);
   } catch (error) {
     next(error);
   }
@@ -392,13 +363,19 @@ function postCopySelect(req, res, next) {
       throw createError('selections array is required', 400, 'validation_error');
     }
 
-    const missingCandidate = req.body.selections.find(
-      (selection) => typeof selection?.candidateId !== 'string' || !selection.candidateId
-    );
+    const state = getState(req);
+    const candidates = state.copyCandidatesByDraft.get(req.body.draftId) || [];
+    const candidateIds = new Set(candidates.map((candidate) => candidate.candidateId));
+
+    const missingCandidate = req.body.selections.find((selection) => {
+      return typeof selection?.candidateId !== 'string' || !candidateIds.has(selection.candidateId);
+    });
 
     if (missingCandidate) {
       throw createError('copy candidate not found', 404, 'copy_candidate_not_found');
     }
+
+    state.copySelectionsByDraft.set(req.body.draftId, req.body.selections);
 
     res.status(200).json({
       draftId: req.body.draftId,
@@ -453,12 +430,24 @@ function postReviewTransition(req, res, next) {
     assertString(req.body?.toState, 'toState');
     assertString(req.body?.event, 'event');
 
-    const transitionKey = `${req.body.fromState}->${req.body.toState}`;
-    if (!ALLOWED_REVIEW_TRANSITIONS.has(transitionKey)) {
-      throw createError('Invalid review transition', 409, 'invalid_transition');
+    const state = getState(req);
+    const currentState = state.reviewStatesByDraft.get(req.body.draftId);
+    const decision = reviewTransitionGuard.evaluate({
+      currentState,
+      fromState: req.body.fromState,
+      toState: req.body.toState,
+      event: req.body.event,
+      reason: req.body.reason
+    });
+
+    if (!decision.ok) {
+      throw createError('Invalid review transition', 409, 'invalid_transition', {
+        reasonCode: decision.reasonCode,
+        fromState: req.body.fromState,
+        toState: req.body.toState
+      });
     }
 
-    const state = getState(req);
     state.reviewStatesByDraft.set(req.body.draftId, req.body.toState);
 
     res.status(200).json({
@@ -478,22 +467,33 @@ function postPublishSite(req, res, next) {
     assertString(req.body?.draftId, 'draftId');
     assertString(req.body?.proposalId, 'proposalId');
 
+    const qualityFindings = Array.isArray(req.body?.qualityFindings) ? [...req.body.qualityFindings] : [];
+    const securityFindings = Array.isArray(req.body?.securityFindings) ? [...req.body.securityFindings] : [];
+
     if (req.body?.simulateQualityP0Fail === true) {
-      res.status(409).json({
-        siteId: req.params.siteId,
-        status: 'blocked',
-        code: 'publish_blocked_quality',
-        reasons: ['quality_p0_failed']
+      qualityFindings.push({
+        severity: 'P0',
+        ruleId: 'COPY-P0-SIMULATED',
+        blocking: true
       });
-      return;
+    }
+    if (req.body?.simulateSecurityHigh === true) {
+      securityFindings.push({
+        severity: 'high',
+        status: 'open'
+      });
     }
 
-    if (req.body?.simulateSecurityHigh === true) {
+    const gate = publishGateService.evaluate({
+      qualityFindings,
+      securityFindings
+    });
+    if (gate.blocked) {
       res.status(409).json({
         siteId: req.params.siteId,
         status: 'blocked',
-        code: 'publish_blocked_security',
-        reasons: ['security_high_found']
+        code: gate.code,
+        reasons: gate.reasons
       });
       return;
     }

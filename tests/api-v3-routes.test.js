@@ -155,6 +155,7 @@ test('review transition validates allowed state movement and returns invalid_tra
     assert.equal(invalidRes.status, 409);
     const invalidBody = await invalidRes.json();
     assert.equal(invalidBody.code, 'invalid_transition');
+    assert.equal(invalidBody.details.reasonCode, 'transition_not_allowed');
 
     const validRes = await fetch(`${baseUrl}/api/v1/sites/site-1/review/transition`, {
       method: 'POST',
@@ -168,6 +169,22 @@ test('review transition validates allowed state movement and returns invalid_tra
     });
 
     assert.equal(validRes.status, 200);
+
+    const staleStateRes = await fetch(`${baseUrl}/api/v1/sites/site-1/review/transition`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        draftId: 'draft-1',
+        fromState: 'draft',
+        toState: 'proposal_generated',
+        event: 'PROPOSALS_READY'
+      })
+    });
+
+    assert.equal(staleStateRes.status, 409);
+    const staleBody = await staleStateRes.json();
+    assert.equal(staleBody.code, 'invalid_transition');
+    assert.equal(staleBody.details.reasonCode, 'state_mismatch');
   } finally {
     await stopServer(server);
   }
