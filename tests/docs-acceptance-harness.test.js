@@ -492,3 +492,24 @@ test('WS-F contract: quality report exposes COPY/LAYOUT/MEDIA/LEGAL gate outcome
     await stopServer(server);
   }
 });
+
+test('WS-F contract: security report exposes JSON+markdown artifacts and gate decision reason code', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsf-security/security/latest`);
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+
+    assert.equal(payload.gateDecision.reasonCode, 'security_pass_non_blocking_only');
+    assert.equal(payload.gateDecision.blocked, false);
+    assert.equal(typeof payload.artifacts.findingsJsonPath, 'string');
+    assert.equal(typeof payload.artifacts.reportMarkdownPath, 'string');
+    assert.equal(typeof payload.artifacts.gateResultJsonPath, 'string');
+    assert.equal(payload.artifacts.findingsJsonPath.includes('docs/security/findings/'), true);
+    assert.equal(payload.artifacts.reportMarkdownPath.includes('docs/security/reports/'), true);
+    assert.equal(payload.artifacts.gateResultJsonPath.includes('docs/security/gates/'), true);
+  } finally {
+    await stopServer(server);
+  }
+});

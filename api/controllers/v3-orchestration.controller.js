@@ -851,11 +851,35 @@ function getLatestQualityReport(req, res, next) {
 
 function getLatestSecurityReport(req, res, next) {
   try {
+    const state = getState(req);
+    const versions = state.siteVersions.get(req.params.siteId) || [];
+    const activeVersion = versions.find((item) => item.active) || null;
+    const versionId = activeVersion?.versionId || 'version-pending';
+    const releaseId = `${req.params.siteId}-${versionId}`;
+
     res.status(200).json({
       siteId: req.params.siteId,
+      releaseId,
+      versionId,
       generatedAt: new Date().toISOString(),
       status: 'pending',
-      unresolvedFindings: []
+      unresolvedFindings: [],
+      severityCounts: {
+        critical: 0,
+        high: 0,
+        medium: 0,
+        low: 0
+      },
+      gateDecision: {
+        blocked: false,
+        reasonCode: 'security_pass_non_blocking_only',
+        unresolvedBlockingCount: 0
+      },
+      artifacts: {
+        findingsJsonPath: `docs/security/findings/${releaseId}.json`,
+        reportMarkdownPath: `docs/security/reports/${releaseId}.md`,
+        gateResultJsonPath: `docs/security/gates/${releaseId}.json`
+      }
     });
   } catch (error) {
     next(error);

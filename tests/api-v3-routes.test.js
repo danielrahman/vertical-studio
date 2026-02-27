@@ -624,6 +624,28 @@ test('quality latest endpoint returns required COPY/LAYOUT/MEDIA/LEGAL gate outc
   }
 });
 
+test('security latest endpoint returns artifact references and deterministic gate decision fields', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-security/security/latest`);
+    assert.equal(response.status, 200);
+    const payload = await response.json();
+    assert.equal(payload.status, 'pending');
+    assert.equal(payload.gateDecision.reasonCode, 'security_pass_non_blocking_only');
+    assert.equal(payload.gateDecision.blocked, false);
+    assert.equal(payload.severityCounts.critical, 0);
+    assert.equal(typeof payload.artifacts.findingsJsonPath, 'string');
+    assert.equal(typeof payload.artifacts.reportMarkdownPath, 'string');
+    assert.equal(typeof payload.artifacts.gateResultJsonPath, 'string');
+    assert.equal(payload.artifacts.findingsJsonPath.includes('docs/security/findings/'), true);
+    assert.equal(payload.artifacts.reportMarkdownPath.includes('docs/security/reports/'), true);
+    assert.equal(payload.artifacts.gateResultJsonPath.includes('docs/security/gates/'), true);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('audit events endpoint is internal-admin scoped and returns privileged action trail', async () => {
   const { server, baseUrl } = await startServer();
 
