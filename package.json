@@ -1,0 +1,28 @@
+{
+  "name": "vertical-studio",
+  "version": "1.0.0",
+  "description": "Automated website generation system for boutique developers",
+  "main": "engine/generator.js",
+  "scripts": {
+    "generate": "node engine/generator.js",
+    "pipeline": "node engine/pipeline.js",
+    "validate": "node engine/validator.js",
+    "test": "npm run generate -- samples/all-new-development-input.json build-output/"
+  },
+  "keywords": [
+    "web-generator",
+    "boutique-developer",
+    "real-estate",
+    "automation",
+    "website-builder"
+  ],
+  "author": "Richard Malek",
+  "license": "MIT",
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
