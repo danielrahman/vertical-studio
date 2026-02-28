@@ -2164,7 +2164,7 @@ test('WS-D contract: copy selection per-item validation failures report invalidF
   try {
     const siteId = 'site-wsd-select-item-errors';
     const draftId = 'draft-wsd-select-item-errors-1';
-    const assertInvalidSelectionField = async (selections, message, invalidField) => {
+    const assertInvalidSelectionField = async (selections, message, invalidField, extraDetails) => {
       const response = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
         method: 'POST',
         headers: INTERNAL_ADMIN_HEADERS,
@@ -2178,6 +2178,9 @@ test('WS-D contract: copy selection per-item validation failures report invalidF
       assert.equal(payload.code, 'validation_error');
       assert.equal(payload.message, message);
       assert.equal(payload.details.invalidField, invalidField);
+      if (extraDetails) {
+        assert.deepEqual(extraDetails(payload.details), true);
+      }
     };
 
     await assertInvalidSelectionField([null], 'selection item must be an object', 'selections[0]');
@@ -2189,7 +2192,11 @@ test('WS-D contract: copy selection per-item validation failures report invalidF
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'de-DE', candidateId: 'candidate-1' }],
       'selection locale must be one of cs-CZ or en-US',
-      'selections[0].locale'
+      'selections[0].locale',
+      (details) =>
+        Array.isArray(details.allowedLocales) &&
+        details.allowedLocales.includes('cs-CZ') &&
+        details.allowedLocales.includes('en-US')
     );
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: '' }],
