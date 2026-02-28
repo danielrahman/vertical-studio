@@ -101,6 +101,43 @@ test('renderSiteFromRuntime resolves active version, fetches immutable snapshot,
   assert.equal(result.html.includes('Rendered from immutable snapshot'), true);
 });
 
+test('renderSiteFromRuntime trims resolve storageKey before immutable snapshot fetch', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'runtime-trim.example.test',
+        siteId: 'site-trim',
+        versionId: 'version-9',
+        storageKey: '  site-versions/site-trim/version-9.json  '
+      }),
+      jsonResponse(200, {
+        siteId: 'site-trim',
+        versionId: 'version-9',
+        storageKey: 'site-versions/site-trim/version-9.json',
+        immutable: true,
+        snapshot: {
+          sections: []
+        }
+      })
+    ],
+    calls
+  );
+
+  const result = await renderSiteFromRuntime({
+    apiBaseUrl: 'http://localhost:3000',
+    host: 'runtime-trim.example.test',
+    fetchImpl
+  });
+
+  assert.equal(calls.length, 2);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-trim%2Fversion-9.json'
+  );
+  assert.equal(result.snapshot.immutable, true);
+});
+
 test('renderSiteFromRuntime falls back to site/version snapshot endpoint when storageKey is missing', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(
@@ -144,6 +181,42 @@ test('renderSiteFromRuntime falls back to site/version snapshot endpoint when st
   assert.equal(result.resolved.versionId, 'version-7');
   assert.equal(result.snapshot.immutable, true);
   assert.equal(result.html.includes('Compatibility fetch path'), true);
+});
+
+test('renderSiteFromRuntime trims fallback siteId/versionId before compatibility snapshot fetch', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'legacy-trim.example.test',
+        siteId: '  site-legacy-trim  ',
+        versionId: '  version-9  '
+      }),
+      jsonResponse(200, {
+        siteId: 'site-legacy-trim',
+        versionId: 'version-9',
+        storageKey: 'site-versions/site-legacy-trim/version-9.json',
+        immutable: true,
+        snapshot: {
+          sections: []
+        }
+      })
+    ],
+    calls
+  );
+
+  const result = await renderSiteFromRuntime({
+    apiBaseUrl: 'http://localhost:3000',
+    host: 'legacy-trim.example.test',
+    fetchImpl
+  });
+
+  assert.equal(calls.length, 2);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot?siteId=site-legacy-trim&versionId=version-9'
+  );
+  assert.equal(result.snapshot.immutable, true);
 });
 
 test('renderSiteFromRuntime fallback path surfaces API error metadata', async () => {

@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-244 | Add runtime-client resolve-payload trim normalization coverage         | done | codex | runtime-client tests now verify resolve-payload whitespace is trimmed for both storageKey fetches and fallback `siteId/versionId` compatibility fetch parameters |
 | VS3-IMP-243 | Add runtime-client compatibility error-propagation coverage            | done | codex | runtime-client tests now verify `renderSiteFromRuntime` compatibility fallback preserves API error metadata (`code`,`statusCode`,`details`) from snapshot fetch failures |
 | VS3-IMP-242 | Add runtime compatibility snapshot not-found coverage                  | done | codex | added API + WS-E acceptance assertions that unknown `siteId/versionId` on compatibility snapshot endpoint returns `404 runtime_version_not_found` |
 | VS3-IMP-241 | Lock runtime fallback contract text in docs acceptance tests           | done | codex | docs-acceptance harness now asserts API contract text requires storage-key-first runtime fetch plus compatibility `siteId+versionId` fallback wording |
