@@ -218,6 +218,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 197. Review-transition required-field metadata contract alignment implemented (`VS3-IMP-190`): `POST /sites/:siteId/review/transition` required `draftId`, `fromState`, `toState`, and `event` validation now has deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-D tests and API contract text.
 198. Publish required-field metadata contract alignment implemented (`VS3-IMP-191`): `POST /sites/:siteId/publish` required `draftId` and `proposalId` validation now has deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-F tests and API contract text.
 199. Overrides required-field metadata contract alignment implemented (`VS3-IMP-192`): `POST /sites/:siteId/overrides` required `draftId` validation now has deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-D tests and API contract text.
+200. Public runtime snapshot-by-storage-key required-field metadata contract alignment implemented (`VS3-IMP-193`): `GET /api/v1/public/runtime/snapshot/by-storage-key` required `storageKey` query validation now has deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-E tests and API contract text.
 
 ## In Progress
 

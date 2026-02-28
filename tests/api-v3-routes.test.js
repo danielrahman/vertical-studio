@@ -3509,6 +3509,34 @@ test('public runtime snapshot by storage key returns immutable payload and 404 f
   }
 });
 
+test('public runtime snapshot by storage key requires storageKey query with deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingStorageKeyRes = await fetch(`${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key`);
+    assert.equal(missingStorageKeyRes.status, 400);
+    const missingStorageKeyBody = await missingStorageKeyRes.json();
+    assert.equal(missingStorageKeyBody.code, 'validation_error');
+    assert.equal(missingStorageKeyBody.message, 'storageKey is required');
+    assert.equal(missingStorageKeyBody.details.invalidField, 'storageKey');
+    assert.equal(missingStorageKeyBody.details.expectedType, 'string');
+    assert.equal(missingStorageKeyBody.details.receivedType, 'undefined');
+
+    const repeatedStorageKeyRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=alpha&storageKey=beta`
+    );
+    assert.equal(repeatedStorageKeyRes.status, 400);
+    const repeatedStorageKeyBody = await repeatedStorageKeyRes.json();
+    assert.equal(repeatedStorageKeyBody.code, 'validation_error');
+    assert.equal(repeatedStorageKeyBody.message, 'storageKey is required');
+    assert.equal(repeatedStorageKeyBody.details.invalidField, 'storageKey');
+    assert.equal(repeatedStorageKeyBody.details.expectedType, 'string');
+    assert.equal(repeatedStorageKeyBody.details.receivedType, 'array');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('quality latest endpoint returns required COPY/LAYOUT/MEDIA/LEGAL gate outcomes', async () => {
   const { server, baseUrl } = await startServer();
 

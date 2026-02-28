@@ -3295,6 +3295,34 @@ test('WS-E baseline: local runtime resolve+snapshot latency remains within harne
   }
 });
 
+test('WS-E contract: runtime snapshot by storage key requires storageKey query with deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingStorageKeyRes = await fetch(`${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key`);
+    assert.equal(missingStorageKeyRes.status, 400);
+    const missingStorageKeyPayload = await missingStorageKeyRes.json();
+    assert.equal(missingStorageKeyPayload.code, 'validation_error');
+    assert.equal(missingStorageKeyPayload.message, 'storageKey is required');
+    assert.equal(missingStorageKeyPayload.details.invalidField, 'storageKey');
+    assert.equal(missingStorageKeyPayload.details.expectedType, 'string');
+    assert.equal(missingStorageKeyPayload.details.receivedType, 'undefined');
+
+    const repeatedStorageKeyRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=alpha&storageKey=beta`
+    );
+    assert.equal(repeatedStorageKeyRes.status, 400);
+    const repeatedStorageKeyPayload = await repeatedStorageKeyRes.json();
+    assert.equal(repeatedStorageKeyPayload.code, 'validation_error');
+    assert.equal(repeatedStorageKeyPayload.message, 'storageKey is required');
+    assert.equal(repeatedStorageKeyPayload.details.invalidField, 'storageKey');
+    assert.equal(repeatedStorageKeyPayload.details.expectedType, 'string');
+    assert.equal(repeatedStorageKeyPayload.details.receivedType, 'array');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-F contract: quality report exposes COPY/LAYOUT/MEDIA/LEGAL gate outcomes', async () => {
   const { server, baseUrl } = await startServer();
 
