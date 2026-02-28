@@ -628,6 +628,15 @@ test('WS-G contract: secret refs reject plaintext payload keys with invalidField
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.details.invalidField, 'value');
+    assert.deepEqual(payload.details.forbiddenKeys, [
+      'apiKey',
+      'plaintext',
+      'privateKey',
+      'secret',
+      'secretValue',
+      'token',
+      'value'
+    ]);
   } finally {
     await stopServer(server);
   }

@@ -229,6 +229,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 208. Secret-ref invalid-ref format metadata hardening implemented (`VS3-IMP-201`): `POST /api/v1/secrets/refs` invalid `ref` shape validation now includes deterministic `invalidField`, `expectedFormat`, and `receivedRef` metadata with API/WS-G contract coverage and plan text alignment.
 209. Secret-ref unknown-payload allow-list metadata hardening implemented (`VS3-IMP-202`): `POST /api/v1/secrets/refs` unknown top-level payload validation errors now include lexicographically sorted `allowedTopLevelFields` metadata alongside deterministic `invalidField` and sorted `unknownFields` details, with API/WS-G contract coverage and plan text alignment.
 210. Secret-ref segment-shape pattern metadata hardening implemented (`VS3-IMP-203`): `POST /api/v1/secrets/refs` invalid segment-shape validation for `provider`/`key`/`tenantSlug` now includes deterministic `expectedPattern` and `receivedValue` metadata alongside type metadata, with API/WS-G contract coverage and plan text alignment.
+211. Secret-ref plaintext-key forbidden-list metadata hardening implemented (`VS3-IMP-204`): `POST /api/v1/secrets/refs` plaintext payload-key rejection now includes lexicographically sorted `forbiddenKeys` metadata alongside deterministic `invalidField`, with API/WS-G contract coverage and plan text alignment.
 
 ## In Progress
 
