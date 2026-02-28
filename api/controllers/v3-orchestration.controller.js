@@ -315,7 +315,8 @@ function assertCopySelectActorRole(req, state, siteId) {
 function assertCopySelectionShape(selection, index) {
   if (!selection || typeof selection !== 'object' || Array.isArray(selection)) {
     throw createError('selection item must be an object', 400, 'validation_error', {
-      invalidField: `selections[${index}]`
+      invalidField: `selections[${index}]`,
+      selectionIndex: index
     });
   }
 

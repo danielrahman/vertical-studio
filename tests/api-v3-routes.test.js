@@ -1898,7 +1898,12 @@ test('copy select per-item validation failures report invalidField details', asy
       }
     };
 
-    await assertInvalidSelectionField([null], 'selection item must be an object', 'selections[0]');
+    await assertInvalidSelectionField(
+      [null],
+      'selection item must be an object',
+      'selections[0]',
+      (details) => details.selectionIndex === 0
+    );
     await assertInvalidSelectionField(
       [{ slotId: '', locale: 'cs-CZ', candidateId: 'candidate-1' }],
       'selection slotId is required',

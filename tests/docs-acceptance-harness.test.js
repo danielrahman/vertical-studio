@@ -2256,7 +2256,12 @@ test('WS-D contract: copy selection per-item validation failures report invalidF
       }
     };
 
-    await assertInvalidSelectionField([null], 'selection item must be an object', 'selections[0]');
+    await assertInvalidSelectionField(
+      [null],
+      'selection item must be an object',
+      'selections[0]',
+      (details) => details.selectionIndex === 0
+    );
     await assertInvalidSelectionField(
       [{ slotId: '', locale: 'cs-CZ', candidateId: 'candidate-1' }],
       'selection slotId is required',
