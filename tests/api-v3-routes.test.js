@@ -1459,6 +1459,22 @@ test('copy generate enforces locale allow-list and rejects duplicate locales', a
     assert.equal(invalidLocaleBody.message, 'locales must contain only supported locales');
     assert.deepEqual(invalidLocaleBody.details.unsupportedLocales, ['de-DE']);
 
+    const missingLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-locales/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-locales',
+        locales: ['cs-CZ'],
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(missingLocaleRes.status, 400);
+    const missingLocaleBody = await missingLocaleRes.json();
+    assert.equal(missingLocaleBody.code, 'validation_error');
+    assert.equal(missingLocaleBody.message, 'locales must include cs-CZ and en-US');
+    assert.equal(missingLocaleBody.details.invalidField, 'locales');
+    assert.deepEqual(missingLocaleBody.details.missingLocales, ['en-US']);
+
     const duplicateLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-locales/copy/generate`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

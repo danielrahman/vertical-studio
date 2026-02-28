@@ -11,7 +11,8 @@ const QUALITY_SEVERITY_LEVELS = new Set(['P0', 'P1', 'P2']);
 const SECURITY_SEVERITY_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
 const TENANT_MEMBER_ROLES = new Set(['internal_admin', 'owner', 'editor', 'viewer']);
 const EXTRACTION_METHODS = new Set(['dom', 'ocr', 'inference', 'manual']);
-const COPY_LOCALES = new Set(['cs-CZ', 'en-US']);
+const COPY_REQUIRED_LOCALES = ['cs-CZ', 'en-US'];
+const COPY_LOCALES = new Set(COPY_REQUIRED_LOCALES);
 const COPY_SELECT_ACTOR_ROLES = new Set(['internal_admin', 'owner']);
 const COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'draftId',
@@ -1581,8 +1582,12 @@ function postCopyGenerate(req, res, next) {
         allowedLocales: Array.from(COPY_LOCALES)
       });
     }
-    if (!locales.includes('cs-CZ') || !locales.includes('en-US')) {
-      throw createError('locales must include cs-CZ and en-US', 400, 'validation_error');
+    const missingLocales = COPY_REQUIRED_LOCALES.filter((locale) => !locales.includes(locale));
+    if (missingLocales.length > 0) {
+      throw createError('locales must include cs-CZ and en-US', 400, 'validation_error', {
+        invalidField: 'locales',
+        missingLocales
+      });
     }
     const hasHighImpactPolicyFlag = Object.prototype.hasOwnProperty.call(
       req.body || {},
