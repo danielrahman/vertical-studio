@@ -2685,6 +2685,9 @@ function postSecretRef(req, res, next) {
         }
         return indexes;
       }, []);
+      const receivedAllowedTopLevelFields = allowedTopLevelFieldIndexes.map((fieldIndex) => {
+        return receivedTopLevelFields[fieldIndex];
+      });
       throw createError('secret ref payload contains unknown top-level fields', 400, 'validation_error', {
         invalidField: 'payload',
         unknownFields: unknownTopLevelFields,
@@ -2695,6 +2698,7 @@ function postSecretRef(req, res, next) {
         receivedTopLevelFieldCount: receivedTopLevelFields.length,
         receivedTopLevelFields,
         allowedTopLevelFieldIndexes,
+        receivedAllowedTopLevelFields,
         receivedAllowedTopLevelFieldCount: allowedTopLevelFieldIndexes.length,
         allowedTopLevelFieldCount: SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS.size,
         allowedTopLevelFields: Array.from(SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS).sort()

@@ -351,6 +351,13 @@ test('WS-G contract: secret refs endpoint rejects unknown top-level payload fiel
     ]);
     assert.deepEqual(payload.details.unknownFields, ['alphaRotationPolicy', 'zetaRotationWindowDays']);
     assert.deepEqual(payload.details.allowedTopLevelFieldIndexes, [1, 2, 3, 4, 5]);
+    assert.deepEqual(payload.details.receivedAllowedTopLevelFields, [
+      'key',
+      'provider',
+      'ref',
+      'tenantId',
+      'tenantSlug'
+    ]);
     assert.equal(payload.details.receivedAllowedTopLevelFieldCount, 5);
     assert.equal(payload.details.allowedTopLevelFieldCount, 7);
     assert.deepEqual(payload.details.allowedTopLevelFields, [
