@@ -316,6 +316,7 @@ test('WS-C contract: cms publish webhook rejects unknown top-level payload field
     assert.equal(body.details.receivedTopLevelFieldCount, 4);
     assert.deepEqual(body.details.receivedTopLevelFields, ['alphaPreview', 'event', 'siteId', 'zetaDryRun']);
     assert.deepEqual(body.details.allowedTopLevelFieldIndexes, [1, 2]);
+    assert.deepEqual(body.details.receivedAllowedTopLevelFields, ['event', 'siteId']);
     assert.equal(body.details.receivedAllowedTopLevelFieldCount, 2);
     assert.equal(body.details.allowedTopLevelFieldCount, 2);
     assert.deepEqual(body.details.allowedTopLevelFields, ['event', 'siteId']);
