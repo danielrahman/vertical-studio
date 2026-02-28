@@ -391,7 +391,7 @@ function assertNoPlaintextSecretPayload(body) {
 
   if (forbiddenField) {
     throw createError('plaintext secret values are not allowed in metadata payloads', 400, 'validation_error', {
-      field: forbiddenField
+      invalidField: forbiddenField
     });
   }
 }

@@ -327,6 +327,31 @@ test('WS-G contract: secret refs segment mismatch errors use invalidField metada
   }
 });
 
+test('WS-G contract: secret refs reject plaintext payload keys with invalidField metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-plaintext',
+        tenantSlug: 'tenant-wsg-secret-plaintext',
+        ref: 'tenant.tenant-wsg-secret-plaintext.openai.api',
+        provider: 'openai',
+        key: 'api',
+        value: 'top-secret'
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.details.invalidField, 'value');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-G contract: secret refs reject tenant reassignment with conflict invalidField metadata', async () => {
   const { server, baseUrl } = await startServer();
 

@@ -3647,7 +3647,7 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     assert.equal(plaintextRes.status, 400);
     const plaintextBody = await plaintextRes.json();
     assert.equal(plaintextBody.code, 'validation_error');
-    assert.equal(plaintextBody.details.field, 'value');
+    assert.equal(plaintextBody.details.invalidField, 'value');
 
     const mismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
