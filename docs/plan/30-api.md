@@ -281,7 +281,7 @@ Hard rules:
 1. Exactly three variants must always be returned.
 2. Deterministic output for identical input payload and versions.
 3. Requested `catalogVersion` must resolve to at least one loaded component contract (`404 component_contract_not_found` otherwise).
-4. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
+4. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
 
 #### `POST /api/v1/sites/:siteId/compose/select`
 Select one proposal as final composition.
@@ -412,7 +412,7 @@ Request:
 ```
 
 Rules:
-1. Override fields in this payload are arrays of non-empty strings when provided (values are trimmed before validation/storage); blank-value validation failures include deterministic `field` and `invalidIndexes` details.
+1. Override fields in this payload are arrays of non-empty strings when provided (values are trimmed before validation/storage); non-array values return `400 invalid_override_payload` with deterministic type metadata (`invalidField`, `expectedType`, `receivedType`), non-string item values return deterministic item-type metadata (`invalidField`, `invalidItemIndexes`, `expectedItemType`, `receivedItemTypes`), and blank-value validation failures include deterministic `field` and `invalidIndexes` details.
 2. `requiredSections`, `excludedSections`, and `pinnedSections` must use allowed section keys (`hero`, `value_props`, `about`, `process`, `timeline`, `portfolio`, `team`, `testimonials`, `stats`, `faq`, `cta`, `contact`, `legal`); unknown values return `400 invalid_override_payload` with lexicographically sorted `unknownSections` details plus lexicographically sorted `allowedSectionKeys` metadata.
 3. Override arrays must not contain duplicate values; duplicate-value validation failures return lexicographically sorted `duplicateValues` details plus deterministic `duplicateIndexes` metadata.
 4. At least one override array must be present with at least one value (no-op override payloads are rejected with `400 invalid_override_payload` and lexicographically sorted `fields` details, plus deterministic cardinality metadata `minimumNonEmptyOverrideArrays` and `receivedNonEmptyOverrideArrays`).

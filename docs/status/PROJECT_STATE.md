@@ -194,6 +194,8 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 173. Override blank-value invalid-index metadata hardening implemented (`VS3-IMP-166`): `POST /sites/:siteId/overrides` blank-string override array validation errors now include deterministic `invalidIndexes` metadata alongside `field`, with API/WS-D contract coverage and plan text alignment.
 174. Override duplicate-value index metadata hardening implemented (`VS3-IMP-167`): `POST /sites/:siteId/overrides` duplicate-value validation errors now include deterministic `duplicateIndexes` metadata alongside sorted `duplicateValues`, with API/WS-D contract coverage and plan text alignment.
 175. Override unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-168`): `POST /sites/:siteId/overrides` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown/allowed field details, with API/WS-D contract coverage and plan text alignment.
+176. Override array-shape type metadata hardening implemented (`VS3-IMP-169`): `POST /sites/:siteId/overrides` non-array and non-string item validation errors now include deterministic type/item-type metadata (`invalidField`, `expectedType`, `receivedType`, `invalidItemIndexes`, `expectedItemType`, `receivedItemTypes`), with API/WS-D contract coverage and plan text alignment.
+177. Compose-propose unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-170`): `POST /sites/:siteId/compose/propose` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 

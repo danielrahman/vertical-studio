@@ -1471,6 +1471,7 @@ function postComposePropose(req, res, next) {
       .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('compose propose payload contains unknown top-level fields', 400, 'validation_error', {
+        invalidField: 'payload',
         unknownFields: unknownTopLevelFields
       });
     }
@@ -1911,16 +1912,31 @@ function postOverrides(req, res, next) {
     const normalizedOverrideArrays = {};
 
     for (const key of OVERRIDE_ARRAY_KEYS) {
-      if (typeof req.body[key] !== 'undefined' && !Array.isArray(req.body[key])) {
-        throw createError(`Invalid override payload: ${key} must be an array`, 400, 'invalid_override_payload');
+      const overrideArray = req.body[key];
+      if (typeof overrideArray !== 'undefined' && !Array.isArray(overrideArray)) {
+        throw createError(`Invalid override payload: ${key} must be an array`, 400, 'invalid_override_payload', {
+          invalidField: key,
+          expectedType: 'array',
+          receivedType: getValueType(overrideArray)
+        });
       }
 
-      if (Array.isArray(req.body[key]) && req.body[key].some((item) => typeof item !== 'string')) {
-        throw createError(`Invalid override payload: ${key} must be an array of strings`, 400, 'invalid_override_payload');
+      if (Array.isArray(overrideArray)) {
+        const invalidItemIndexes = overrideArray
+          .map((item, index) => (typeof item !== 'string' ? index : null))
+          .filter((index) => index !== null);
+        if (invalidItemIndexes.length > 0) {
+          throw createError(`Invalid override payload: ${key} must be an array of strings`, 400, 'invalid_override_payload', {
+            invalidField: key,
+            invalidItemIndexes,
+            expectedItemType: 'string',
+            receivedItemTypes: invalidItemIndexes.map((index) => getValueType(overrideArray[index]))
+          });
+        }
       }
 
-      if (Array.isArray(req.body[key])) {
-        const normalizedValues = req.body[key].map((item) => item.trim());
+      if (Array.isArray(overrideArray)) {
+        const normalizedValues = overrideArray.map((item) => item.trim());
         const invalidIndexes = normalizedValues
           .map((value, index) => (value.length === 0 ? index : null))
           .filter((index) => index !== null);

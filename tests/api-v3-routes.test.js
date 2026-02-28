@@ -1196,6 +1196,7 @@ test('compose propose rejects unknown top-level payload fields', async () => {
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'compose propose payload contains unknown top-level fields');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaMode', 'zetaMode']);
   } finally {
     await stopServer(server);
@@ -2687,6 +2688,75 @@ test('overrides requires at least one non-empty override directive array', async
       })
     });
     assert.equal(validOverrideRes.status, 200);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('overrides validates override array payload types with deterministic metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-override-array-type-metadata-1';
+    const proposeRes = await fetch(`${baseUrl}/api/v1/sites/site-override-array-type-metadata/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(proposeRes.status, 200);
+
+    const toReviewRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-override-array-type-metadata/review/transition`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId,
+          fromState: 'proposal_generated',
+          toState: 'review_in_progress',
+          event: 'REVIEW_STARTED'
+        })
+      }
+    );
+    assert.equal(toReviewRes.status, 200);
+
+    const nonArrayRes = await fetch(`${baseUrl}/api/v1/sites/site-override-array-type-metadata/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        keywords: 'trust'
+      })
+    });
+    assert.equal(nonArrayRes.status, 400);
+    const nonArrayPayload = await nonArrayRes.json();
+    assert.equal(nonArrayPayload.code, 'invalid_override_payload');
+    assert.equal(nonArrayPayload.message, 'Invalid override payload: keywords must be an array');
+    assert.equal(nonArrayPayload.details.invalidField, 'keywords');
+    assert.equal(nonArrayPayload.details.expectedType, 'array');
+    assert.equal(nonArrayPayload.details.receivedType, 'string');
+
+    const nonStringItemRes = await fetch(`${baseUrl}/api/v1/sites/site-override-array-type-metadata/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        requiredComponents: ['cards-3up', 42, null]
+      })
+    });
+    assert.equal(nonStringItemRes.status, 400);
+    const nonStringItemPayload = await nonStringItemRes.json();
+    assert.equal(nonStringItemPayload.code, 'invalid_override_payload');
+    assert.equal(nonStringItemPayload.message, 'Invalid override payload: requiredComponents must be an array of strings');
+    assert.equal(nonStringItemPayload.details.invalidField, 'requiredComponents');
+    assert.deepEqual(nonStringItemPayload.details.invalidItemIndexes, [1, 2]);
+    assert.equal(nonStringItemPayload.details.expectedItemType, 'string');
+    assert.deepEqual(nonStringItemPayload.details.receivedItemTypes, ['number', 'null']);
   } finally {
     await stopServer(server);
   }
