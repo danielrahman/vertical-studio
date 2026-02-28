@@ -116,6 +116,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 95. Copy-generate `locales` item-type enforcement implemented (`VS3-IMP-088`): `POST /sites/:siteId/copy/generate` now rejects non-string `locales` array entries with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
 96. Copy-generate `locales` duplicate-value enforcement implemented (`VS3-IMP-089`): `POST /sites/:siteId/copy/generate` now rejects duplicate `locales` values with deterministic `validation_error` details (`invalidField`, `duplicateLocales`) instead of silently de-duplicating.
 97. Copy-generate required-locale details implemented (`VS3-IMP-090`): `POST /sites/:siteId/copy/generate` now returns deterministic `validation_error` details (`invalidField`, `missingLocales`) when required locales (`cs-CZ`,`en-US`) are not fully provided.
+98. Copy-generate high-impact mode field-key standardization implemented (`VS3-IMP-091`): `POST /sites/:siteId/copy/generate` now reports deterministic `validation_error` details using `invalidField` (instead of `field`) for `highImpactOnlyThreeVariants` validation failures.
 
 ## In Progress
 
@@ -123,7 +124,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Complete `VS3-IMP-091` by standardizing deterministic `invalidField` details for `highImpactOnlyThreeVariants` validation errors.
+1. Backlog currently has no remaining `todo` items; define and prioritize the next post-harness implementation slice for runtime and rollout hardening.
 
 ## Known Constraints
 

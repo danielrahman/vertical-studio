@@ -1599,7 +1599,7 @@ function postCopyGenerate(req, res, next) {
         400,
         'validation_error',
         {
-          field: 'highImpactOnlyThreeVariants',
+          invalidField: 'highImpactOnlyThreeVariants',
           allowedValue: true
         }
       );

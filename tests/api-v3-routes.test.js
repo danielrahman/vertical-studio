@@ -1390,7 +1390,7 @@ test('copy generate rejects unsupported highImpactOnlyThreeVariants mode when pr
     const invalidFlagBody = await invalidFlagRes.json();
     assert.equal(invalidFlagBody.code, 'validation_error');
     assert.equal(invalidFlagBody.message, 'highImpactOnlyThreeVariants must be true when provided');
-    assert.equal(invalidFlagBody.details.field, 'highImpactOnlyThreeVariants');
+    assert.equal(invalidFlagBody.details.invalidField, 'highImpactOnlyThreeVariants');
     assert.equal(invalidFlagBody.details.allowedValue, true);
 
     const validFlagRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-mode/copy/generate`, {

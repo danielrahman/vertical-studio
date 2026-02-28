@@ -1748,7 +1748,7 @@ test('WS-D contract: copy generation rejects unsupported high-impact variant mod
     assert.equal(invalidModeRes.status, 400);
     const invalidMode = await invalidModeRes.json();
     assert.equal(invalidMode.code, 'validation_error');
-    assert.equal(invalidMode.details.field, 'highImpactOnlyThreeVariants');
+    assert.equal(invalidMode.details.invalidField, 'highImpactOnlyThreeVariants');
 
     const validModeRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-copy/copy/generate`, {
       method: 'POST',
