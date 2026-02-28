@@ -786,7 +786,7 @@ function listDuplicateValues(values) {
     seen.add(value);
   }
 
-  return Array.from(duplicates);
+  return Array.from(duplicates).sort();
 }
 
 function normalizeManualOverrides(overrides) {

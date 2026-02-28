@@ -2555,7 +2555,7 @@ test('overrides rejects duplicate values inside override arrays', async () => {
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        keywords: ['trust', 'trust']
+        keywords: ['zeta', 'alpha', 'zeta', 'alpha']
       })
     });
     assert.equal(duplicateOverrideRes.status, 400);
@@ -2565,7 +2565,7 @@ test('overrides rejects duplicate values inside override arrays', async () => {
       duplicateOverrideBody.message,
       'Invalid override payload: keywords must not contain duplicate values'
     );
-    assert.deepEqual(duplicateOverrideBody.details.duplicateValues, ['trust']);
+    assert.deepEqual(duplicateOverrideBody.details.duplicateValues, ['alpha', 'zeta']);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-duplicates/overrides`, {
       method: 'POST',
