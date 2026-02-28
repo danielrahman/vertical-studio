@@ -259,6 +259,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 238. Hero primary CTA selected-copy mapping implemented (`VS3-IMP-231`): publish-time immutable snapshot generation now also prefers selected `hero.primary_cta_label` candidate text for `hero.slots.primaryCtaLabel`, with deterministic fallback behavior and API/WS-E contract coverage.
 239. Value-props intro selected-copy mapping implemented (`VS3-IMP-232`): publish-time immutable snapshot generation now prefers selected `value_props.intro` candidate text for `value_props.slots.intro`, with deterministic fallback behavior and API/WS-E contract coverage.
 240. About intro selected-copy mapping implemented (`VS3-IMP-233`): publish-time immutable snapshot generation now prefers selected `about.intro` candidate text for `about.slots.intro`, with deterministic fallback behavior and API/WS-E contract coverage.
+241. Process step-title selected-copy mapping implemented (`VS3-IMP-234`): publish-time immutable snapshot generation now prefers selected `process.step_1_title` candidate text for `process.slots.step1Title`, with deterministic fallback behavior and API/WS-E contract coverage.
 
 ## In Progress
 

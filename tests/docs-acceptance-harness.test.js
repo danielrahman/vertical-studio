@@ -3541,6 +3541,13 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
       (candidate) => candidate.slotId === 'about.intro' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
     );
     assert.ok(aboutIntroCandidate);
+    const processStep1TitleCandidate = candidates.find(
+      (candidate) =>
+        candidate.slotId === 'process.step_1_title' &&
+        candidate.locale === 'cs-CZ' &&
+        candidate.variantKey === 'SINGLE'
+    );
+    assert.ok(processStep1TitleCandidate);
     const contactPrimaryCtaCandidate = candidates.find(
       (candidate) =>
         candidate.slotId === 'contact.primary_cta_label' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
@@ -3577,6 +3584,11 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
             slotId: 'about.intro',
             locale: 'cs-CZ',
             candidateId: aboutIntroCandidate.candidateId
+          },
+          {
+            slotId: 'process.step_1_title',
+            locale: 'cs-CZ',
+            candidateId: processStep1TitleCandidate.candidateId
           },
           {
             slotId: 'contact.primary_cta_label',
@@ -3619,6 +3631,10 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
     const aboutSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'about');
     assert.ok(aboutSection);
     assert.equal(aboutSection.slots.intro, aboutIntroCandidate.text);
+
+    const processSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'process');
+    assert.ok(processSection);
+    assert.equal(processSection.slots.step1Title, processStep1TitleCandidate.text);
 
     const contactSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'contact');
     assert.ok(contactSection);

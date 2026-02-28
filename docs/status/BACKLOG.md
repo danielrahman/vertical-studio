@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-234 | Apply selected process step title copy to published runtime snapshots | done | codex | publish-time immutable runtime snapshots now prefer selected `process.step_1_title` candidate text in `process.slots.step1Title`, with API + WS-E coverage and plan text alignment |
 | VS3-IMP-233 | Apply selected about intro copy to published runtime snapshots        | done | codex | publish-time immutable runtime snapshots now prefer selected `about.intro` candidate text in `about.slots.intro`, with API + WS-E coverage and plan text alignment |
 | VS3-IMP-232 | Apply selected value-props intro copy to published runtime snapshots  | done | codex | publish-time immutable runtime snapshots now prefer selected `value_props.intro` candidate text in `value_props.slots.intro`, with API + WS-E coverage and plan text alignment |
 | VS3-IMP-231 | Apply selected hero primary CTA copy to published runtime snapshots   | done | codex | publish-time immutable runtime snapshots now also prefer selected `hero.primary_cta_label` candidate text in `hero.slots.primaryCtaLabel`, with API + WS-E coverage and plan text alignment |

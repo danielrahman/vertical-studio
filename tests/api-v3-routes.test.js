@@ -3320,6 +3320,11 @@ test('published runtime snapshot prefers selected copy recommendations for mappe
             candidateId: stableId(`${draftId}|about.intro|cs-CZ|B`)
           },
           {
+            slotId: 'process.step_1_title',
+            locale: 'cs-CZ',
+            candidateId: stableId(`${draftId}|process.step_1_title|cs-CZ|SINGLE`)
+          },
+          {
             slotId: 'contact.primary_cta_label',
             locale: 'cs-CZ',
             candidateId: stableId(`${draftId}|contact.primary_cta_label|cs-CZ|B`)
@@ -3360,6 +3365,10 @@ test('published runtime snapshot prefers selected copy recommendations for mappe
     const aboutSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'about');
     assert.ok(aboutSection);
     assert.equal(aboutSection.slots.intro, 'about_intro_cs_B');
+
+    const processSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'process');
+    assert.ok(processSection);
+    assert.equal(processSection.slots.step1Title, 'process_step_1_title_cs_SINGLE');
 
     const contactSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'contact');
     assert.ok(contactSection);
