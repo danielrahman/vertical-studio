@@ -358,6 +358,7 @@ test('WS-G contract: secret refs endpoint rejects unknown top-level payload fiel
       'tenantId',
       'tenantSlug'
     ]);
+    assert.deepEqual(payload.details.receivedAllowedTopLevelFieldIndexes, [1, 3, 4, 5, 6]);
     assert.deepEqual(payload.details.missingAllowedTopLevelFields, ['description', 'label']);
     assert.deepEqual(payload.details.missingAllowedTopLevelFieldIndexes, [0, 2]);
     assert.equal(payload.details.missingAllowedTopLevelFieldCount, 2);
