@@ -485,7 +485,7 @@ Auth:
 1. `internal_admin`
 
 Validation:
-1. Unknown top-level payload fields are rejected with `400 validation_error`.
+1. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
 
 #### `GET /api/v1/sites/:siteId/versions`
 List version history and active version pointer.

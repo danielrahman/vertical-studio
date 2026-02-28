@@ -2924,7 +2924,8 @@ test('rollback rejects unknown top-level payload fields', async () => {
         method: 'POST',
         headers: INTERNAL_ADMIN_HEADERS,
         body: JSON.stringify({
-          reason: 'manual-repoint'
+          zetaReason: 'manual-repoint',
+          alphaReason: 'operator-note'
         })
       }
     );
@@ -2932,7 +2933,7 @@ test('rollback rejects unknown top-level payload fields', async () => {
     const payload = await rollbackRes.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'rollback payload contains unknown top-level fields');
-    assert.deepEqual(payload.details.unknownFields, ['reason']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaReason', 'zetaReason']);
   } finally {
     await stopServer(server);
   }

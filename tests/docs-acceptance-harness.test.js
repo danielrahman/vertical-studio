@@ -2701,14 +2701,15 @@ test('WS-E contract: rollback rejects unknown top-level payload fields', async (
         method: 'POST',
         headers: INTERNAL_ADMIN_HEADERS,
         body: JSON.stringify({
-          reason: 'manual-repoint'
+          zetaReason: 'manual-repoint',
+          alphaReason: 'operator-note'
         })
       }
     );
     assert.equal(rollbackRes.status, 400);
     const payload = await rollbackRes.json();
     assert.equal(payload.code, 'validation_error');
-    assert.deepEqual(payload.details.unknownFields, ['reason']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaReason', 'zetaReason']);
   } finally {
     await stopServer(server);
   }
