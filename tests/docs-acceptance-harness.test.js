@@ -1285,6 +1285,7 @@ test('WS-D contract: compose select rejects unknown top-level payload fields', a
     assert.equal(selectRes.status, 400);
     const selectPayload = await selectRes.json();
     assert.equal(selectPayload.code, 'validation_error');
+    assert.equal(selectPayload.details.invalidField, 'payload');
     assert.deepEqual(selectPayload.details.unknownFields, ['alphaField', 'zetaField']);
   } finally {
     await stopServer(server);

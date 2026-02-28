@@ -298,7 +298,7 @@ Request:
 ```
 
 Rules:
-1. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
+1. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
 
 ### 4.5 Copy Lifecycle
 

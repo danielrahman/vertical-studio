@@ -1531,6 +1531,7 @@ function postComposeSelect(req, res, next) {
       .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('compose select payload contains unknown top-level fields', 400, 'validation_error', {
+        invalidField: 'payload',
         unknownFields: unknownTopLevelFields
       });
     }
