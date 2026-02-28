@@ -237,6 +237,63 @@ test('renderSiteFromRuntime falls back to compatibility snapshot when storage-ke
   assert.equal(result.html.includes('Stale storage key fallback'), true);
 });
 
+test('renderSiteFromRuntime uses compatibility response selected by lexicographic storageKey tie-break when no valid generatedAt candidates exist', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'runtime-no-valid-generatedat.example.test',
+        siteId: 'site-no-valid-generatedat',
+        versionId: 'version-no-valid-generatedat',
+        storageKey: 'site-versions/site-no-valid-generatedat/stale-active-pointer.json'
+      }),
+      jsonResponse(404, {
+        code: 'runtime_snapshot_not_found',
+        message: 'Runtime snapshot not found',
+        details: {
+          storageKey: 'site-versions/site-no-valid-generatedat/stale-active-pointer.json'
+        }
+      }),
+      jsonResponse(200, {
+        siteId: 'site-no-valid-generatedat',
+        versionId: 'version-no-valid-generatedat',
+        storageKey: 'site-versions/site-no-valid-generatedat/historical-a.json',
+        immutable: true,
+        snapshot: {
+          sections: [
+            {
+              sectionId: 'hero',
+              slots: {
+                h1: 'No valid generatedAt tie-break winner'
+              }
+            }
+          ]
+        }
+      })
+    ],
+    calls
+  );
+
+  const result = await renderSiteFromRuntime({
+    apiBaseUrl: 'http://localhost:3000',
+    host: 'runtime-no-valid-generatedat.example.test',
+    fetchImpl
+  });
+
+  assert.equal(calls.length, 3);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-no-valid-generatedat%2Fstale-active-pointer.json'
+  );
+  assert.equal(
+    calls[2],
+    'http://localhost:3000/api/v1/public/runtime/snapshot?siteId=site-no-valid-generatedat&versionId=version-no-valid-generatedat'
+  );
+  assert.equal(result.snapshot.storageKey, 'site-versions/site-no-valid-generatedat/historical-a.json');
+  assert.equal(result.snapshot.immutable, true);
+  assert.equal(result.html.includes('No valid generatedAt tie-break winner'), true);
+});
+
 test('renderSiteFromRuntime falls back to site/version snapshot endpoint when storageKey is missing', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(

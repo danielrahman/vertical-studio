@@ -280,6 +280,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 259. Runtime compatibility duplicate-mapping deterministic selection implemented (`VS3-IMP-253`): compatibility snapshot fallback now deterministically selects the newest valid immutable snapshot by `snapshot.generatedAt` and resolves timestamp ties by lexicographically smallest `storageKey`, with API + WS-E acceptance coverage and runtime API contract text alignment.
 260. Runtime compatibility invalid/missing timestamp priority coverage implemented (`VS3-IMP-254`): compatibility snapshot fallback contract now explicitly defines missing/invalid `snapshot.generatedAt` entries as lowest priority, and API + WS-E acceptance suites now verify valid timestamp entries are deterministically preferred across duplicate `siteId+versionId` mappings.
 261. Runtime compatibility no-valid-timestamp tie-break coverage implemented (`VS3-IMP-255`): compatibility snapshot fallback contract now explicitly defines deterministic no-valid-timestamp behavior, and API + WS-E acceptance suites verify that when all duplicate candidates have missing/invalid `snapshot.generatedAt`, the lexicographically smallest `storageKey` is selected.
+262. Public-web runtime-client no-valid-timestamp fallback coverage implemented (`VS3-IMP-256`): runtime-client unit coverage now verifies that storage-key `runtime_snapshot_not_found` retry path correctly renders compatibility endpoint results that represent deterministic lexicographic `storageKey` selection when duplicate runtime mappings have no valid `snapshot.generatedAt`.
 
 ## In Progress
 
@@ -288,7 +289,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after no-valid-timestamp tie-break coverage (candidate: add public-web runtime-client unit coverage for compatibility fallback behavior under duplicate mappings where API selection is lexicographic due no valid `snapshot.generatedAt` values).
+1. Select and start the next smallest non-hardening implementation slice after runtime-client no-valid-timestamp fallback coverage (candidate: add runtime-client unit coverage for storage-key `runtime_snapshot_not_found` retry path that trims whitespace `siteId+versionId` identifiers before compatibility fetch).
 
 ## Known Constraints
 
