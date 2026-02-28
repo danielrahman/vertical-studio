@@ -4346,6 +4346,7 @@ test('secret refs endpoint rejects unknown top-level payload fields', async () =
     ]);
     assert.deepEqual(payload.details.unknownFields, ['alphaRotationPolicy', 'zetaRotationWindowDays']);
     assert.deepEqual(payload.details.receivedUnknownTopLevelFields, ['alphaRotationPolicy', 'zetaRotationWindowDays']);
+    assert.equal(payload.details.receivedUnknownTopLevelFieldCount, 2);
     assert.deepEqual(payload.details.allowedTopLevelFieldIndexes, [1, 2, 3, 4, 5]);
     assert.deepEqual(payload.details.receivedAllowedTopLevelFields, [
       'key',

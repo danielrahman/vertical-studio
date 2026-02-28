@@ -2703,6 +2703,7 @@ function postSecretRef(req, res, next) {
         invalidField: 'payload',
         unknownFields: unknownTopLevelFields,
         receivedUnknownTopLevelFields,
+        receivedUnknownTopLevelFieldCount: receivedUnknownTopLevelFields.length,
         unknownTopLevelFieldCount: unknownTopLevelFields.length,
         unknownTopLevelFieldIndexes: unknownTopLevelFields.map((field) => {
           return receivedTopLevelFields.indexOf(field);
