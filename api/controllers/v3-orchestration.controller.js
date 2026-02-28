@@ -1707,13 +1707,15 @@ function postCopySelect(req, res, next) {
     const candidates = state.copyCandidatesByDraft.get(draftId) || [];
     const candidateById = new Map(candidates.map((candidate) => [candidate.candidateId, candidate]));
 
-    const missingCandidate = req.body.selections.find((selection) => {
+    const missingCandidateIndex = req.body.selections.findIndex((selection) => {
       return !candidateById.has(selection.candidateId);
     });
 
-    if (missingCandidate) {
+    if (missingCandidateIndex !== -1) {
+      const missingCandidate = req.body.selections[missingCandidateIndex];
       throw createError('copy candidate not found', 404, 'copy_candidate_not_found', {
         invalidField: 'selections',
+        selectionIndex: missingCandidateIndex,
         candidateId: missingCandidate.candidateId,
         requestedSlotId: missingCandidate.slotId,
         requestedLocale: missingCandidate.locale,

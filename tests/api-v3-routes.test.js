@@ -1559,6 +1559,7 @@ test('copy select returns deterministic tuple details when candidate is missing'
     assert.equal(payload.code, 'copy_candidate_not_found');
     assert.equal(payload.message, 'copy candidate not found');
     assert.equal(payload.details.invalidField, 'selections');
+    assert.equal(payload.details.selectionIndex, 0);
     assert.equal(payload.details.candidateId, 'candidate-missing-1');
     assert.equal(payload.details.requestedSlotId, 'hero.h1');
     assert.equal(payload.details.requestedLocale, 'cs-CZ');

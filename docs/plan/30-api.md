@@ -379,7 +379,7 @@ Rules:
 1. `draftId` is required and must be a string; missing or non-string values return `400 validation_error` with deterministic `invalidField` details.
 2. Every selection item must include `slotId`, `locale`, and `candidateId`.
 3. `candidateId` must resolve to a generated candidate for the draft.
-4. Missing candidate lookups return `404 copy_candidate_not_found` with deterministic selection tuple details (`candidateId`, `requestedSlotId`, `requestedLocale`, `slotId`, `locale`).
+4. Missing candidate lookups return `404 copy_candidate_not_found` with deterministic selection tuple details (`selectionIndex`, `candidateId`, `requestedSlotId`, `requestedLocale`, `slotId`, `locale`).
 5. Selected candidate `slotId` and `locale` must match the request tuple.
 6. A request must not contain duplicate `slotId`+`locale` tuples.
 7. `selections` is required and must be an array; missing or non-array values return `400 validation_error` with deterministic `invalidField` details.
