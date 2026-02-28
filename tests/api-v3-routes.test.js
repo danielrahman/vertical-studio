@@ -1811,7 +1811,8 @@ test('copy select rejects unknown payload fields', async () => {
       body: JSON.stringify({
         draftId,
         selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId }],
-        unexpectedField: true
+        zetaField: true,
+        alphaField: true
       })
     });
     assert.equal(unknownTopLevelRes.status, 400);
@@ -1819,7 +1820,7 @@ test('copy select rejects unknown payload fields', async () => {
     assert.equal(unknownTopLevelBody.code, 'validation_error');
     assert.equal(unknownTopLevelBody.message, 'copy select payload contains unknown top-level fields');
     assert.equal(unknownTopLevelBody.details.invalidField, 'payload');
-    assert.deepEqual(unknownTopLevelBody.details.unknownFields, ['unexpectedField']);
+    assert.deepEqual(unknownTopLevelBody.details.unknownFields, ['alphaField', 'zetaField']);
     assert.deepEqual(unknownTopLevelBody.details.allowedTopLevelFields, [
       'draftId',
       'selections',
@@ -1831,7 +1832,15 @@ test('copy select rejects unknown payload fields', async () => {
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId, notes: 'manual note' }]
+        selections: [
+          {
+            slotId: 'hero.h1',
+            locale: 'cs-CZ',
+            candidateId,
+            zetaNote: 'manual note',
+            alphaNote: 'manual note'
+          }
+        ]
       })
     });
     assert.equal(unknownSelectionFieldRes.status, 400);
@@ -1839,7 +1848,7 @@ test('copy select rejects unknown payload fields', async () => {
     assert.equal(unknownSelectionFieldBody.code, 'validation_error');
     assert.equal(unknownSelectionFieldBody.message, 'selection item contains unknown fields');
     assert.equal(unknownSelectionFieldBody.details.invalidField, 'selections[0]');
-    assert.deepEqual(unknownSelectionFieldBody.details.unknownFields, ['notes']);
+    assert.deepEqual(unknownSelectionFieldBody.details.unknownFields, ['alphaNote', 'zetaNote']);
     assert.deepEqual(unknownSelectionFieldBody.details.allowedSelectionFields, [
       'slotId',
       'locale',

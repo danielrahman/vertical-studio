@@ -319,9 +319,11 @@ function assertCopySelectionShape(selection, index) {
     });
   }
 
-  const unknownSelectionFields = Object.keys(selection).filter((field) => {
-    return !COPY_SELECT_ALLOWED_SELECTION_FIELDS.has(field);
-  });
+  const unknownSelectionFields = Object.keys(selection)
+    .filter((field) => {
+      return !COPY_SELECT_ALLOWED_SELECTION_FIELDS.has(field);
+    })
+    .sort();
   if (unknownSelectionFields.length > 0) {
     throw createError('selection item contains unknown fields', 400, 'validation_error', {
       invalidField: `selections[${index}]`,
@@ -1675,9 +1677,11 @@ function postCopySelect(req, res, next) {
         invalidField: 'draftId'
       });
     }
-    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
-      return !COPY_SELECT_ALLOWED_TOP_LEVEL_FIELDS.has(field);
-    });
+    const unknownTopLevelFields = Object.keys(req.body)
+      .filter((field) => {
+        return !COPY_SELECT_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+      })
+      .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('copy select payload contains unknown top-level fields', 400, 'validation_error', {
         invalidField: 'payload',

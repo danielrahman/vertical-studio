@@ -2132,14 +2132,15 @@ test('WS-D contract: copy selection rejects unknown payload fields', async () =>
       body: JSON.stringify({
         draftId,
         selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId }],
-        unknown: true
+        zetaField: true,
+        alphaField: true
       })
     });
     assert.equal(unknownTopLevelRes.status, 400);
     const unknownTopLevelPayload = await unknownTopLevelRes.json();
     assert.equal(unknownTopLevelPayload.code, 'validation_error');
     assert.equal(unknownTopLevelPayload.details.invalidField, 'payload');
-    assert.deepEqual(unknownTopLevelPayload.details.unknownFields, ['unknown']);
+    assert.deepEqual(unknownTopLevelPayload.details.unknownFields, ['alphaField', 'zetaField']);
     assert.deepEqual(unknownTopLevelPayload.details.allowedTopLevelFields, [
       'draftId',
       'selections',
@@ -2151,14 +2152,22 @@ test('WS-D contract: copy selection rejects unknown payload fields', async () =>
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId, notes: 'unexpected' }]
+        selections: [
+          {
+            slotId: 'hero.h1',
+            locale: 'cs-CZ',
+            candidateId,
+            zetaNote: 'unexpected',
+            alphaNote: 'unexpected'
+          }
+        ]
       })
     });
     assert.equal(unknownSelectionFieldRes.status, 400);
     const unknownSelectionFieldPayload = await unknownSelectionFieldRes.json();
     assert.equal(unknownSelectionFieldPayload.code, 'validation_error');
     assert.equal(unknownSelectionFieldPayload.details.invalidField, 'selections[0]');
-    assert.deepEqual(unknownSelectionFieldPayload.details.unknownFields, ['notes']);
+    assert.deepEqual(unknownSelectionFieldPayload.details.unknownFields, ['alphaNote', 'zetaNote']);
     assert.deepEqual(unknownSelectionFieldPayload.details.allowedSelectionFields, [
       'slotId',
       'locale',
