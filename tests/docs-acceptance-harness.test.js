@@ -3537,6 +3537,10 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
       (candidate) => candidate.slotId === 'value_props.intro' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
     );
     assert.ok(valuePropsIntroCandidate);
+    const aboutIntroCandidate = candidates.find(
+      (candidate) => candidate.slotId === 'about.intro' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
+    );
+    assert.ok(aboutIntroCandidate);
     const contactPrimaryCtaCandidate = candidates.find(
       (candidate) =>
         candidate.slotId === 'contact.primary_cta_label' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
@@ -3568,6 +3572,11 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
             slotId: 'value_props.intro',
             locale: 'cs-CZ',
             candidateId: valuePropsIntroCandidate.candidateId
+          },
+          {
+            slotId: 'about.intro',
+            locale: 'cs-CZ',
+            candidateId: aboutIntroCandidate.candidateId
           },
           {
             slotId: 'contact.primary_cta_label',
@@ -3606,6 +3615,10 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
     const valuePropsSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'value_props');
     assert.ok(valuePropsSection);
     assert.equal(valuePropsSection.slots.intro, valuePropsIntroCandidate.text);
+
+    const aboutSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'about');
+    assert.ok(aboutSection);
+    assert.equal(aboutSection.slots.intro, aboutIntroCandidate.text);
 
     const contactSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'contact');
     assert.ok(contactSection);
