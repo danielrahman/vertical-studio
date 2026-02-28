@@ -203,6 +203,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 182. Tenant-create unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-175`): `POST /tenants` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-B contract coverage and plan text alignment.
 183. Bootstrap unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-176`): `POST /sites/:siteId/bootstrap-from-extraction` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-B contract coverage and plan text alignment.
 184. Vertical-research unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-177`): `POST /verticals/:verticalKey/research/build` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-B contract coverage and plan text alignment.
+185. CMS webhook unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-178`): `POST /cms/webhooks/publish` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-C contract coverage and plan text alignment.
 
 ## In Progress
 

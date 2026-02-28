@@ -511,7 +511,7 @@ Auth:
 Behavior:
 1. Queue asynchronous publish-preparation job.
 2. Never perform direct synchronous publish.
-3. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
+3. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
 
 #### `POST /api/v1/secrets/refs`
 Create/update secret metadata reference.

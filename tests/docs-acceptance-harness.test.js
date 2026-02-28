@@ -269,6 +269,7 @@ test('WS-C contract: cms publish webhook rejects unknown top-level payload field
     assert.equal(response.status, 400);
     const body = await response.json();
     assert.equal(body.code, 'validation_error');
+    assert.equal(body.details.invalidField, 'payload');
     assert.deepEqual(body.details.unknownFields, ['alphaPreview', 'zetaDryRun']);
   } finally {
     await stopServer(server);
