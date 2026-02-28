@@ -2473,8 +2473,8 @@ test('overrides rejects conflicting section directives across arrays', async () 
         headers: INTERNAL_ADMIN_HEADERS,
         body: JSON.stringify({
           draftId,
-          requiredSections: ['hero', 'contact'],
-          excludedSections: ['contact']
+          requiredSections: ['hero', 'contact', 'timeline'],
+          excludedSections: ['contact', 'hero']
         })
       }
     );
@@ -2485,15 +2485,15 @@ test('overrides rejects conflicting section directives across arrays', async () 
       requiredExcludedConflictBody.message,
       'Invalid override payload: requiredSections and excludedSections must not overlap'
     );
-    assert.deepEqual(requiredExcludedConflictBody.details.conflictingSections, ['contact']);
+    assert.deepEqual(requiredExcludedConflictBody.details.conflictingSections, ['contact', 'hero']);
 
     const pinnedExcludedConflictRes = await fetch(`${baseUrl}/api/v1/sites/site-override-section-conflicts/overrides`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        pinnedSections: ['hero'],
-        excludedSections: ['hero']
+        pinnedSections: ['timeline', 'hero', 'contact'],
+        excludedSections: ['hero', 'timeline']
       })
     });
     assert.equal(pinnedExcludedConflictRes.status, 400);
@@ -2503,7 +2503,7 @@ test('overrides rejects conflicting section directives across arrays', async () 
       pinnedExcludedConflictBody.message,
       'Invalid override payload: pinnedSections and excludedSections must not overlap'
     );
-    assert.deepEqual(pinnedExcludedConflictBody.details.conflictingSections, ['hero']);
+    assert.deepEqual(pinnedExcludedConflictBody.details.conflictingSections, ['hero', 'timeline']);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-section-conflicts/overrides`, {
       method: 'POST',

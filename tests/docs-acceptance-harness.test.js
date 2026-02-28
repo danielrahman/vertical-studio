@@ -1466,14 +1466,15 @@ test('WS-D contract: override section directives cannot conflict across arrays',
         headers: INTERNAL_ADMIN_HEADERS,
         body: JSON.stringify({
           draftId,
-          requiredSections: ['hero'],
-          excludedSections: ['hero']
+          requiredSections: ['hero', 'contact'],
+          excludedSections: ['contact', 'hero']
         })
       }
     );
     assert.equal(requiredExcludedConflictRes.status, 400);
     const requiredExcludedConflictPayload = await requiredExcludedConflictRes.json();
     assert.equal(requiredExcludedConflictPayload.code, 'invalid_override_payload');
+    assert.deepEqual(requiredExcludedConflictPayload.details.conflictingSections, ['contact', 'hero']);
 
     const pinnedExcludedConflictRes = await fetch(
       `${baseUrl}/api/v1/sites/site-wsd-overrides-section-conflicts/overrides`,
@@ -1482,14 +1483,15 @@ test('WS-D contract: override section directives cannot conflict across arrays',
         headers: INTERNAL_ADMIN_HEADERS,
         body: JSON.stringify({
           draftId,
-          pinnedSections: ['contact'],
-          excludedSections: ['contact']
+          pinnedSections: ['timeline', 'contact', 'hero'],
+          excludedSections: ['hero', 'timeline']
         })
       }
     );
     assert.equal(pinnedExcludedConflictRes.status, 400);
     const pinnedExcludedConflictPayload = await pinnedExcludedConflictRes.json();
     assert.equal(pinnedExcludedConflictPayload.code, 'invalid_override_payload');
+    assert.deepEqual(pinnedExcludedConflictPayload.details.conflictingSections, ['hero', 'timeline']);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-section-conflicts/overrides`, {
       method: 'POST',

@@ -1954,7 +1954,7 @@ function postOverrides(req, res, next) {
 
     const conflictingRequiredExcludedSections = requiredSections.filter((sectionKey) =>
       excludedSections.includes(sectionKey)
-    );
+    ).sort();
     if (conflictingRequiredExcludedSections.length > 0) {
       throw createError(
         'Invalid override payload: requiredSections and excludedSections must not overlap',
@@ -1969,7 +1969,7 @@ function postOverrides(req, res, next) {
 
     const conflictingPinnedExcludedSections = pinnedSections.filter((sectionKey) =>
       excludedSections.includes(sectionKey)
-    );
+    ).sort();
     if (conflictingPinnedExcludedSections.length > 0) {
       throw createError(
         'Invalid override payload: pinnedSections and excludedSections must not overlap',
