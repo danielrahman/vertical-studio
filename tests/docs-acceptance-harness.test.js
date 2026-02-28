@@ -3323,6 +3323,34 @@ test('WS-E contract: runtime snapshot by storage key requires storageKey query w
   }
 });
 
+test('WS-E contract: runtime snapshot requires siteId and versionId query with deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingSiteIdRes = await fetch(`${baseUrl}/api/v1/public/runtime/snapshot?versionId=version-1`);
+    assert.equal(missingSiteIdRes.status, 400);
+    const missingSiteIdPayload = await missingSiteIdRes.json();
+    assert.equal(missingSiteIdPayload.code, 'validation_error');
+    assert.equal(missingSiteIdPayload.message, 'siteId is required');
+    assert.equal(missingSiteIdPayload.details.invalidField, 'siteId');
+    assert.equal(missingSiteIdPayload.details.expectedType, 'string');
+    assert.equal(missingSiteIdPayload.details.receivedType, 'undefined');
+
+    const repeatedVersionIdRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-1&versionId=v1&versionId=v2`
+    );
+    assert.equal(repeatedVersionIdRes.status, 400);
+    const repeatedVersionIdPayload = await repeatedVersionIdRes.json();
+    assert.equal(repeatedVersionIdPayload.code, 'validation_error');
+    assert.equal(repeatedVersionIdPayload.message, 'versionId is required');
+    assert.equal(repeatedVersionIdPayload.details.invalidField, 'versionId');
+    assert.equal(repeatedVersionIdPayload.details.expectedType, 'string');
+    assert.equal(repeatedVersionIdPayload.details.receivedType, 'array');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-F contract: quality report exposes COPY/LAYOUT/MEDIA/LEGAL gate outcomes', async () => {
   const { server, baseUrl } = await startServer();
 

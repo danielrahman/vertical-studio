@@ -3537,6 +3537,34 @@ test('public runtime snapshot by storage key requires storageKey query with dete
   }
 });
 
+test('public runtime snapshot requires siteId and versionId query with deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingSiteIdRes = await fetch(`${baseUrl}/api/v1/public/runtime/snapshot?versionId=version-1`);
+    assert.equal(missingSiteIdRes.status, 400);
+    const missingSiteIdBody = await missingSiteIdRes.json();
+    assert.equal(missingSiteIdBody.code, 'validation_error');
+    assert.equal(missingSiteIdBody.message, 'siteId is required');
+    assert.equal(missingSiteIdBody.details.invalidField, 'siteId');
+    assert.equal(missingSiteIdBody.details.expectedType, 'string');
+    assert.equal(missingSiteIdBody.details.receivedType, 'undefined');
+
+    const repeatedVersionIdRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-1&versionId=v1&versionId=v2`
+    );
+    assert.equal(repeatedVersionIdRes.status, 400);
+    const repeatedVersionIdBody = await repeatedVersionIdRes.json();
+    assert.equal(repeatedVersionIdBody.code, 'validation_error');
+    assert.equal(repeatedVersionIdBody.message, 'versionId is required');
+    assert.equal(repeatedVersionIdBody.details.invalidField, 'versionId');
+    assert.equal(repeatedVersionIdBody.details.expectedType, 'string');
+    assert.equal(repeatedVersionIdBody.details.receivedType, 'array');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('quality latest endpoint returns required COPY/LAYOUT/MEDIA/LEGAL gate outcomes', async () => {
   const { server, baseUrl } = await startServer();
 
