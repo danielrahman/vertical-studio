@@ -172,6 +172,7 @@ test('docs completion Test 2: locked decisions are represented in concrete contr
     apiContract,
     'may use compatibility `siteId+versionId` snapshot fetch when resolve payload omits `storageKey`.'
   );
+  mustContain(apiContract, 'renderer should retry via compatibility `siteId+versionId` fetch.');
   mustContain(copySystem, 'Exactly three candidates (`A/B/C`) per high-impact slot and locale.');
   mustContain(dataModel, 'competitorCount: number; // minimum 15');
 });

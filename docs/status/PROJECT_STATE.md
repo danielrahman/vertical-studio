@@ -275,6 +275,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 254. Runtime-resolve fallback payload-shape API coverage and compatibility snapshot fallback implemented (`VS3-IMP-248`): API + WS-E acceptance suites now assert resolve responses preserve non-empty compatibility identifiers (`siteId`,`versionId`) when `storageKey` is unavailable, and compatibility snapshot reads now fall back to `siteId+versionId` lookup when stored version `storageKey` metadata is missing or stale.
 255. Runtime stale non-empty `storageKey` compatibility fallback coverage implemented (`VS3-IMP-249`): API + WS-E acceptance suites now assert that stale non-empty resolve/storage metadata still allows successful compatibility snapshot lookup by `siteId+versionId`, while direct by-storage-key lookup deterministically returns `runtime_snapshot_not_found`.
 256. Runtime-client storage-key not-found compatibility retry implemented (`VS3-IMP-250`): public-web runtime rendering now retries compatibility snapshot fetch by `siteId+versionId` when storage-key snapshot fetch fails with `runtime_snapshot_not_found` and resolve payload includes compatibility identifiers, with runtime-client coverage and runtime contract/readme text alignment.
+257. Runtime retry contract text lock implemented in docs completion assertions (`VS3-IMP-251`): docs acceptance now explicitly requires runtime API contract wording that mandates compatibility retry via `siteId+versionId` when by-storage-key fetch returns `runtime_snapshot_not_found`.
 
 ## In Progress
 
@@ -283,7 +284,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after runtime-client not-found compatibility retry (candidate: lock the new runtime retry contract wording in docs-acceptance completion assertions).
+1. Select and start the next smallest non-hardening implementation slice after runtime retry contract text lock (candidate: add docs-acceptance assertion for public-web README runtime retry flow wording).
 
 ## Known Constraints
 
