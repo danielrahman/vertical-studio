@@ -2144,6 +2144,7 @@ test('WS-D contract: copy selection selectedBy must match authenticated actor', 
     assert.equal(mismatchPayload.code, 'validation_error');
     assert.equal(mismatchPayload.message, 'selection selectedBy must match authenticated actor role');
     assert.equal(mismatchPayload.details.invalidField, 'selections');
+    assert.equal(mismatchPayload.details.selectionIndex, 0);
 
     const matchingRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
       method: 'POST',

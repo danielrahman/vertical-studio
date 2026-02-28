@@ -1768,12 +1768,14 @@ function postCopySelect(req, res, next) {
       });
     }
 
-    const selectedByMismatch = req.body.selections.find((selection) => {
+    const selectedByMismatchIndex = req.body.selections.findIndex((selection) => {
       return typeof selection.selectedBy === 'string' && selection.selectedBy !== selectedByRole;
     });
-    if (selectedByMismatch) {
+    if (selectedByMismatchIndex !== -1) {
+      const selectedByMismatch = req.body.selections[selectedByMismatchIndex];
       throw createError('selection selectedBy must match authenticated actor role', 400, 'validation_error', {
         invalidField: 'selections',
+        selectionIndex: selectedByMismatchIndex,
         slotId: selectedByMismatch.slotId,
         locale: selectedByMismatch.locale,
         selectedBy: selectedByMismatch.selectedBy,

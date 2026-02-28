@@ -1782,6 +1782,7 @@ test('copy select selectedBy must match authenticated actor role', async () => {
     assert.equal(mismatchBody.code, 'validation_error');
     assert.equal(mismatchBody.message, 'selection selectedBy must match authenticated actor role');
     assert.equal(mismatchBody.details.invalidField, 'selections');
+    assert.equal(mismatchBody.details.selectionIndex, 0);
 
     const matchingRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
       method: 'POST',
