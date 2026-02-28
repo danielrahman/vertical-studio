@@ -4179,6 +4179,7 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     const plaintextBody = await plaintextRes.json();
     assert.equal(plaintextBody.code, 'validation_error');
     assert.equal(plaintextBody.details.invalidField, 'value');
+    assert.equal(plaintextBody.details.receivedType, 'string');
     assert.deepEqual(plaintextBody.details.forbiddenKeys, [
       'apiKey',
       'plaintext',

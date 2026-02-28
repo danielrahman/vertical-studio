@@ -535,7 +535,7 @@ Contract:
 4. Secret-ref required-field `validation_error` responses (`ref`, `tenantId`) include deterministic metadata (`invalidField`, `expectedType`, `receivedType`); invalid `ref` format validation includes deterministic `expectedFormat` and `receivedRef` metadata; segment checks (`provider`, `key`, and `tenantSlug` when provided) include deterministic `invalidField` and deterministic type metadata (`expectedType`, `receivedType`), and invalid string-shape segment values include deterministic `expectedPattern` and `receivedValue` metadata.
 5. Secret-ref segment mismatch responses (`provider`, `key`, `tenantSlug`) include deterministic mismatch metadata (`expectedSegment`, `receivedSegment`) alongside `invalidField`.
 6. Reassigning an existing secret ref to a different `tenantId` is rejected with `409 secret_ref_conflict` and deterministic conflict metadata (`invalidField: tenantId`, `expectedTenantId`, `receivedTenantId`).
-7. Plaintext secret payload-key rejection (`value`, `secret`, `secretValue`, `plaintext`, `token`, `apiKey`, `privateKey`) uses deterministic `invalidField` metadata for the offending key and lexicographically sorted `forbiddenKeys` metadata.
+7. Plaintext secret payload-key rejection (`value`, `secret`, `secretValue`, `plaintext`, `token`, `apiKey`, `privateKey`) uses deterministic `invalidField` metadata for the offending key, deterministic `receivedType` metadata for the offending value, and lexicographically sorted `forbiddenKeys` metadata.
 
 ## 5. Error Codes
 Required additional codes:
