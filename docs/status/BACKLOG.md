@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-241 | Lock runtime fallback contract text in docs acceptance tests           | done | codex | docs-acceptance harness now asserts API contract text requires storage-key-first runtime fetch plus compatibility `siteId+versionId` fallback wording |
 | VS3-IMP-240 | Add explicit runtime-client error for incomplete resolve payload       | done | codex | runtime client now throws deterministic `runtime_resolve_incomplete` error when resolve payload lacks both `storageKey` and complete `siteId+versionId`, with unit coverage and readme flow alignment |
 | VS3-IMP-239 | Add WS-E coverage for runtime snapshot compatibility success path      | done | codex | added API + WS-E acceptance assertions that compatibility `siteId+versionId` snapshot fetch returns immutable payload equivalent to storage-key fetch |
 | VS3-IMP-238 | Add runtime client fallback to site/version snapshot fetch            | done | codex | implemented runtime client fallback from `storageKey` to compatibility `siteId+versionId` snapshot fetch, added runtime-client coverage, and aligned runtime contract/readme text |
