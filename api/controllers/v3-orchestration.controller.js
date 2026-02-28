@@ -1986,7 +1986,7 @@ function postOverrides(req, res, next) {
       const knownComponentIds = new Set(listComponentContractIds(state));
       const unknownRequiredComponents = normalizedOverrideArrays.requiredComponents.filter((componentId) => {
         return !knownComponentIds.has(componentId);
-      });
+      }).sort();
       if (unknownRequiredComponents.length > 0) {
         throw createError(
           'Invalid override payload: requiredComponents contains unknown componentId values',

@@ -2349,7 +2349,7 @@ test('overrides rejects unknown requiredComponents values', async () => {
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        requiredComponents: ['unknown-component']
+        requiredComponents: ['zeta-component', 'alpha-component']
       })
     });
     assert.equal(invalidOverrideRes.status, 400);
@@ -2359,7 +2359,7 @@ test('overrides rejects unknown requiredComponents values', async () => {
       invalidOverrideBody.message,
       'Invalid override payload: requiredComponents contains unknown componentId values'
     );
-    assert.deepEqual(invalidOverrideBody.details.unknownComponentIds, ['unknown-component']);
+    assert.deepEqual(invalidOverrideBody.details.unknownComponentIds, ['alpha-component', 'zeta-component']);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-components/overrides`, {
       method: 'POST',

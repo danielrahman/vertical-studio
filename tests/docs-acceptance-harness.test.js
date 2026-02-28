@@ -1349,13 +1349,13 @@ test('WS-D contract: overrides requiredComponents must reference loaded componen
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        requiredComponents: ['missing-component']
+        requiredComponents: ['zeta-component', 'alpha-component']
       })
     });
     assert.equal(invalidOverrideRes.status, 400);
     const invalidOverridePayload = await invalidOverrideRes.json();
     assert.equal(invalidOverridePayload.code, 'invalid_override_payload');
-    assert.deepEqual(invalidOverridePayload.details.unknownComponentIds, ['missing-component']);
+    assert.deepEqual(invalidOverridePayload.details.unknownComponentIds, ['alpha-component', 'zeta-component']);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides/overrides`, {
       method: 'POST',

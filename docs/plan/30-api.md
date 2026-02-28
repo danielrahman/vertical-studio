@@ -418,7 +418,7 @@ Rules:
 4. At least one override array must be present with at least one value (no-op override payloads are rejected with `400 invalid_override_payload`).
 5. `requiredSections` must not overlap with `excludedSections`; overlap validation failures return lexicographically sorted `conflictingSections` details.
 6. `pinnedSections` must not overlap with `excludedSections`; overlap validation failures return lexicographically sorted `conflictingSections` details.
-7. `requiredComponents` must reference loaded component contract IDs; unknown IDs return `400 invalid_override_payload`.
+7. `requiredComponents` must reference loaded component contract IDs; unknown IDs return `400 invalid_override_payload` with lexicographically sorted `unknownComponentIds` details.
 8. Unknown top-level payload fields (outside `draftId` and override arrays) are rejected with `400 invalid_override_payload` and lexicographically sorted `unknownFields` details.
 
 ### 4.7 Review State Lifecycle

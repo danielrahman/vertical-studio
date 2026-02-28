@@ -185,6 +185,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 164. Override duplicate-value detail sorting hardening implemented (`VS3-IMP-157`): `POST /sites/:siteId/overrides` duplicate array-value validation errors now emit lexicographically sorted `duplicateValues` details, with API/WS-D contract coverage and plan text alignment.
 165. Override unknown-section detail sorting hardening implemented (`VS3-IMP-158`): `POST /sites/:siteId/overrides` unknown section-key validation errors now emit lexicographically sorted `unknownSections` details, with API/WS-D contract coverage and plan text alignment.
 166. Override conflicting-section detail sorting hardening implemented (`VS3-IMP-159`): `POST /sites/:siteId/overrides` section-overlap validation errors now emit lexicographically sorted `conflictingSections` details, with API/WS-D contract coverage and plan text alignment.
+167. Override unknown-component detail sorting hardening implemented (`VS3-IMP-160`): `POST /sites/:siteId/overrides` unknown required-component validation errors now emit lexicographically sorted `unknownComponentIds` details, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 
