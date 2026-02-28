@@ -2625,6 +2625,15 @@ test('overrides requires at least one non-empty override directive array', async
       emptyOverrideBody.message,
       'Invalid override payload: at least one non-empty override array is required'
     );
+    assert.deepEqual(emptyOverrideBody.details.fields, [
+      'excludedCompetitorPatterns',
+      'excludedSections',
+      'keywords',
+      'pinnedSections',
+      'requiredComponents',
+      'requiredSections',
+      'tone'
+    ]);
 
     const emptyArraysRes = await fetch(`${baseUrl}/api/v1/sites/site-override-non-empty/overrides`, {
       method: 'POST',
@@ -2638,6 +2647,15 @@ test('overrides requires at least one non-empty override directive array', async
     assert.equal(emptyArraysRes.status, 400);
     const emptyArraysBody = await emptyArraysRes.json();
     assert.equal(emptyArraysBody.code, 'invalid_override_payload');
+    assert.deepEqual(emptyArraysBody.details.fields, [
+      'excludedCompetitorPatterns',
+      'excludedSections',
+      'keywords',
+      'pinnedSections',
+      'requiredComponents',
+      'requiredSections',
+      'tone'
+    ]);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-non-empty/overrides`, {
       method: 'POST',

@@ -2009,7 +2009,7 @@ function postOverrides(req, res, next) {
         400,
         'invalid_override_payload',
         {
-          fields: OVERRIDE_ARRAY_KEYS
+          fields: [...OVERRIDE_ARRAY_KEYS].sort()
         }
       );
     }
