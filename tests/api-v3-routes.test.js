@@ -252,14 +252,14 @@ test('vertical research build rejects duplicate source classes with deterministi
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         targetCompetitorCount: 15,
-        sources: ['public_web', 'legal_pages', 'public_web']
+        sources: ['public_web', 'legal_pages', 'public_web', 'legal_pages']
       })
     });
     assert.equal(duplicateSourcesRes.status, 400);
     const duplicateSourcesPayload = await duplicateSourcesRes.json();
     assert.equal(duplicateSourcesPayload.code, 'validation_error');
     assert.equal(duplicateSourcesPayload.message, 'sources must not contain duplicate values');
-    assert.deepEqual(duplicateSourcesPayload.details.duplicateSources, ['public_web']);
+    assert.deepEqual(duplicateSourcesPayload.details.duplicateSources, ['legal_pages', 'public_web']);
   } finally {
     await stopServer(server);
   }

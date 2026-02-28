@@ -899,14 +899,14 @@ test('WS-B contract: vertical research build rejects duplicate source classes', 
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         targetCompetitorCount: 15,
-        sources: ['public_web', 'legal_pages', 'public_web']
+        sources: ['public_web', 'legal_pages', 'public_web', 'legal_pages']
       })
     });
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'sources must not contain duplicate values');
-    assert.deepEqual(payload.details.duplicateSources, ['public_web']);
+    assert.deepEqual(payload.details.duplicateSources, ['legal_pages', 'public_web']);
   } finally {
     await stopServer(server);
   }

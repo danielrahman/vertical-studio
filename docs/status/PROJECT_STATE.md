@@ -178,6 +178,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 157. Override payload unknown-field sorting hardening implemented (`VS3-IMP-150`): `POST /sites/:siteId/overrides` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-D contract coverage and plan text alignment.
 158. Bootstrap sitePolicy unknown-field sorting hardening implemented (`VS3-IMP-151`): `POST /sites/:siteId/bootstrap-from-extraction` `sitePolicy` unknown-field validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-B contract coverage and plan text alignment.
 159. Bootstrap extracted-field unknown-key sorting hardening implemented (`VS3-IMP-152`): `POST /sites/:siteId/bootstrap-from-extraction` unknown nested `extractedFields` item-key validation errors now emit lexicographically sorted per-item `unknownFields` details, with API/WS-B contract coverage and plan text alignment.
+160. Vertical-research duplicate-source detail sorting hardening implemented (`VS3-IMP-153`): `POST /verticals/:verticalKey/research/build` duplicate `sources` validation errors now emit lexicographically sorted `duplicateSources` details, with API/WS-B contract coverage and plan text alignment.
 
 ## In Progress
 
