@@ -375,6 +375,7 @@ test('WS-B contract: bootstrap-from-extraction rejects unknown top-level payload
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaPreview', 'zetaPreview']);
   } finally {
     await stopServer(server);

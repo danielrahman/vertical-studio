@@ -175,7 +175,7 @@ Contract:
 13. If `lowConfidence` is provided, it must be a boolean.
 14. If `sitePolicy` is provided, it must be an object.
 15. `sitePolicy` may contain only `allowOwnerDraftCopyEdits`; unknown nested fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
-16. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
+16. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
 
 ### 4.2 Vertical Intelligence Lifecycle
 

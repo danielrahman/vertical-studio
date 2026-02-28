@@ -939,6 +939,7 @@ test('bootstrap-from-extraction rejects unknown top-level payload fields', async
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'bootstrap payload contains unknown top-level fields');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaPreview', 'zetaPreview']);
   } finally {
     await stopServer(server);
