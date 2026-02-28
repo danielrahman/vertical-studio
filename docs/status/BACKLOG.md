@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-237 | Define next prioritized non-hardening implementation target           | blocked | codex | blocker: all current non-hardening runtime selected-copy mapping gaps are completed; required input: choose the next implementation category/feature to prioritize |
 | VS3-IMP-236 | Apply selected FAQ answer copy to published runtime snapshots         | done | codex | publish-time immutable runtime snapshots now prefer selected `faq.a1` candidate text in `faq.slots.answer1`, with API + WS-E coverage and plan text alignment |
 | VS3-IMP-235 | Apply selected FAQ question copy to published runtime snapshots       | done | codex | publish-time immutable runtime snapshots now prefer selected `faq.q1` candidate text in `faq.slots.question1`, with API + WS-E coverage and plan text alignment |
 | VS3-IMP-234 | Apply selected process step title copy to published runtime snapshots | done | codex | publish-time immutable runtime snapshots now prefer selected `process.step_1_title` candidate text in `process.slots.step1Title`, with API + WS-E coverage and plan text alignment |

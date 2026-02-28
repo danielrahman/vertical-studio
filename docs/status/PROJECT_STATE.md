@@ -270,7 +270,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest unblocked non-hardening backlog item.
+1. Blocked on prioritization input: select the next non-hardening implementation category now that runtime selected-copy mapping coverage is complete for all currently generated slots.
 
 ## Known Constraints
 
