@@ -205,6 +205,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 184. Vertical-research unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-177`): `POST /verticals/:verticalKey/research/build` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-B contract coverage and plan text alignment.
 185. CMS webhook unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-178`): `POST /cms/webhooks/publish` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-C contract coverage and plan text alignment.
 186. Secret-ref unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-179`): `POST /secrets/refs` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-G contract coverage and plan text alignment.
+187. Secret-ref validation detail-key standardization implemented (`VS3-IMP-180`): secret-ref `validation_error` responses for required/segment checks now use deterministic `invalidField` metadata (`ref`, `tenantId`, `provider`, `key`, `tenantSlug`), with API/WS-G contract coverage and plan text alignment.
 
 ## In Progress
 

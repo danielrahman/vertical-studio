@@ -303,6 +303,30 @@ test('WS-G contract: secret refs endpoint rejects unknown top-level payload fiel
   }
 });
 
+test('WS-G contract: secret refs segment mismatch errors use invalidField metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-segment',
+        tenantSlug: 'tenant-wsg-secret-segment',
+        ref: 'tenant.tenant-wsg-secret-segment.openai.api',
+        provider: 'openai',
+        key: 'other'
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.details.invalidField, 'key');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: non-public read endpoints require tenant-member or internal_admin role', async () => {
   const { server, baseUrl } = await startServer();
 

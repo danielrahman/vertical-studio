@@ -252,7 +252,7 @@ function assertString(value, fieldName) {
 function assertSegment(value, fieldName) {
   if (typeof value !== 'string' || !SECRET_REF_SEGMENT_PATTERN.test(value)) {
     throw createError(`${fieldName} must contain only lowercase letters, numbers, and hyphen`, 400, 'validation_error', {
-      field: fieldName
+      invalidField: fieldName
     });
   }
 
@@ -262,7 +262,7 @@ function assertSegment(value, fieldName) {
 function parseSecretRef(ref) {
   const match = SECRET_REF_PATTERN.exec(ref);
   if (!match) {
-    throw createError('ref must match tenant.<slug>.<provider>.<key>', 400, 'validation_error', { field: 'ref' });
+    throw createError('ref must match tenant.<slug>.<provider>.<key>', 400, 'validation_error', { invalidField: 'ref' });
   }
 
   return {
@@ -2653,13 +2653,13 @@ function postSecretRef(req, res, next) {
 
     const ref = normalizeOptionalString(req.body?.ref);
     if (!ref) {
-      throw createError('ref is required', 400, 'validation_error', { field: 'ref' });
+      throw createError('ref is required', 400, 'validation_error', { invalidField: 'ref' });
     }
 
     const refParts = parseSecretRef(ref);
     const tenantId = normalizeOptionalString(req.body?.tenantId);
     if (!tenantId) {
-      throw createError('tenantId is required', 400, 'validation_error', { field: 'tenantId' });
+      throw createError('tenantId is required', 400, 'validation_error', { invalidField: 'tenantId' });
     }
 
     const provider = assertSegment(normalizeOptionalString(req.body?.provider), 'provider');
@@ -2667,20 +2667,20 @@ function postSecretRef(req, res, next) {
 
     if (provider !== refParts.provider) {
       throw createError('provider must match ref segment', 400, 'validation_error', {
-        field: 'provider'
+        invalidField: 'provider'
       });
     }
 
     if (key !== refParts.key) {
       throw createError('key must match ref segment', 400, 'validation_error', {
-        field: 'key'
+        invalidField: 'key'
       });
     }
 
     const providedTenantSlug = normalizeOptionalString(req.body?.tenantSlug);
     if (providedTenantSlug !== null && assertSegment(providedTenantSlug, 'tenantSlug') !== refParts.tenantSlug) {
       throw createError('tenantSlug must match ref segment', 400, 'validation_error', {
-        field: 'tenantSlug'
+        invalidField: 'tenantSlug'
       });
     }
 

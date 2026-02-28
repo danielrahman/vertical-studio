@@ -3602,6 +3602,35 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     assert.equal(invalidRes.status, 400);
     const invalidBody = await invalidRes.json();
     assert.equal(invalidBody.code, 'validation_error');
+    assert.equal(invalidBody.details.invalidField, 'ref');
+
+    const missingRefRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(missingRefRes.status, 400);
+    const missingRefBody = await missingRefRes.json();
+    assert.equal(missingRefBody.code, 'validation_error');
+    assert.equal(missingRefBody.details.invalidField, 'ref');
+
+    const missingTenantIdRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(missingTenantIdRes.status, 400);
+    const missingTenantIdBody = await missingTenantIdRes.json();
+    assert.equal(missingTenantIdBody.code, 'validation_error');
+    assert.equal(missingTenantIdBody.details.invalidField, 'tenantId');
 
     const plaintextRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
@@ -3635,7 +3664,7 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     assert.equal(mismatchRes.status, 400);
     const mismatchBody = await mismatchRes.json();
     assert.equal(mismatchBody.code, 'validation_error');
-    assert.equal(mismatchBody.details.field, 'key');
+    assert.equal(mismatchBody.details.invalidField, 'key');
 
     const validRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
