@@ -376,6 +376,8 @@ function assertCopySelectionShape(selection, index) {
     throw createError('selection selectedBy must be one of internal_admin or owner', 400, 'validation_error', {
       invalidField: `selections[${index}].selectedBy`,
       selectionIndex: index,
+      expectedType: 'string',
+      receivedType: getValueType(selection.selectedBy),
       allowedSelectedByRoles: Array.from(COPY_SELECT_ACTOR_ROLES).sort()
     });
   }

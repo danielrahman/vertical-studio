@@ -154,6 +154,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 133. Copy-select per-item object-shape type metadata hardening implemented (`VS3-IMP-126`): `POST /sites/:siteId/copy/select` non-object selection-item validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField` and `selectionIndex`, with API/WS-D contract coverage and plan text alignment.
 134. Copy-select per-item `slotId` type metadata hardening implemented (`VS3-IMP-127`): `POST /sites/:siteId/copy/select` per-item `slotId` validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField` and `selectionIndex`, with API/WS-D contract coverage and plan text alignment.
 135. Copy-select per-item `candidateId` type metadata hardening implemented (`VS3-IMP-128`): `POST /sites/:siteId/copy/select` per-item `candidateId` validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField` and `selectionIndex`, with API/WS-D contract coverage and plan text alignment.
+136. Copy-select per-item `selectedBy` type metadata hardening implemented (`VS3-IMP-129`): `POST /sites/:siteId/copy/select` per-item invalid `selectedBy` validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField`, `selectionIndex`, and allowed-role metadata, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 
