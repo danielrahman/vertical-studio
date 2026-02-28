@@ -1938,7 +1938,8 @@ function postOverrides(req, res, next) {
       if (unknownSections.length > 0) {
         throw createError(`Invalid override payload: ${field} contains unknown section values`, 400, 'invalid_override_payload', {
           field,
-          unknownSections
+          unknownSections,
+          allowedSectionKeys: Array.from(ALLOWED_OVERRIDE_SECTION_KEYS).sort()
         });
       }
     }

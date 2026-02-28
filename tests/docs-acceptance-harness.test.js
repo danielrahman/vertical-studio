@@ -1414,6 +1414,21 @@ test('WS-D contract: override section arrays must use allowed section keys', asy
     assert.equal(invalidOverridePayload.code, 'invalid_override_payload');
     assert.equal(invalidOverridePayload.details.field, 'excludedSections');
     assert.deepEqual(invalidOverridePayload.details.unknownSections, ['alpha-section', 'zeta-section']);
+    assert.deepEqual(invalidOverridePayload.details.allowedSectionKeys, [
+      'about',
+      'contact',
+      'cta',
+      'faq',
+      'hero',
+      'legal',
+      'portfolio',
+      'process',
+      'stats',
+      'team',
+      'testimonials',
+      'timeline',
+      'value_props'
+    ]);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-sections/overrides`, {
       method: 'POST',

@@ -189,6 +189,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 168. Override no-op field-list detail sorting hardening implemented (`VS3-IMP-161`): `POST /sites/:siteId/overrides` no-op override validation errors now emit lexicographically sorted `fields` details, with API/WS-D contract coverage and plan text alignment.
 169. Override unknown-top-level allow-list metadata hardening implemented (`VS3-IMP-162`): `POST /sites/:siteId/overrides` unknown top-level payload validation errors now include lexicographically sorted `allowedTopLevelFields` metadata alongside sorted `unknownFields`, with API/WS-D contract coverage and plan text alignment.
 170. Override unknown-component allow-list metadata hardening implemented (`VS3-IMP-163`): `POST /sites/:siteId/overrides` unknown `requiredComponents` validation errors now include lexicographically sorted `allowedComponentIds` metadata alongside sorted `unknownComponentIds`, with API/WS-D contract coverage and plan text alignment.
+171. Override unknown-section allow-list metadata hardening implemented (`VS3-IMP-164`): `POST /sites/:siteId/overrides` unknown section-key validation errors now include lexicographically sorted `allowedSectionKeys` metadata alongside sorted `unknownSections`, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 

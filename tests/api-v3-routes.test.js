@@ -2421,6 +2421,21 @@ test('overrides rejects unknown section values in section arrays', async () => {
       'Invalid override payload: requiredSections contains unknown section values'
     );
     assert.deepEqual(invalidOverrideBody.details.unknownSections, ['alpha-section', 'zeta-section']);
+    assert.deepEqual(invalidOverrideBody.details.allowedSectionKeys, [
+      'about',
+      'contact',
+      'cta',
+      'faq',
+      'hero',
+      'legal',
+      'portfolio',
+      'process',
+      'stats',
+      'team',
+      'testimonials',
+      'timeline',
+      'value_props'
+    ]);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-sections/overrides`, {
       method: 'POST',
