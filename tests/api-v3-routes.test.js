@@ -1933,6 +1933,7 @@ test('copy select per-item validation failures report invalidField details', asy
       'selection selectedBy must be one of internal_admin or owner',
       'selections[0].selectedBy',
       (details) =>
+        details.selectionIndex === 0 &&
         Array.isArray(details.allowedSelectedByRoles) &&
         details.allowedSelectedByRoles.length === 2 &&
         details.allowedSelectedByRoles[0] === 'internal_admin' &&
