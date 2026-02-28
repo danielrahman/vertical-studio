@@ -1785,6 +1785,22 @@ test('WS-D contract: copy generation accepts only supported locales and de-dupli
     assert.equal(nonArrayLocalesPayload.message, 'locales must be an array when provided');
     assert.equal(nonArrayLocalesPayload.details.invalidField, 'locales');
 
+    const nonStringLocalesRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-locales/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-locales-1',
+        locales: ['cs-CZ', 42, 'en-US'],
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(nonStringLocalesRes.status, 400);
+    const nonStringLocalesPayload = await nonStringLocalesRes.json();
+    assert.equal(nonStringLocalesPayload.code, 'validation_error');
+    assert.equal(nonStringLocalesPayload.message, 'locales must contain only string items');
+    assert.equal(nonStringLocalesPayload.details.invalidField, 'locales');
+    assert.deepEqual(nonStringLocalesPayload.details.invalidItemIndexes, [1]);
+
     const invalidLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-locales/copy/generate`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

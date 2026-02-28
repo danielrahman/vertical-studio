@@ -1428,6 +1428,22 @@ test('copy generate enforces locale allow-list and normalizes duplicate locales'
     assert.equal(nonArrayLocalesBody.message, 'locales must be an array when provided');
     assert.equal(nonArrayLocalesBody.details.invalidField, 'locales');
 
+    const nonStringLocalesRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-locales/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-locales',
+        locales: ['cs-CZ', 42, 'en-US'],
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(nonStringLocalesRes.status, 400);
+    const nonStringLocalesBody = await nonStringLocalesRes.json();
+    assert.equal(nonStringLocalesBody.code, 'validation_error');
+    assert.equal(nonStringLocalesBody.message, 'locales must contain only string items');
+    assert.equal(nonStringLocalesBody.details.invalidField, 'locales');
+    assert.deepEqual(nonStringLocalesBody.details.invalidItemIndexes, [1]);
+
     const invalidLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-locales/copy/generate`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

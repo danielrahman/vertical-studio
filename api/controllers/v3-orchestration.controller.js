@@ -1553,6 +1553,18 @@ function postCopyGenerate(req, res, next) {
       });
     }
     const requestedLocales = Array.isArray(req.body?.locales) ? req.body.locales : [];
+    const invalidLocaleItemIndexes = requestedLocales.reduce((indexes, locale, index) => {
+      if (typeof locale !== 'string') {
+        indexes.push(index);
+      }
+      return indexes;
+    }, []);
+    if (invalidLocaleItemIndexes.length > 0) {
+      throw createError('locales must contain only string items', 400, 'validation_error', {
+        invalidField: 'locales',
+        invalidItemIndexes: invalidLocaleItemIndexes
+      });
+    }
     const locales = Array.from(new Set(requestedLocales));
     const unsupportedLocales = locales.filter((locale) => !COPY_LOCALES.has(locale));
     if (unsupportedLocales.length > 0) {
