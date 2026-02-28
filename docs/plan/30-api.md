@@ -382,7 +382,7 @@ Rules:
 4. Missing candidate lookups return `404 copy_candidate_not_found` with deterministic selection tuple details (`selectionIndex`, `candidateId`, `requestedSlotId`, `requestedLocale`, `slotId`, `locale`).
 5. Selected candidate `slotId` and `locale` must match the request tuple.
 6. A request must not contain duplicate `slotId`+`locale` tuples.
-7. `selections` is required and must be an array; missing or non-array values return `400 validation_error` with deterministic `invalidField` details.
+7. `selections` is required and must be an array; missing or non-array values return `400 validation_error` with deterministic `invalidField` details and deterministic type metadata (`expectedType`, `receivedType`).
 8. `selections` must contain at least one item.
 9. If `selectedBy` is provided, it must match the authenticated actor role; server-side actor identity remains source of truth.
 10. Unknown top-level payload fields and unknown per-selection object fields are rejected with `400 validation_error`; unknown-field detail arrays are lexicographically sorted for deterministic output, top-level unknown-field errors include deterministic `invalidField: payload` and `allowedTopLevelFields` details, and `allowedTopLevelFields` values are sorted lexicographically.

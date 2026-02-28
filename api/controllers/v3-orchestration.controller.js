@@ -1713,7 +1713,9 @@ function postCopySelect(req, res, next) {
 
     if (!Array.isArray(req.body?.selections)) {
       throw createError('selections array is required', 400, 'validation_error', {
-        invalidField: 'selections'
+        invalidField: 'selections',
+        expectedType: 'array',
+        receivedType: getValueType(req.body?.selections)
       });
     }
     if (req.body.selections.length === 0) {

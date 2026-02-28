@@ -1694,6 +1694,8 @@ test('copy select requires selections array and reports invalidField details', a
     assert.equal(missingSelectionsBody.code, 'validation_error');
     assert.equal(missingSelectionsBody.message, 'selections array is required');
     assert.equal(missingSelectionsBody.details.invalidField, 'selections');
+    assert.equal(missingSelectionsBody.details.expectedType, 'array');
+    assert.equal(missingSelectionsBody.details.receivedType, 'undefined');
 
     const nonArraySelectionsRes = await fetch(
       `${baseUrl}/api/v1/sites/site-copy-select-required/copy/select`,
@@ -1711,6 +1713,8 @@ test('copy select requires selections array and reports invalidField details', a
     assert.equal(nonArraySelectionsBody.code, 'validation_error');
     assert.equal(nonArraySelectionsBody.message, 'selections array is required');
     assert.equal(nonArraySelectionsBody.details.invalidField, 'selections');
+    assert.equal(nonArraySelectionsBody.details.expectedType, 'array');
+    assert.equal(nonArraySelectionsBody.details.receivedType, 'string');
   } finally {
     await stopServer(server);
   }

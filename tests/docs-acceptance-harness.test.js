@@ -2059,6 +2059,8 @@ test('WS-D contract: copy selection requires selections array with invalidField 
     assert.equal(missingSelectionsPayload.code, 'validation_error');
     assert.equal(missingSelectionsPayload.message, 'selections array is required');
     assert.equal(missingSelectionsPayload.details.invalidField, 'selections');
+    assert.equal(missingSelectionsPayload.details.expectedType, 'array');
+    assert.equal(missingSelectionsPayload.details.receivedType, 'undefined');
 
     const nonArraySelectionsRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-required/copy/select`, {
       method: 'POST',
@@ -2073,6 +2075,8 @@ test('WS-D contract: copy selection requires selections array with invalidField 
     assert.equal(nonArraySelectionsPayload.code, 'validation_error');
     assert.equal(nonArraySelectionsPayload.message, 'selections array is required');
     assert.equal(nonArraySelectionsPayload.details.invalidField, 'selections');
+    assert.equal(nonArraySelectionsPayload.details.expectedType, 'array');
+    assert.equal(nonArraySelectionsPayload.details.receivedType, 'string');
   } finally {
     await stopServer(server);
   }
