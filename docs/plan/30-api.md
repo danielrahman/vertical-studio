@@ -383,6 +383,7 @@ Rules:
 5. `selections` must contain at least one item.
 6. If `selectedBy` is provided, it must match the authenticated actor role; server-side actor identity remains source of truth.
 7. Unknown top-level payload fields and unknown per-selection object fields are rejected with `400 validation_error`.
+8. Selection-level validation failures for `selections` (empty array, tuple mismatch, duplicate tuple, selectedBy actor mismatch) return deterministic `invalidField` details.
 
 ### 4.6 Manual Override Lifecycle
 

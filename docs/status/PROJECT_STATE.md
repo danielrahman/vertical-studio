@@ -119,6 +119,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 98. Copy-generate high-impact mode field-key standardization implemented (`VS3-IMP-091`): `POST /sites/:siteId/copy/generate` now reports deterministic `validation_error` details using `invalidField` (instead of `field`) for `highImpactOnlyThreeVariants` validation failures.
 99. Copy-generate unsupported-locale field-key standardization implemented (`VS3-IMP-092`): `POST /sites/:siteId/copy/generate` now reports deterministic `validation_error` details using `invalidField` (instead of `field`) for unsupported locale validation failures.
 100. Copy-generate missing-version field-details implemented (`VS3-IMP-093`): `POST /sites/:siteId/copy/generate` now reports deterministic `validation_error` details (`invalidField`) when `verticalStandardVersion` is missing.
+101. Copy-select top-level selection field-key standardization implemented (`VS3-IMP-094`): `POST /sites/:siteId/copy/select` now reports deterministic `validation_error` details using `invalidField` (instead of `field`) for empty selections, tuple mismatch, duplicate tuple, and selectedBy actor mismatch errors.
 
 ## In Progress
 
@@ -126,7 +127,9 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Backlog currently has no remaining `todo` items; define and prioritize the next post-harness implementation slice for runtime and rollout hardening.
+1. Complete `VS3-IMP-095` by standardizing deterministic `invalidField` details for copy-select per-item validation errors.
+2. Complete `VS3-IMP-096` by adding deterministic `invalidField` details for missing/non-array `selections` in copy-select requests.
+3. Define and prioritize the next copy-select validation contract hardening slice once `VS3-IMP-095` and `VS3-IMP-096` are complete.
 
 ## Known Constraints
 

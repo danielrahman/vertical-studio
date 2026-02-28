@@ -1937,6 +1937,7 @@ test('WS-D contract: copy selection enforces unique slot-locale tuples per reque
     const duplicatePayload = await duplicateRes.json();
     assert.equal(duplicatePayload.code, 'validation_error');
     assert.equal(duplicatePayload.message, 'selection tuple must be unique per slotId and locale');
+    assert.equal(duplicatePayload.details.invalidField, 'selections');
     assert.equal(duplicatePayload.details.slotId, 'hero.h1');
     assert.equal(duplicatePayload.details.locale, 'cs-CZ');
   } finally {
@@ -1960,6 +1961,7 @@ test('WS-D contract: copy selection rejects empty selection arrays', async () =>
     const emptySelectPayload = await emptySelectRes.json();
     assert.equal(emptySelectPayload.code, 'validation_error');
     assert.equal(emptySelectPayload.message, 'selections array must contain at least one item');
+    assert.equal(emptySelectPayload.details.invalidField, 'selections');
   } finally {
     await stopServer(server);
   }
@@ -1995,6 +1997,7 @@ test('WS-D contract: copy selection selectedBy must match authenticated actor', 
     const mismatchPayload = await mismatchRes.json();
     assert.equal(mismatchPayload.code, 'validation_error');
     assert.equal(mismatchPayload.message, 'selection selectedBy must match authenticated actor role');
+    assert.equal(mismatchPayload.details.invalidField, 'selections');
 
     const matchingRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
       method: 'POST',

@@ -1571,6 +1571,7 @@ test('copy select rejects slotId/locale mismatch for an existing candidate', asy
     const mismatchBody = await mismatchRes.json();
     assert.equal(mismatchBody.code, 'validation_error');
     assert.equal(mismatchBody.message, 'selection must match candidate slotId and locale');
+    assert.equal(mismatchBody.details.invalidField, 'selections');
     assert.equal(mismatchBody.details.candidateId, candidateId);
   } finally {
     await stopServer(server);
@@ -1610,6 +1611,7 @@ test('copy select rejects duplicate slotId/locale selections in one request', as
     const duplicateBody = await duplicateRes.json();
     assert.equal(duplicateBody.code, 'validation_error');
     assert.equal(duplicateBody.message, 'selection tuple must be unique per slotId and locale');
+    assert.equal(duplicateBody.details.invalidField, 'selections');
     assert.equal(duplicateBody.details.slotId, 'hero.h1');
     assert.equal(duplicateBody.details.locale, 'cs-CZ');
   } finally {
@@ -1633,7 +1635,7 @@ test('copy select rejects empty selections array for internal_admin requests', a
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'selections array must contain at least one item');
-    assert.equal(payload.details.field, 'selections');
+    assert.equal(payload.details.invalidField, 'selections');
   } finally {
     await stopServer(server);
   }
@@ -1669,6 +1671,7 @@ test('copy select selectedBy must match authenticated actor role', async () => {
     const mismatchBody = await mismatchRes.json();
     assert.equal(mismatchBody.code, 'validation_error');
     assert.equal(mismatchBody.message, 'selection selectedBy must match authenticated actor role');
+    assert.equal(mismatchBody.details.invalidField, 'selections');
 
     const matchingRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
       method: 'POST',

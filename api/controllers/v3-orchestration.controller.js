@@ -1684,7 +1684,7 @@ function postCopySelect(req, res, next) {
     }
     if (req.body.selections.length === 0) {
       throw createError('selections array must contain at least one item', 400, 'validation_error', {
-        field: 'selections'
+        invalidField: 'selections'
       });
     }
     req.body.selections.forEach((selection, index) => assertCopySelectionShape(selection, index));
@@ -1706,7 +1706,7 @@ function postCopySelect(req, res, next) {
 
     if (mismatchedSelection) {
       throw createError('selection must match candidate slotId and locale', 400, 'validation_error', {
-        field: 'selections',
+        invalidField: 'selections',
         candidateId: mismatchedSelection.candidateId,
         slotId: mismatchedSelection.slotId,
         locale: mismatchedSelection.locale
@@ -1725,7 +1725,7 @@ function postCopySelect(req, res, next) {
 
     if (duplicateSelectionTuple) {
       throw createError('selection tuple must be unique per slotId and locale', 400, 'validation_error', {
-        field: 'selections',
+        invalidField: 'selections',
         slotId: duplicateSelectionTuple.slotId,
         locale: duplicateSelectionTuple.locale
       });
@@ -1736,7 +1736,7 @@ function postCopySelect(req, res, next) {
     });
     if (selectedByMismatch) {
       throw createError('selection selectedBy must match authenticated actor role', 400, 'validation_error', {
-        field: 'selections',
+        invalidField: 'selections',
         slotId: selectedByMismatch.slotId,
         locale: selectedByMismatch.locale,
         selectedBy: selectedByMismatch.selectedBy,
