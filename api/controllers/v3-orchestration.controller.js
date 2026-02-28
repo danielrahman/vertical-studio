@@ -2704,6 +2704,7 @@ function postSecretRef(req, res, next) {
         allowedTopLevelFieldIndexes,
         receivedAllowedTopLevelFields,
         missingAllowedTopLevelFields,
+        missingAllowedTopLevelFieldCount: missingAllowedTopLevelFields.length,
         receivedAllowedTopLevelFieldCount: allowedTopLevelFieldIndexes.length,
         allowedTopLevelFieldCount: SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS.size,
         allowedTopLevelFields
