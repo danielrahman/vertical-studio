@@ -267,7 +267,9 @@ function assertSegment(value, fieldName) {
     throw createError(`${fieldName} must contain only lowercase letters, numbers, and hyphen`, 400, 'validation_error', {
       invalidField: fieldName,
       expectedType: 'string',
-      receivedType: getValueType(value)
+      receivedType: getValueType(value),
+      expectedPattern: '^[a-z0-9-]+$',
+      receivedValue: value
     });
   }
 

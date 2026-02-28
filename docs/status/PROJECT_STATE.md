@@ -228,6 +228,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 207. Secret-ref tenant reassignment conflict mismatch metadata hardening implemented (`VS3-IMP-200`): `POST /api/v1/secrets/refs` `secret_ref_conflict` responses now include deterministic `invalidField`, `expectedTenantId`, and `receivedTenantId` metadata for tenant reassignment attempts with API/WS-G contract coverage and plan text alignment.
 208. Secret-ref invalid-ref format metadata hardening implemented (`VS3-IMP-201`): `POST /api/v1/secrets/refs` invalid `ref` shape validation now includes deterministic `invalidField`, `expectedFormat`, and `receivedRef` metadata with API/WS-G contract coverage and plan text alignment.
 209. Secret-ref unknown-payload allow-list metadata hardening implemented (`VS3-IMP-202`): `POST /api/v1/secrets/refs` unknown top-level payload validation errors now include lexicographically sorted `allowedTopLevelFields` metadata alongside deterministic `invalidField` and sorted `unknownFields` details, with API/WS-G contract coverage and plan text alignment.
+210. Secret-ref segment-shape pattern metadata hardening implemented (`VS3-IMP-203`): `POST /api/v1/secrets/refs` invalid segment-shape validation for `provider`/`key`/`tenantSlug` now includes deterministic `expectedPattern` and `receivedValue` metadata alongside type metadata, with API/WS-G contract coverage and plan text alignment.
 
 ## In Progress
 

@@ -464,6 +464,23 @@ test('WS-G contract: secret refs segment mismatch errors use invalidField metada
     assert.equal(nonStringProviderPayload.details.expectedType, 'string');
     assert.equal(nonStringProviderPayload.details.receivedType, 'array');
 
+    const invalidProviderShapeRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-segment',
+        ref: 'tenant.tenant-wsg-secret-segment.openai.api',
+        provider: 'OpenAI',
+        key: 'api'
+      })
+    });
+    assert.equal(invalidProviderShapeRes.status, 400);
+    const invalidProviderShapePayload = await invalidProviderShapeRes.json();
+    assert.equal(invalidProviderShapePayload.code, 'validation_error');
+    assert.equal(invalidProviderShapePayload.details.invalidField, 'provider');
+    assert.equal(invalidProviderShapePayload.details.expectedPattern, '^[a-z0-9-]+$');
+    assert.equal(invalidProviderShapePayload.details.receivedValue, 'OpenAI');
+
     const nonStringKeyRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
@@ -480,6 +497,23 @@ test('WS-G contract: secret refs segment mismatch errors use invalidField metada
     assert.equal(nonStringKeyPayload.details.invalidField, 'key');
     assert.equal(nonStringKeyPayload.details.expectedType, 'string');
     assert.equal(nonStringKeyPayload.details.receivedType, 'array');
+
+    const invalidKeyShapeRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-segment',
+        ref: 'tenant.tenant-wsg-secret-segment.openai.api',
+        provider: 'openai',
+        key: 'api!'
+      })
+    });
+    assert.equal(invalidKeyShapeRes.status, 400);
+    const invalidKeyShapePayload = await invalidKeyShapeRes.json();
+    assert.equal(invalidKeyShapePayload.code, 'validation_error');
+    assert.equal(invalidKeyShapePayload.details.invalidField, 'key');
+    assert.equal(invalidKeyShapePayload.details.expectedPattern, '^[a-z0-9-]+$');
+    assert.equal(invalidKeyShapePayload.details.receivedValue, 'api!');
 
     const nonStringTenantSlugRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
@@ -498,6 +532,24 @@ test('WS-G contract: secret refs segment mismatch errors use invalidField metada
     assert.equal(nonStringTenantSlugPayload.details.invalidField, 'tenantSlug');
     assert.equal(nonStringTenantSlugPayload.details.expectedType, 'string');
     assert.equal(nonStringTenantSlugPayload.details.receivedType, 'array');
+
+    const invalidTenantSlugShapeRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-segment',
+        tenantSlug: 'tenant_wsg_secret_segment',
+        ref: 'tenant.tenant-wsg-secret-segment.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(invalidTenantSlugShapeRes.status, 400);
+    const invalidTenantSlugShapePayload = await invalidTenantSlugShapeRes.json();
+    assert.equal(invalidTenantSlugShapePayload.code, 'validation_error');
+    assert.equal(invalidTenantSlugShapePayload.details.invalidField, 'tenantSlug');
+    assert.equal(invalidTenantSlugShapePayload.details.expectedPattern, '^[a-z0-9-]+$');
+    assert.equal(invalidTenantSlugShapePayload.details.receivedValue, 'tenant_wsg_secret_segment');
 
     const providerMismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
