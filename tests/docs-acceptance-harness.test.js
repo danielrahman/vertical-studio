@@ -1915,6 +1915,8 @@ test('WS-D contract: copy selection missing-candidate errors expose deterministi
     assert.equal(payload.message, 'copy candidate not found');
     assert.equal(payload.details.invalidField, 'selections');
     assert.equal(payload.details.candidateId, 'candidate-missing-1');
+    assert.equal(payload.details.requestedSlotId, 'hero.h1');
+    assert.equal(payload.details.requestedLocale, 'cs-CZ');
     assert.equal(payload.details.slotId, 'hero.h1');
     assert.equal(payload.details.locale, 'cs-CZ');
   } finally {

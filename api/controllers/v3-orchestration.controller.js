@@ -1715,6 +1715,8 @@ function postCopySelect(req, res, next) {
       throw createError('copy candidate not found', 404, 'copy_candidate_not_found', {
         invalidField: 'selections',
         candidateId: missingCandidate.candidateId,
+        requestedSlotId: missingCandidate.slotId,
+        requestedLocale: missingCandidate.locale,
         slotId: missingCandidate.slotId,
         locale: missingCandidate.locale
       });

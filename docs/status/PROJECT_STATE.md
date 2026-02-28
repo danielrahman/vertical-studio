@@ -135,15 +135,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 114. Copy-select unknown per-item allowed-fields sorting implemented (`VS3-IMP-107`): `POST /sites/:siteId/copy/select` unknown per-item selection-field validation errors now emit lexicographically sorted `allowedSelectionFields` values for deterministic operator output.
 115. Copy-select invalid-locale allowed-values sorting implemented (`VS3-IMP-108`): `POST /sites/:siteId/copy/select` invalid locale validation errors now emit lexicographically sorted `allowedLocales` values for deterministic operator output.
 116. Copy-select invalid-selectedBy-role allowed-values sorting implemented (`VS3-IMP-109`): `POST /sites/:siteId/copy/select` invalid `selectedBy` validation errors now emit lexicographically sorted `allowedSelectedByRoles` values for deterministic operator output.
+117. Copy-select missing-candidate requested tuple-alias details implemented (`VS3-IMP-110`): `POST /sites/:siteId/copy/select` `copy_candidate_not_found` errors now include deterministic `requestedSlotId` and `requestedLocale` aliases alongside existing tuple details.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. Copy-select error-detail hardening is continuing with `VS3-IMP-110` (missing-candidate requested tuple aliases) now in progress.
+2. No task is currently marked `in_progress`; the next deterministic contract hardening slice needs prioritization.
 
 ## Next
 
-1. Complete remaining copy-select deterministic error-detail hardening task `VS3-IMP-110`.
+1. Define and prioritize the next copy-select deterministic contract-hardening slice after `VS3-IMP-110`.
 
 ## Known Constraints
 
