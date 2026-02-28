@@ -1828,9 +1828,9 @@ test('copy select rejects unknown payload fields', async () => {
     assert.equal(unknownTopLevelBody.details.invalidField, 'payload');
     assert.deepEqual(unknownTopLevelBody.details.unknownFields, ['alphaField', 'zetaField']);
     assert.deepEqual(unknownTopLevelBody.details.allowedTopLevelFields, [
+      'actorRole',
       'draftId',
       'selections',
-      'actorRole'
     ]);
 
     const unknownSelectionFieldRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
