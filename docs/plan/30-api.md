@@ -432,7 +432,7 @@ Auth:
 Validation:
 1. Only allowed transitions from architecture state machine are accepted.
 2. Invalid transitions return `409 invalid_transition`.
-3. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
+3. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
 
 ### 4.8 Publish Lifecycle
 

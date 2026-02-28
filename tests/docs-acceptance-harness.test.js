@@ -1311,6 +1311,7 @@ test('WS-D contract: review transition rejects unknown top-level payload fields'
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaDryRun', 'zetaDryRun']);
   } finally {
     await stopServer(server);
