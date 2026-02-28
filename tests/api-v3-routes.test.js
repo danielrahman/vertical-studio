@@ -823,6 +823,37 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(invalidExtractedFieldExtractedAtPayload.details.invalidField, 'extractedFields.extractedAt');
     assert.deepEqual(invalidExtractedFieldExtractedAtPayload.details.invalidItemIndexes, [0]);
 
+    const invalidExtractedFieldExtractedAtFormatResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          extractedFields: [
+            {
+              fieldPath: 'brand.tagline',
+              value: 'Premium development team',
+              sourceUrl: 'https://example.test/about',
+              method: 'dom',
+              confidence: 0.91,
+              required: true,
+              extractedAt: '2026/02/28 10:00:00'
+            }
+          ]
+        })
+      }
+    );
+    assert.equal(invalidExtractedFieldExtractedAtFormatResponse.status, 400);
+    const invalidExtractedFieldExtractedAtFormatPayload = await invalidExtractedFieldExtractedAtFormatResponse.json();
+    assert.equal(invalidExtractedFieldExtractedAtFormatPayload.code, 'validation_error');
+    assert.equal(
+      invalidExtractedFieldExtractedAtFormatPayload.message,
+      'extractedFields.extractedAt must be an ISO-8601 datetime string when provided'
+    );
+    assert.equal(invalidExtractedFieldExtractedAtFormatPayload.details.invalidField, 'extractedFields.extractedAt');
+    assert.deepEqual(invalidExtractedFieldExtractedAtFormatPayload.details.invalidItemIndexes, [0]);
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

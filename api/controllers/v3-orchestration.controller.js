@@ -5,6 +5,7 @@ const { PublishGateService, isQualityP0Finding } = require('../../services/publi
 
 const SUPPORTED_RESEARCH_SOURCES = new Set(['public_web', 'legal_pages', 'selected_listings']);
 const SOURCE_DOMAIN_PATTERN = /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
+const ISO_8601_UTC_DATETIME_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/;
 const QUALITY_GATE_FAMILIES = ['COPY', 'LAYOUT', 'MEDIA', 'LEGAL'];
 const QUALITY_SEVERITY_LEVELS = new Set(['P0', 'P1', 'P2']);
 const SECURITY_SEVERITY_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
@@ -1073,6 +1074,30 @@ function postBootstrapFromExtraction(req, res, next) {
         invalidField: 'extractedFields.extractedAt',
         invalidItemIndexes: invalidExtractedFieldExtractedAtItemIndexes
       });
+    }
+    const invalidExtractedFieldExtractedAtFormatItemIndexes = rawExtractedFields.reduce((indexes, field, index) => {
+      if (!Object.prototype.hasOwnProperty.call(field, 'extractedAt')) {
+        return indexes;
+      }
+      const extractedAt = field.extractedAt.trim();
+      const parsedTimestamp = Date.parse(extractedAt);
+      const isIso8601Utc =
+        ISO_8601_UTC_DATETIME_PATTERN.test(extractedAt) && Number.isFinite(parsedTimestamp);
+      if (!isIso8601Utc) {
+        indexes.push(index);
+      }
+      return indexes;
+    }, []);
+    if (invalidExtractedFieldExtractedAtFormatItemIndexes.length > 0) {
+      throw createError(
+        'extractedFields.extractedAt must be an ISO-8601 datetime string when provided',
+        400,
+        'validation_error',
+        {
+          invalidField: 'extractedFields.extractedAt',
+          invalidItemIndexes: invalidExtractedFieldExtractedAtFormatItemIndexes
+        }
+      );
     }
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
     const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;

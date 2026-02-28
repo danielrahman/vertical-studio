@@ -747,6 +747,39 @@ test('WS-B contract: bootstrap-from-extraction enforces extractedAt non-empty st
   }
 });
 
+test('WS-B contract: bootstrap-from-extraction enforces extractedAt ISO-8601 format when provided', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap-shape/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-shape-14',
+        extractedFields: [
+          {
+            fieldPath: 'brand.tagline',
+            value: 'Premium development team',
+            sourceUrl: 'https://example.test/about',
+            method: 'dom',
+            confidence: 0.91,
+            required: true,
+            extractedAt: '2026/02/28 10:00:00'
+          }
+        ]
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'extractedFields.extractedAt must be an ISO-8601 datetime string when provided');
+    assert.equal(payload.details.invalidField, 'extractedFields.extractedAt');
+    assert.deepEqual(payload.details.invalidItemIndexes, [0]);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: vertical research build rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 
