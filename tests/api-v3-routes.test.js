@@ -1887,7 +1887,11 @@ test('copy select per-item validation failures report invalidField details', asy
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-1', selectedBy: 'editor' }],
       'selection selectedBy must be one of internal_admin or owner',
-      'selections[0].selectedBy'
+      'selections[0].selectedBy',
+      (details) =>
+        Array.isArray(details.allowedSelectedByRoles) &&
+        details.allowedSelectedByRoles.includes('internal_admin') &&
+        details.allowedSelectedByRoles.includes('owner')
     );
   } finally {
     await stopServer(server);

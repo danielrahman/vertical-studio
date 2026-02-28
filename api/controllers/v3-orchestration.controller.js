@@ -350,7 +350,8 @@ function assertCopySelectionShape(selection, index) {
 
   if (typeof selection.selectedBy !== 'undefined' && !COPY_SELECT_ACTOR_ROLES.has(selection.selectedBy)) {
     throw createError('selection selectedBy must be one of internal_admin or owner', 400, 'validation_error', {
-      invalidField: `selections[${index}].selectedBy`
+      invalidField: `selections[${index}].selectedBy`,
+      allowedSelectedByRoles: Array.from(COPY_SELECT_ACTOR_ROLES)
     });
   }
 }

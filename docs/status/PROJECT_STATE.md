@@ -125,6 +125,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 104. Copy-select draftId required details implemented (`VS3-IMP-097`): `POST /sites/:siteId/copy/select` now reports deterministic `validation_error` details (`invalidField`) when `draftId` is missing or not a string.
 105. Copy-select missing-candidate triage details implemented (`VS3-IMP-098`): `POST /sites/:siteId/copy/select` `copy_candidate_not_found` errors now include deterministic tuple details (`candidateId`, `slotId`, `locale`) to speed operator debugging.
 106. Copy-select locale allow-list detail output implemented (`VS3-IMP-099`): `POST /sites/:siteId/copy/select` invalid per-item locale values now include deterministic `allowedLocales` details alongside `invalidField` for operator triage.
+107. Copy-select selectedBy allow-list detail output implemented (`VS3-IMP-100`): `POST /sites/:siteId/copy/select` invalid per-item `selectedBy` values now include deterministic `allowedSelectedByRoles` details alongside `invalidField`.
 
 ## In Progress
 
@@ -132,8 +133,8 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Complete `VS3-IMP-100` by adding deterministic `allowedSelectedByRoles` details for copy-select per-item `selectedBy` validation failures.
-2. Complete `VS3-IMP-101` by adding deterministic `invalidField` details for copy-select unknown top-level payload field errors.
+1. Complete `VS3-IMP-101` by adding deterministic `invalidField` details for copy-select unknown top-level payload field errors.
+2. Define and prioritize the next copy-select request-shape hardening slice once `VS3-IMP-101` is complete.
 
 ## Known Constraints
 
