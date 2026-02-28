@@ -3329,14 +3329,15 @@ test('publish rejects unknown top-level payload fields', async () => {
       body: JSON.stringify({
         draftId: 'draft-publish-unknown-1',
         proposalId: 'proposal-publish-unknown-1',
-        dryRun: true
+        zetaDryRun: true,
+        alphaDryRun: false
       })
     });
     assert.equal(publishRes.status, 400);
     const payload = await publishRes.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'publish payload contains unknown top-level fields');
-    assert.deepEqual(payload.details.unknownFields, ['dryRun']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaDryRun', 'zetaDryRun']);
   } finally {
     await stopServer(server);
   }

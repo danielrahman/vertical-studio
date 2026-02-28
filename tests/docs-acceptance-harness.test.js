@@ -1156,13 +1156,14 @@ test('WS-F contract: publish rejects unknown top-level payload fields', async ()
       body: JSON.stringify({
         draftId: 'draft-wsf-publish-unknown-1',
         proposalId: 'proposal-wsf-publish-unknown-1',
-        dryRun: true
+        zetaDryRun: true,
+        alphaDryRun: false
       })
     });
     assert.equal(publishRes.status, 400);
     const payload = await publishRes.json();
     assert.equal(payload.code, 'validation_error');
-    assert.deepEqual(payload.details.unknownFields, ['dryRun']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaDryRun', 'zetaDryRun']);
   } finally {
     await stopServer(server);
   }
