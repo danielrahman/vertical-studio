@@ -3707,6 +3707,22 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     assert.equal(updatedPayload.tenantId, 'tenant-1');
     assert.equal(updatedPayload.provider, 'openai');
     assert.equal(updatedPayload.key, 'api');
+
+    const conflictRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-2',
+        tenantSlug: 'tenant-1',
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(conflictRes.status, 409);
+    const conflictPayload = await conflictRes.json();
+    assert.equal(conflictPayload.code, 'secret_ref_conflict');
+    assert.equal(conflictPayload.details.invalidField, 'tenantId');
   } finally {
     await stopServer(server);
   }

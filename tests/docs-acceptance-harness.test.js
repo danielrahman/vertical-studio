@@ -327,6 +327,43 @@ test('WS-G contract: secret refs segment mismatch errors use invalidField metada
   }
 });
 
+test('WS-G contract: secret refs reject tenant reassignment with conflict invalidField metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const createRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-conflict-a',
+        tenantSlug: 'tenant-wsg-secret-conflict-a',
+        ref: 'tenant.tenant-wsg-secret-conflict-a.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(createRes.status, 201);
+
+    const conflictRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-conflict-b',
+        tenantSlug: 'tenant-wsg-secret-conflict-a',
+        ref: 'tenant.tenant-wsg-secret-conflict-a.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(conflictRes.status, 409);
+    const payload = await conflictRes.json();
+    assert.equal(payload.code, 'secret_ref_conflict');
+    assert.equal(payload.details.invalidField, 'tenantId');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: non-public read endpoints require tenant-member or internal_admin role', async () => {
   const { server, baseUrl } = await startServer();
 
