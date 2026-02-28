@@ -2053,9 +2053,11 @@ function postReviewTransition(req, res, next) {
     assertString(req.body?.fromState, 'fromState');
     assertString(req.body?.toState, 'toState');
     assertString(req.body?.event, 'event');
-    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
-      return !REVIEW_TRANSITION_ALLOWED_TOP_LEVEL_FIELDS.has(field);
-    });
+    const unknownTopLevelFields = Object.keys(req.body)
+      .filter((field) => {
+        return !REVIEW_TRANSITION_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+      })
+      .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('review transition payload contains unknown top-level fields', 400, 'validation_error', {
         unknownFields: unknownTopLevelFields

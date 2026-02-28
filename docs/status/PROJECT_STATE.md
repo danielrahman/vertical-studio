@@ -170,6 +170,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 149. Tenant-create unknown-field sorting hardening implemented (`VS3-IMP-142`): `POST /tenants` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-B contract coverage and plan text alignment.
 150. Bootstrap unknown-field sorting hardening implemented (`VS3-IMP-143`): `POST /sites/:siteId/bootstrap-from-extraction` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-B contract coverage and plan text alignment.
 151. Vertical-research-build unknown-field sorting hardening implemented (`VS3-IMP-144`): `POST /verticals/:verticalKey/research/build` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-B contract coverage and plan text alignment.
+152. Review-transition unknown-field sorting hardening implemented (`VS3-IMP-145`): `POST /sites/:siteId/review/transition` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 
