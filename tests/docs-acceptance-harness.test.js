@@ -3552,6 +3552,10 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
       (candidate) => candidate.slotId === 'faq.q1' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'SINGLE'
     );
     assert.ok(faqQuestion1Candidate);
+    const faqAnswer1Candidate = candidates.find(
+      (candidate) => candidate.slotId === 'faq.a1' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'SINGLE'
+    );
+    assert.ok(faqAnswer1Candidate);
     const contactPrimaryCtaCandidate = candidates.find(
       (candidate) =>
         candidate.slotId === 'contact.primary_cta_label' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
@@ -3598,6 +3602,11 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
             slotId: 'faq.q1',
             locale: 'cs-CZ',
             candidateId: faqQuestion1Candidate.candidateId
+          },
+          {
+            slotId: 'faq.a1',
+            locale: 'cs-CZ',
+            candidateId: faqAnswer1Candidate.candidateId
           },
           {
             slotId: 'contact.primary_cta_label',
@@ -3648,6 +3657,7 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
     const faqSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'faq');
     assert.ok(faqSection);
     assert.equal(faqSection.slots.question1, faqQuestion1Candidate.text);
+    assert.equal(faqSection.slots.answer1, faqAnswer1Candidate.text);
 
     const contactSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'contact');
     assert.ok(contactSection);

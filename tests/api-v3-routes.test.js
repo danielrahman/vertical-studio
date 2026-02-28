@@ -3330,6 +3330,11 @@ test('published runtime snapshot prefers selected copy recommendations for mappe
             candidateId: stableId(`${draftId}|faq.q1|cs-CZ|SINGLE`)
           },
           {
+            slotId: 'faq.a1',
+            locale: 'cs-CZ',
+            candidateId: stableId(`${draftId}|faq.a1|cs-CZ|SINGLE`)
+          },
+          {
             slotId: 'contact.primary_cta_label',
             locale: 'cs-CZ',
             candidateId: stableId(`${draftId}|contact.primary_cta_label|cs-CZ|B`)
@@ -3378,6 +3383,7 @@ test('published runtime snapshot prefers selected copy recommendations for mappe
     const faqSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'faq');
     assert.ok(faqSection);
     assert.equal(faqSection.slots.question1, 'faq_q1_cs_SINGLE');
+    assert.equal(faqSection.slots.answer1, 'faq_a1_cs_SINGLE');
 
     const contactSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'contact');
     assert.ok(contactSection);
