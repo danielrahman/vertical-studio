@@ -144,8 +144,6 @@ test('renderSiteFromRuntime storageKey path surfaces API error metadata', async 
     [
       jsonResponse(200, {
         host: 'runtime-missing-storage-key.example.test',
-        siteId: 'site-storage-key-missing',
-        versionId: 'version-404',
         storageKey: 'site-versions/site-storage-key-missing/version-404.json'
       }),
       jsonResponse(404, {
@@ -180,6 +178,63 @@ test('renderSiteFromRuntime storageKey path surfaces API error metadata', async 
     calls[1],
     'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-storage-key-missing%2Fversion-404.json'
   );
+});
+
+test('renderSiteFromRuntime falls back to compatibility snapshot when storage-key fetch returns runtime_snapshot_not_found', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'runtime-stale-storage-key.example.test',
+        siteId: 'site-stale-storage-key',
+        versionId: 'version-legacy',
+        storageKey: 'site-versions/site-stale-storage-key/stale-key.json'
+      }),
+      jsonResponse(404, {
+        code: 'runtime_snapshot_not_found',
+        message: 'Runtime snapshot not found',
+        details: {
+          storageKey: 'site-versions/site-stale-storage-key/stale-key.json'
+        }
+      }),
+      jsonResponse(200, {
+        siteId: 'site-stale-storage-key',
+        versionId: 'version-legacy',
+        storageKey: 'site-versions/site-stale-storage-key/version-legacy.json',
+        immutable: true,
+        snapshot: {
+          sections: [
+            {
+              sectionId: 'hero',
+              slots: {
+                h1: 'Stale storage key fallback'
+              }
+            }
+          ]
+        }
+      })
+    ],
+    calls
+  );
+
+  const result = await renderSiteFromRuntime({
+    apiBaseUrl: 'http://localhost:3000',
+    host: 'runtime-stale-storage-key.example.test',
+    fetchImpl
+  });
+
+  assert.equal(calls.length, 3);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-stale-storage-key%2Fstale-key.json'
+  );
+  assert.equal(
+    calls[2],
+    'http://localhost:3000/api/v1/public/runtime/snapshot?siteId=site-stale-storage-key&versionId=version-legacy'
+  );
+  assert.equal(result.snapshot.immutable, true);
+  assert.equal(result.snapshot.versionId, 'version-legacy');
+  assert.equal(result.html.includes('Stale storage key fallback'), true);
 });
 
 test('renderSiteFromRuntime falls back to site/version snapshot endpoint when storageKey is missing', async () => {

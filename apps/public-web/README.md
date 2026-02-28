@@ -6,8 +6,9 @@ Public runtime skeleton for v3 immutable snapshot rendering.
 
 1. Resolve active version by host via `GET /api/v1/public/runtime/resolve?host=<host>`.
 2. Fetch immutable snapshot by `storageKey` via `GET /api/v1/public/runtime/snapshot/by-storage-key`.
-3. If resolve response has no `storageKey`, fallback to compatibility fetch by `siteId+versionId` via `GET /api/v1/public/runtime/snapshot`.
-4. If resolve response has neither `storageKey` nor complete `siteId+versionId`, fail with `runtime_resolve_incomplete`.
+3. If by-storage-key fetch returns `runtime_snapshot_not_found` and resolve response also includes `siteId+versionId`, retry via compatibility fetch `GET /api/v1/public/runtime/snapshot`.
+4. If resolve response has no `storageKey`, fallback to compatibility fetch by `siteId+versionId` via `GET /api/v1/public/runtime/snapshot`.
+5. If resolve response has neither `storageKey` nor complete `siteId+versionId`, fail with `runtime_resolve_incomplete`.
 5. Render snapshot payload into runtime HTML.
 
 ## Local Module

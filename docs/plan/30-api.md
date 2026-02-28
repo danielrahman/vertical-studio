@@ -551,7 +551,7 @@ Required additional codes:
 
 ## 6. Public Runtime Resolution Contract
 1. Public renderer resolves host/subdomain to active `site_version`.
-2. Renderer fetches immutable snapshot by `storageKey` when present and may use compatibility `siteId+versionId` snapshot fetch when resolve payload omits `storageKey`.
+2. Renderer fetches immutable snapshot by `storageKey` when present and may use compatibility `siteId+versionId` snapshot fetch when resolve payload omits `storageKey`. If by-storage-key fetch returns `runtime_snapshot_not_found` and resolve payload includes compatibility identifiers, renderer should retry via compatibility `siteId+versionId` fetch.
 3. Resolve responses must always include non-empty `siteId` and `versionId` identifiers for compatibility fallback usage, even when `storageKey` is unavailable.
 4. Renderer must never read mutable draft data.
 5. `GET /api/v1/public/runtime/resolve` requires a non-empty `host` (query or host header fallback); missing or non-string values return `400 validation_error` with deterministic metadata (`invalidField`, `expectedType`, `receivedType`).

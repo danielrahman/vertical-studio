@@ -89,13 +89,34 @@ async function renderSiteFromRuntime({ apiBaseUrl, host, fetchImpl = fetch }) {
     throw error;
   }
 
-  const snapshot = await fetchRuntimeSnapshot({
-    apiBaseUrl,
-    storageKey: storageKey || undefined,
-    siteId: storageKey ? undefined : siteId,
-    versionId: storageKey ? undefined : versionId,
-    fetchImpl
-  });
+  let snapshot;
+  if (storageKey) {
+    try {
+      snapshot = await fetchRuntimeSnapshot({
+        apiBaseUrl,
+        storageKey,
+        fetchImpl
+      });
+    } catch (error) {
+      if (error?.code !== 'runtime_snapshot_not_found' || !siteId || !versionId) {
+        throw error;
+      }
+
+      snapshot = await fetchRuntimeSnapshot({
+        apiBaseUrl,
+        siteId,
+        versionId,
+        fetchImpl
+      });
+    }
+  } else {
+    snapshot = await fetchRuntimeSnapshot({
+      apiBaseUrl,
+      siteId,
+      versionId,
+      fetchImpl
+    });
+  }
 
   return {
     resolved,
