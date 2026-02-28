@@ -1537,7 +1537,12 @@ function postCopyGenerate(req, res, next) {
     assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
-    assertString(req.body?.verticalStandardVersion, 'verticalStandardVersion');
+    const verticalStandardVersion = req.body?.verticalStandardVersion;
+    if (!verticalStandardVersion || typeof verticalStandardVersion !== 'string') {
+      throw createError('verticalStandardVersion is required', 400, 'validation_error', {
+        invalidField: 'verticalStandardVersion'
+      });
+    }
     const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
       return !COPY_GENERATE_ALLOWED_TOP_LEVEL_FIELDS.has(field);
     });
@@ -1614,7 +1619,7 @@ function postCopyGenerate(req, res, next) {
     const promptPayload = buildPromptPayloadAuditRecord({
       state,
       draftId: req.body.draftId,
-      verticalStandardVersion: req.body?.verticalStandardVersion,
+      verticalStandardVersion,
       slotDefinitions: generation.slots
     });
     state.copySlotsByDraft.set(req.body.draftId, generation.slots);

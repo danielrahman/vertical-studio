@@ -1868,6 +1868,7 @@ test('WS-D contract: copy generation requires verticalStandardVersion', async ()
     const missingVersionPayload = await missingVersionRes.json();
     assert.equal(missingVersionPayload.code, 'validation_error');
     assert.equal(missingVersionPayload.message, 'verticalStandardVersion is required');
+    assert.equal(missingVersionPayload.details.invalidField, 'verticalStandardVersion');
   } finally {
     await stopServer(server);
   }

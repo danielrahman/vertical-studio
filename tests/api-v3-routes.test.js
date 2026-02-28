@@ -1512,6 +1512,7 @@ test('copy generate requires verticalStandardVersion for prompt contract reprodu
     const missingVersionBody = await missingVersionRes.json();
     assert.equal(missingVersionBody.code, 'validation_error');
     assert.equal(missingVersionBody.message, 'verticalStandardVersion is required');
+    assert.equal(missingVersionBody.details.invalidField, 'verticalStandardVersion');
   } finally {
     await stopServer(server);
   }

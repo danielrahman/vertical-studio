@@ -118,6 +118,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 97. Copy-generate required-locale details implemented (`VS3-IMP-090`): `POST /sites/:siteId/copy/generate` now returns deterministic `validation_error` details (`invalidField`, `missingLocales`) when required locales (`cs-CZ`,`en-US`) are not fully provided.
 98. Copy-generate high-impact mode field-key standardization implemented (`VS3-IMP-091`): `POST /sites/:siteId/copy/generate` now reports deterministic `validation_error` details using `invalidField` (instead of `field`) for `highImpactOnlyThreeVariants` validation failures.
 99. Copy-generate unsupported-locale field-key standardization implemented (`VS3-IMP-092`): `POST /sites/:siteId/copy/generate` now reports deterministic `validation_error` details using `invalidField` (instead of `field`) for unsupported locale validation failures.
+100. Copy-generate missing-version field-details implemented (`VS3-IMP-093`): `POST /sites/:siteId/copy/generate` now reports deterministic `validation_error` details (`invalidField`) when `verticalStandardVersion` is missing.
 
 ## In Progress
 
@@ -125,7 +126,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Complete `VS3-IMP-093` by adding deterministic `invalidField` details when copy-generate requests omit `verticalStandardVersion`.
+1. Backlog currently has no remaining `todo` items; define and prioritize the next post-harness implementation slice for runtime and rollout hardening.
 
 ## Known Constraints
 
