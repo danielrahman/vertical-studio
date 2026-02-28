@@ -2714,11 +2714,14 @@ function postSecretRef(req, res, next) {
       });
     }
 
-    const providedTenantSlug = normalizeOptionalString(req.body?.tenantSlug);
-    if (providedTenantSlug !== null && assertSegment(providedTenantSlug, 'tenantSlug') !== refParts.tenantSlug) {
-      throw createError('tenantSlug must match ref segment', 400, 'validation_error', {
-        invalidField: 'tenantSlug'
-      });
+    const payload = req.body && typeof req.body === 'object' ? req.body : {};
+    if (Object.prototype.hasOwnProperty.call(payload, 'tenantSlug')) {
+      const tenantSlug = assertSegment(payload.tenantSlug, 'tenantSlug');
+      if (tenantSlug !== refParts.tenantSlug) {
+        throw createError('tenantSlug must match ref segment', 400, 'validation_error', {
+          invalidField: 'tenantSlug'
+        });
+      }
     }
 
     const state = getState(req);

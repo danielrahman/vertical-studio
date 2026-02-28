@@ -455,6 +455,24 @@ test('WS-G contract: secret refs segment mismatch errors use invalidField metada
     assert.equal(nonStringKeyPayload.details.expectedType, 'string');
     assert.equal(nonStringKeyPayload.details.receivedType, 'array');
 
+    const nonStringTenantSlugRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-segment',
+        tenantSlug: ['tenant-wsg-secret-segment'],
+        ref: 'tenant.tenant-wsg-secret-segment.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(nonStringTenantSlugRes.status, 400);
+    const nonStringTenantSlugPayload = await nonStringTenantSlugRes.json();
+    assert.equal(nonStringTenantSlugPayload.code, 'validation_error');
+    assert.equal(nonStringTenantSlugPayload.details.invalidField, 'tenantSlug');
+    assert.equal(nonStringTenantSlugPayload.details.expectedType, 'string');
+    assert.equal(nonStringTenantSlugPayload.details.receivedType, 'array');
+
     const response = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

@@ -4091,6 +4091,24 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     assert.equal(nonStringKeyBody.details.expectedType, 'string');
     assert.equal(nonStringKeyBody.details.receivedType, 'array');
 
+    const nonStringTenantSlugRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        tenantSlug: ['tenant-1'],
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(nonStringTenantSlugRes.status, 400);
+    const nonStringTenantSlugBody = await nonStringTenantSlugRes.json();
+    assert.equal(nonStringTenantSlugBody.code, 'validation_error');
+    assert.equal(nonStringTenantSlugBody.details.invalidField, 'tenantSlug');
+    assert.equal(nonStringTenantSlugBody.details.expectedType, 'string');
+    assert.equal(nonStringTenantSlugBody.details.receivedType, 'array');
+
     const plaintextRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
