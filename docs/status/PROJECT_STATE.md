@@ -270,6 +270,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 249. Runtime-client compatibility error-propagation coverage implemented (`VS3-IMP-243`): public-web runtime client tests now assert compatibility fallback (`siteId+versionId`) surfaces API error metadata (`code`, `statusCode`, `details`) unchanged when snapshot fetch fails.
 250. Runtime-client resolve-payload trim normalization coverage implemented (`VS3-IMP-244`): public-web runtime client tests now assert resolve payload whitespace is trimmed for storage-key snapshot fetches and fallback `siteId+versionId` compatibility fetch parameters.
 251. Runtime-client storage-key error-propagation coverage implemented (`VS3-IMP-245`): public-web runtime client tests now assert storage-key runtime path surfaces immutable snapshot API error metadata (`code`, `statusCode`, `details`) unchanged through `renderSiteFromRuntime`.
+252. Runtime-client non-string resolve-identifier edge coverage implemented (`VS3-IMP-246`): public-web runtime client tests now assert non-string fallback `siteId`/`versionId` values in resolve payload are treated as missing identifiers and deterministically trigger `runtime_resolve_incomplete`.
 
 ## In Progress
 
@@ -278,7 +279,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after runtime-client storage-key error propagation coverage (candidate: extend runtime-client fallback coverage for resolve payload edge values such as explicit non-string identifiers).
+1. Select and start the next smallest non-hardening implementation slice after runtime-client non-string resolve-identifier coverage (candidate: extend runtime-client coverage for trimmed-empty `storageKey` with invalid fallback identifiers).
 
 ## Known Constraints
 

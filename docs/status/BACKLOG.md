@@ -11,6 +11,7 @@
 
 | id          | title                                                                 | status      | owner | notes                                                                                   |
 | ----------- | --------------------------------------------------------------------- | ----------- | ----- | --------------------------------------------------------------------------------------- |
+| VS3-IMP-246 | Add runtime-client non-string resolve-identifier edge coverage         | done | codex | runtime-client tests now verify non-string fallback `siteId`/`versionId` in resolve payload are treated as missing and deterministically trigger `runtime_resolve_incomplete` |
 | VS3-IMP-245 | Add runtime-client storage-key error-propagation coverage              | done | codex | runtime-client tests now verify `renderSiteFromRuntime` storage-key path preserves API error metadata (`code`,`statusCode`,`details`) from immutable snapshot fetch failures |
 | VS3-IMP-244 | Add runtime-client resolve-payload trim normalization coverage         | done | codex | runtime-client tests now verify resolve-payload whitespace is trimmed for both storageKey fetches and fallback `siteId/versionId` compatibility fetch parameters |
 | VS3-IMP-243 | Add runtime-client compatibility error-propagation coverage            | done | codex | runtime-client tests now verify `renderSiteFromRuntime` compatibility fallback preserves API error metadata (`code`,`statusCode`,`details`) from snapshot fetch failures |

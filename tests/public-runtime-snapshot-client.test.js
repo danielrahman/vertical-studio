@@ -340,6 +340,39 @@ test('renderSiteFromRuntime throws deterministic error when resolve payload lack
   assert.equal(calls.length, 1);
 });
 
+test('renderSiteFromRuntime treats non-string fallback siteId/versionId as missing identifiers', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'broken-runtime-types.example.test',
+        siteId: 42,
+        versionId: true
+      })
+    ],
+    calls
+  );
+
+  await assert.rejects(
+    renderSiteFromRuntime({
+      apiBaseUrl: 'http://localhost:3000',
+      host: 'broken-runtime-types.example.test',
+      fetchImpl
+    }),
+    (error) => {
+      assert.equal(error.code, 'runtime_resolve_incomplete');
+      assert.equal(error.message, 'Runtime resolve payload must include storageKey or siteId+versionId');
+      assert.deepEqual(error.details, {
+        hasStorageKey: false,
+        hasSiteId: false,
+        hasVersionId: false
+      });
+      return true;
+    }
+  );
+  assert.equal(calls.length, 1);
+});
+
 test('fetchRuntimeSnapshot surfaces API error metadata', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(
