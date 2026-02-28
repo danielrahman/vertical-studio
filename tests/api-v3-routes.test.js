@@ -2604,6 +2604,45 @@ test('overrides rejects unknown requiredComponents values', async () => {
   }
 });
 
+test('overrides requires draftId with deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-override-required/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tone: ['credible']
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdBody = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdBody.code, 'validation_error');
+    assert.equal(missingDraftIdBody.message, 'draftId is required');
+    assert.equal(missingDraftIdBody.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdBody.details.expectedType, 'string');
+    assert.equal(missingDraftIdBody.details.receivedType, 'undefined');
+
+    const nonStringDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-override-required/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 123,
+        tone: ['credible']
+      })
+    });
+    assert.equal(nonStringDraftIdRes.status, 400);
+    const nonStringDraftIdBody = await nonStringDraftIdRes.json();
+    assert.equal(nonStringDraftIdBody.code, 'validation_error');
+    assert.equal(nonStringDraftIdBody.message, 'draftId is required');
+    assert.equal(nonStringDraftIdBody.details.invalidField, 'draftId');
+    assert.equal(nonStringDraftIdBody.details.expectedType, 'string');
+    assert.equal(nonStringDraftIdBody.details.receivedType, 'number');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('overrides rejects unknown section values in section arrays', async () => {
   const { server, baseUrl } = await startServer();
 

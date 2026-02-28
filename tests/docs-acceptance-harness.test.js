@@ -1698,6 +1698,45 @@ test('WS-D contract: overrides requiredComponents must reference loaded componen
   }
 });
 
+test('WS-D contract: overrides requires draftId with deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-required/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tone: ['credible']
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdPayload = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdPayload.code, 'validation_error');
+    assert.equal(missingDraftIdPayload.message, 'draftId is required');
+    assert.equal(missingDraftIdPayload.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdPayload.details.expectedType, 'string');
+    assert.equal(missingDraftIdPayload.details.receivedType, 'undefined');
+
+    const nonStringDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-required/overrides`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 123,
+        tone: ['credible']
+      })
+    });
+    assert.equal(nonStringDraftIdRes.status, 400);
+    const nonStringDraftIdPayload = await nonStringDraftIdRes.json();
+    assert.equal(nonStringDraftIdPayload.code, 'validation_error');
+    assert.equal(nonStringDraftIdPayload.message, 'draftId is required');
+    assert.equal(nonStringDraftIdPayload.details.invalidField, 'draftId');
+    assert.equal(nonStringDraftIdPayload.details.expectedType, 'string');
+    assert.equal(nonStringDraftIdPayload.details.receivedType, 'number');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: override section arrays must use allowed section keys', async () => {
   const { server, baseUrl } = await startServer();
 
