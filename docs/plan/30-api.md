@@ -165,7 +165,7 @@ Contract:
 3. Set `site_drafts.low_confidence=true` when any required field is TODO.
 4. If `extractedFields` is provided, it must be an array.
 5. `extractedFields` may contain only object items.
-6. `extractedFields` items may contain only `fieldPath`, `value`, `sourceUrl`, `method`, `confidence`, `extractedAt`, and `required`.
+6. `extractedFields` items may contain only `fieldPath`, `value`, `sourceUrl`, `method`, `confidence`, `extractedAt`, and `required`; unknown item fields are rejected with `400 validation_error` and lexicographically sorted per-item `unknownFields` details.
 7. If `fieldPath` is provided in an `extractedFields` item, it must be a non-empty string.
 8. If `sourceUrl` is provided in an `extractedFields` item, it must be a non-empty string or `null`.
 9. If `method` is provided in an `extractedFields` item, it must be one of `dom`, `ocr`, `inference`, or `manual`.

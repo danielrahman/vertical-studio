@@ -512,7 +512,8 @@ test('WS-B contract: bootstrap-from-extraction rejects unknown nested extractedF
             sourceUrl: 'https://example.test/about',
             method: 'dom',
             confidence: 0.91,
-            legacyConfidence: 91
+            zetaLegacyConfidence: 91,
+            alphaLegacySignal: 'inferred'
           }
         ]
       })
@@ -522,7 +523,9 @@ test('WS-B contract: bootstrap-from-extraction rejects unknown nested extractedF
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'extractedFields items contain unknown fields');
     assert.equal(payload.details.invalidField, 'extractedFields');
-    assert.deepEqual(payload.details.invalidItemFields, [{ index: 0, unknownFields: ['legacyConfidence'] }]);
+    assert.deepEqual(payload.details.invalidItemFields, [
+      { index: 0, unknownFields: ['alphaLegacySignal', 'zetaLegacyConfidence'] }
+    ]);
   } finally {
     await stopServer(server);
   }

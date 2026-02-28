@@ -601,7 +601,8 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
               sourceUrl: 'https://example.test/about',
               method: 'dom',
               confidence: 0.91,
-              legacyConfidence: 91
+              zetaLegacyConfidence: 91,
+              alphaLegacySignal: 'inferred'
             }
           ]
         })
@@ -613,7 +614,7 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(unknownExtractedFieldItemFieldPayload.message, 'extractedFields items contain unknown fields');
     assert.equal(unknownExtractedFieldItemFieldPayload.details.invalidField, 'extractedFields');
     assert.deepEqual(unknownExtractedFieldItemFieldPayload.details.invalidItemFields, [
-      { index: 0, unknownFields: ['legacyConfidence'] }
+      { index: 0, unknownFields: ['alphaLegacySignal', 'zetaLegacyConfidence'] }
     ]);
 
     const invalidExtractedFieldPathResponse = await fetch(

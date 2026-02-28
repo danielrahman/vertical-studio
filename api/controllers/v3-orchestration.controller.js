@@ -981,7 +981,9 @@ function postBootstrapFromExtraction(req, res, next) {
       });
     }
     const invalidExtractedFieldItemFields = rawExtractedFields.reduce((items, field, index) => {
-      const unknownFields = Object.keys(field).filter((key) => !BOOTSTRAP_EXTRACTED_FIELD_ALLOWED_FIELDS.has(key));
+      const unknownFields = Object.keys(field)
+        .filter((key) => !BOOTSTRAP_EXTRACTED_FIELD_ALLOWED_FIELDS.has(key))
+        .sort();
       if (unknownFields.length > 0) {
         items.push({
           index,
