@@ -2780,6 +2780,17 @@ test('overrides rejects unknown top-level payload fields', async () => {
     assert.equal(invalidOverrideBody.code, 'invalid_override_payload');
     assert.equal(invalidOverrideBody.message, 'Invalid override payload: contains unknown top-level fields');
     assert.deepEqual(invalidOverrideBody.details.unknownFields, ['alphaUnsupportedDirective', 'zetaUnsupportedDirective']);
+    assert.deepEqual(invalidOverrideBody.details.allowedTopLevelFields, [
+      'actorRole',
+      'draftId',
+      'excludedCompetitorPatterns',
+      'excludedSections',
+      'keywords',
+      'pinnedSections',
+      'requiredComponents',
+      'requiredSections',
+      'tone'
+    ]);
   } finally {
     await stopServer(server);
   }

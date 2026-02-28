@@ -187,6 +187,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 166. Override conflicting-section detail sorting hardening implemented (`VS3-IMP-159`): `POST /sites/:siteId/overrides` section-overlap validation errors now emit lexicographically sorted `conflictingSections` details, with API/WS-D contract coverage and plan text alignment.
 167. Override unknown-component detail sorting hardening implemented (`VS3-IMP-160`): `POST /sites/:siteId/overrides` unknown required-component validation errors now emit lexicographically sorted `unknownComponentIds` details, with API/WS-D contract coverage and plan text alignment.
 168. Override no-op field-list detail sorting hardening implemented (`VS3-IMP-161`): `POST /sites/:siteId/overrides` no-op override validation errors now emit lexicographically sorted `fields` details, with API/WS-D contract coverage and plan text alignment.
+169. Override unknown-top-level allow-list metadata hardening implemented (`VS3-IMP-162`): `POST /sites/:siteId/overrides` unknown top-level payload validation errors now include lexicographically sorted `allowedTopLevelFields` metadata alongside sorted `unknownFields`, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 
