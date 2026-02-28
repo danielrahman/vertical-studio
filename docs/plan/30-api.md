@@ -174,7 +174,7 @@ Contract:
 12. If `extractedAt` is provided in an `extractedFields` item, it must be a non-empty ISO-8601 datetime string.
 13. If `lowConfidence` is provided, it must be a boolean.
 14. If `sitePolicy` is provided, it must be an object.
-15. `sitePolicy` may contain only `allowOwnerDraftCopyEdits`.
+15. `sitePolicy` may contain only `allowOwnerDraftCopyEdits`; unknown nested fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
 16. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
 
 ### 4.2 Vertical Intelligence Lifecycle

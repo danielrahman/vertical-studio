@@ -457,7 +457,8 @@ test('WS-B contract: bootstrap-from-extraction rejects unknown nested sitePolicy
         draftId: 'draft-wsb-bootstrap-shape-4',
         sitePolicy: {
           allowOwnerDraftCopyEdits: true,
-          policyVersion: 'v1'
+          zetaPolicyVersion: 'v1',
+          alphaPolicyMode: 'strict'
         }
       })
     });
@@ -466,7 +467,7 @@ test('WS-B contract: bootstrap-from-extraction rejects unknown nested sitePolicy
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'sitePolicy contains unknown fields');
     assert.equal(payload.details.invalidField, 'sitePolicy');
-    assert.deepEqual(payload.details.unknownFields, ['policyVersion']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaPolicyMode', 'zetaPolicyVersion']);
   } finally {
     await stopServer(server);
   }

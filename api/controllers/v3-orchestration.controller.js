@@ -1153,7 +1153,9 @@ function postBootstrapFromExtraction(req, res, next) {
       });
     }
     const unknownSitePolicyFields = sitePolicyProvided
-      ? Object.keys(req.body.sitePolicy).filter((field) => !BOOTSTRAP_SITE_POLICY_ALLOWED_FIELDS.has(field))
+      ? Object.keys(req.body.sitePolicy)
+          .filter((field) => !BOOTSTRAP_SITE_POLICY_ALLOWED_FIELDS.has(field))
+          .sort()
       : [];
     if (unknownSitePolicyFields.length > 0) {
       throw createError('sitePolicy contains unknown fields', 400, 'validation_error', {

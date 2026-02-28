@@ -542,7 +542,8 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
           draftId: 'draft-bootstrap-model',
           sitePolicy: {
             allowOwnerDraftCopyEdits: true,
-            policyVersion: 'v1'
+            zetaPolicyVersion: 'v1',
+            alphaPolicyMode: 'strict'
           }
         })
       }
@@ -552,7 +553,7 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(unknownSitePolicyFieldPayload.code, 'validation_error');
     assert.equal(unknownSitePolicyFieldPayload.message, 'sitePolicy contains unknown fields');
     assert.equal(unknownSitePolicyFieldPayload.details.invalidField, 'sitePolicy');
-    assert.deepEqual(unknownSitePolicyFieldPayload.details.unknownFields, ['policyVersion']);
+    assert.deepEqual(unknownSitePolicyFieldPayload.details.unknownFields, ['alphaPolicyMode', 'zetaPolicyVersion']);
 
     const nonArrayFieldsResponse = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
