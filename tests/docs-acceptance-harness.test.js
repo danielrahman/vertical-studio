@@ -1893,14 +1893,15 @@ test('WS-D contract: copy generation rejects unknown top-level payload fields', 
         draftId: 'draft-wsd-copy-generate-unknown-1',
         locales: ['cs-CZ', 'en-US'],
         verticalStandardVersion: '2026.02',
-        promptMode: 'fast'
+        zetaMode: 'fast',
+        alphaMode: 'strict'
       })
     });
     assert.equal(unknownFieldRes.status, 400);
     const unknownFieldPayload = await unknownFieldRes.json();
     assert.equal(unknownFieldPayload.code, 'validation_error');
     assert.equal(unknownFieldPayload.details.invalidField, 'payload');
-    assert.deepEqual(unknownFieldPayload.details.unknownFields, ['promptMode']);
+    assert.deepEqual(unknownFieldPayload.details.unknownFields, ['alphaMode', 'zetaMode']);
     assert.deepEqual(unknownFieldPayload.details.allowedTopLevelFields, [
       'actorRole',
       'draftId',

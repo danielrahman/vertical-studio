@@ -1576,9 +1576,11 @@ function postCopyGenerate(req, res, next) {
         receivedType: getValueType(verticalStandardVersion)
       });
     }
-    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
-      return !COPY_GENERATE_ALLOWED_TOP_LEVEL_FIELDS.has(field);
-    });
+    const unknownTopLevelFields = Object.keys(req.body)
+      .filter((field) => {
+        return !COPY_GENERATE_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+      })
+      .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('copy generate payload contains unknown top-level fields', 400, 'validation_error', {
         invalidField: 'payload',

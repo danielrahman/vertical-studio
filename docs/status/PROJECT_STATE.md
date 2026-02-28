@@ -162,6 +162,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 141. Copy-generate `highImpactOnlyThreeVariants` type metadata hardening implemented (`VS3-IMP-134`): `POST /sites/:siteId/copy/generate` invalid `highImpactOnlyThreeVariants` validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField` and `allowedValue`, with API/WS-D contract coverage and plan text alignment.
 142. Copy-generate unknown top-level invalid-field metadata hardening implemented (`VS3-IMP-135`): `POST /sites/:siteId/copy/generate` unknown top-level payload validation errors now include deterministic `invalidField` metadata (`payload`) alongside `unknownFields`, with API/WS-D contract coverage and plan text alignment.
 143. Copy-generate unknown top-level allowed-field metadata hardening implemented (`VS3-IMP-136`): `POST /sites/:siteId/copy/generate` unknown top-level payload validation errors now include deterministic `allowedTopLevelFields` metadata alongside `invalidField` and `unknownFields`, with API/WS-D contract coverage and plan text alignment.
+144. Copy-generate unknown-field sorting hardening implemented (`VS3-IMP-137`): `POST /sites/:siteId/copy/generate` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details alongside sorted `allowedTopLevelFields`, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 

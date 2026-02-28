@@ -1537,7 +1537,8 @@ test('copy generate rejects unknown top-level payload fields', async () => {
         draftId: 'draft-copy-generate-unknown',
         locales: ['cs-CZ', 'en-US'],
         verticalStandardVersion: '2026.02',
-        promptMode: 'fast'
+        zetaMode: 'fast',
+        alphaMode: 'strict'
       })
     });
     assert.equal(unknownFieldRes.status, 400);
@@ -1545,7 +1546,7 @@ test('copy generate rejects unknown top-level payload fields', async () => {
     assert.equal(unknownFieldBody.code, 'validation_error');
     assert.equal(unknownFieldBody.message, 'copy generate payload contains unknown top-level fields');
     assert.equal(unknownFieldBody.details.invalidField, 'payload');
-    assert.deepEqual(unknownFieldBody.details.unknownFields, ['promptMode']);
+    assert.deepEqual(unknownFieldBody.details.unknownFields, ['alphaMode', 'zetaMode']);
     assert.deepEqual(unknownFieldBody.details.allowedTopLevelFields, [
       'actorRole',
       'draftId',
