@@ -1571,7 +1571,9 @@ function postCopyGenerate(req, res, next) {
     const verticalStandardVersion = req.body?.verticalStandardVersion;
     if (!verticalStandardVersion || typeof verticalStandardVersion !== 'string') {
       throw createError('verticalStandardVersion is required', 400, 'validation_error', {
-        invalidField: 'verticalStandardVersion'
+        invalidField: 'verticalStandardVersion',
+        expectedType: 'string',
+        receivedType: getValueType(verticalStandardVersion)
       });
     }
     const unknownTopLevelFields = Object.keys(req.body).filter((field) => {

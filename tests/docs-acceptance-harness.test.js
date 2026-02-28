@@ -1869,6 +1869,8 @@ test('WS-D contract: copy generation requires verticalStandardVersion', async ()
     assert.equal(missingVersionPayload.code, 'validation_error');
     assert.equal(missingVersionPayload.message, 'verticalStandardVersion is required');
     assert.equal(missingVersionPayload.details.invalidField, 'verticalStandardVersion');
+    assert.equal(missingVersionPayload.details.expectedType, 'string');
+    assert.equal(missingVersionPayload.details.receivedType, 'undefined');
   } finally {
     await stopServer(server);
   }

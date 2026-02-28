@@ -1513,6 +1513,8 @@ test('copy generate requires verticalStandardVersion for prompt contract reprodu
     assert.equal(missingVersionBody.code, 'validation_error');
     assert.equal(missingVersionBody.message, 'verticalStandardVersion is required');
     assert.equal(missingVersionBody.details.invalidField, 'verticalStandardVersion');
+    assert.equal(missingVersionBody.details.expectedType, 'string');
+    assert.equal(missingVersionBody.details.receivedType, 'undefined');
   } finally {
     await stopServer(server);
   }
