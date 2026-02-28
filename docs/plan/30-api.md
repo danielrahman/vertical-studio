@@ -337,7 +337,7 @@ Rules:
 1. High-impact slots must generate `A/B/C` candidates.
 2. Non-high-impact slots must generate one `SINGLE` candidate.
 3. Every candidate must satisfy slot hard limits before response finalization.
-4. If `highImpactOnlyThreeVariants` is present, it must be `true` (other values return `400 validation_error` with deterministic `invalidField` details).
+4. If `highImpactOnlyThreeVariants` is present, it must be `true` (other values return `400 validation_error` with deterministic `invalidField` details and deterministic type metadata (`expectedType`, `receivedType`)).
 5. If `locales` is provided, it must be an array; non-array values return `400 validation_error` with deterministic `invalidField` details and deterministic type metadata (`expectedType`, `receivedType`).
 6. If `locales` is provided, every item must be a string; non-string items return `400 validation_error` with deterministic `invalidField` details, deterministic index details (`invalidItemIndexes`), and deterministic item type metadata (`expectedItemType`, `receivedItemTypes`).
 7. Duplicate `locales` values are rejected with `400 validation_error`.

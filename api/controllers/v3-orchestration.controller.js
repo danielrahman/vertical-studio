@@ -1642,7 +1642,9 @@ function postCopyGenerate(req, res, next) {
         'validation_error',
         {
           invalidField: 'highImpactOnlyThreeVariants',
-          allowedValue: true
+          allowedValue: true,
+          expectedType: 'boolean',
+          receivedType: getValueType(req.body.highImpactOnlyThreeVariants)
         }
       );
     }
