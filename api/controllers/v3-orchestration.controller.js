@@ -245,7 +245,11 @@ function getState(req) {
 
 function assertString(value, fieldName) {
   if (!value || typeof value !== 'string') {
-    throw createError(`${fieldName} is required`, 400, 'validation_error');
+    throw createError(`${fieldName} is required`, 400, 'validation_error', {
+      invalidField: fieldName,
+      expectedType: 'string',
+      receivedType: getValueType(value)
+    });
   }
 }
 
@@ -1726,15 +1730,20 @@ function getCopySlots(req, res, next) {
     assertTenantMemberOrInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
 
-    if (typeof req.query.draftId !== 'string' || !req.query.draftId) {
-      throw createError('draftId query param is required', 400, 'validation_error');
+    const draftId = req.query.draftId;
+    if (typeof draftId !== 'string' || !draftId.trim()) {
+      throw createError('draftId query param is required', 400, 'validation_error', {
+        invalidField: 'draftId',
+        expectedType: 'string',
+        receivedType: getValueType(draftId)
+      });
     }
 
     const state = getState(req);
-    const slots = state.copySlotsByDraft.get(req.query.draftId) || [];
+    const slots = state.copySlotsByDraft.get(draftId) || [];
 
     res.status(200).json({
-      draftId: req.query.draftId,
+      draftId,
       generated: slots.length > 0,
       slots
     });

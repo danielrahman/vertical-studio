@@ -1370,6 +1370,91 @@ test('WS-D contract: compose requires loaded component contracts for requested c
   }
 });
 
+test('WS-D contract: compose required fields return deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-compose-required/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdPayload = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdPayload.code, 'validation_error');
+    assert.equal(missingDraftIdPayload.message, 'draftId is required');
+    assert.equal(missingDraftIdPayload.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdPayload.details.expectedType, 'string');
+    assert.equal(missingDraftIdPayload.details.receivedType, 'undefined');
+
+    const nonStringRulesVersionRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-compose-required/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-compose-required-1',
+        rulesVersion: 100,
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(nonStringRulesVersionRes.status, 400);
+    const nonStringRulesVersionPayload = await nonStringRulesVersionRes.json();
+    assert.equal(nonStringRulesVersionPayload.code, 'validation_error');
+    assert.equal(nonStringRulesVersionPayload.message, 'rulesVersion is required');
+    assert.equal(nonStringRulesVersionPayload.details.invalidField, 'rulesVersion');
+    assert.equal(nonStringRulesVersionPayload.details.expectedType, 'string');
+    assert.equal(nonStringRulesVersionPayload.details.receivedType, 'number');
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('WS-D contract: compose select required fields return deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-compose-select-required/compose/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        proposalId: 'proposal-wsd-compose-select-required-1'
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdPayload = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdPayload.code, 'validation_error');
+    assert.equal(missingDraftIdPayload.message, 'draftId is required');
+    assert.equal(missingDraftIdPayload.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdPayload.details.expectedType, 'string');
+    assert.equal(missingDraftIdPayload.details.receivedType, 'undefined');
+
+    const nonStringProposalIdRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-wsd-compose-select-required/compose/select`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-wsd-compose-select-required-1',
+          proposalId: 42
+        })
+      }
+    );
+    assert.equal(nonStringProposalIdRes.status, 400);
+    const nonStringProposalIdPayload = await nonStringProposalIdRes.json();
+    assert.equal(nonStringProposalIdPayload.code, 'validation_error');
+    assert.equal(nonStringProposalIdPayload.message, 'proposalId is required');
+    assert.equal(nonStringProposalIdPayload.details.invalidField, 'proposalId');
+    assert.equal(nonStringProposalIdPayload.details.expectedType, 'string');
+    assert.equal(nonStringProposalIdPayload.details.receivedType, 'number');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: compose rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 
@@ -2209,6 +2294,39 @@ test('WS-D contract: copy generation rejects unknown top-level payload fields', 
       'locales',
       'verticalStandardVersion'
     ]);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('WS-D contract: copy slots requires draftId query param with deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-copy-slots/copy/slots`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdPayload = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdPayload.code, 'validation_error');
+    assert.equal(missingDraftIdPayload.message, 'draftId query param is required');
+    assert.equal(missingDraftIdPayload.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdPayload.details.expectedType, 'string');
+    assert.equal(missingDraftIdPayload.details.receivedType, 'undefined');
+
+    const nonStringDraftIdRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-wsd-copy-slots/copy/slots?draftId=one&draftId=two`,
+      {
+        headers: TENANT_MEMBER_HEADERS
+      }
+    );
+    assert.equal(nonStringDraftIdRes.status, 400);
+    const nonStringDraftIdPayload = await nonStringDraftIdRes.json();
+    assert.equal(nonStringDraftIdPayload.code, 'validation_error');
+    assert.equal(nonStringDraftIdPayload.message, 'draftId query param is required');
+    assert.equal(nonStringDraftIdPayload.details.invalidField, 'draftId');
+    assert.equal(nonStringDraftIdPayload.details.expectedType, 'string');
+    assert.equal(nonStringDraftIdPayload.details.receivedType, 'array');
   } finally {
     await stopServer(server);
   }

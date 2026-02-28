@@ -1242,6 +1242,82 @@ test('compose propose returns deterministic three-variant envelope', async () =>
   }
 });
 
+test('copy slots requires draftId query param with deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-slots-validation/copy/slots`, {
+      headers: TENANT_MEMBER_HEADERS
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdBody = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdBody.code, 'validation_error');
+    assert.equal(missingDraftIdBody.message, 'draftId query param is required');
+    assert.equal(missingDraftIdBody.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdBody.details.expectedType, 'string');
+    assert.equal(missingDraftIdBody.details.receivedType, 'undefined');
+
+    const nonStringDraftIdRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-copy-slots-validation/copy/slots?draftId=one&draftId=two`,
+      {
+        headers: TENANT_MEMBER_HEADERS
+      }
+    );
+    assert.equal(nonStringDraftIdRes.status, 400);
+    const nonStringDraftIdBody = await nonStringDraftIdRes.json();
+    assert.equal(nonStringDraftIdBody.code, 'validation_error');
+    assert.equal(nonStringDraftIdBody.message, 'draftId query param is required');
+    assert.equal(nonStringDraftIdBody.details.invalidField, 'draftId');
+    assert.equal(nonStringDraftIdBody.details.expectedType, 'string');
+    assert.equal(nonStringDraftIdBody.details.receivedType, 'array');
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('compose propose required fields return deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-compose-required/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        rulesVersion: '1.0.0',
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdBody = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdBody.code, 'validation_error');
+    assert.equal(missingDraftIdBody.message, 'draftId is required');
+    assert.equal(missingDraftIdBody.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdBody.details.expectedType, 'string');
+    assert.equal(missingDraftIdBody.details.receivedType, 'undefined');
+
+    const nonStringRulesVersionRes = await fetch(`${baseUrl}/api/v1/sites/site-compose-required/compose/propose`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-compose-required-1',
+        rulesVersion: 100,
+        catalogVersion: '1.0.0',
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(nonStringRulesVersionRes.status, 400);
+    const nonStringRulesVersionBody = await nonStringRulesVersionRes.json();
+    assert.equal(nonStringRulesVersionBody.code, 'validation_error');
+    assert.equal(nonStringRulesVersionBody.message, 'rulesVersion is required');
+    assert.equal(nonStringRulesVersionBody.details.invalidField, 'rulesVersion');
+    assert.equal(nonStringRulesVersionBody.details.expectedType, 'string');
+    assert.equal(nonStringRulesVersionBody.details.receivedType, 'number');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('compose propose rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 
@@ -1349,6 +1425,45 @@ test('compose propose audit event persists structured prompt payload contract fi
     assert.equal(Array.isArray(auditBody.items[0].promptPayload.slotDefinitions), true);
     assert.equal(auditBody.items[0].promptPayload.slotDefinitions.length > 0, true);
     assert.equal(Array.isArray(auditBody.items[0].promptPayload.disallowedPatterns), true);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('compose select required fields return deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-compose-select-required/compose/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        proposalId: 'proposal-compose-select-required-1'
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdBody = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdBody.code, 'validation_error');
+    assert.equal(missingDraftIdBody.message, 'draftId is required');
+    assert.equal(missingDraftIdBody.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdBody.details.expectedType, 'string');
+    assert.equal(missingDraftIdBody.details.receivedType, 'undefined');
+
+    const nonStringProposalIdRes = await fetch(`${baseUrl}/api/v1/sites/site-compose-select-required/compose/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-compose-select-required-1',
+        proposalId: 42
+      })
+    });
+    assert.equal(nonStringProposalIdRes.status, 400);
+    const nonStringProposalIdBody = await nonStringProposalIdRes.json();
+    assert.equal(nonStringProposalIdBody.code, 'validation_error');
+    assert.equal(nonStringProposalIdBody.message, 'proposalId is required');
+    assert.equal(nonStringProposalIdBody.details.invalidField, 'proposalId');
+    assert.equal(nonStringProposalIdBody.details.expectedType, 'string');
+    assert.equal(nonStringProposalIdBody.details.receivedType, 'number');
   } finally {
     await stopServer(server);
   }

@@ -212,6 +212,9 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 191. Runtime resolve missing-host invalid-field metadata hardening implemented (`VS3-IMP-184`): public runtime resolve host validation errors now use deterministic `invalidField: host` metadata, with API/WS-E contract coverage and plan text alignment.
 192. Override field-level invalid-field metadata hardening implemented (`VS3-IMP-185`): override payload field-level validation errors (blank/duplicate/section/conflict/component checks) now use deterministic `invalidField` metadata, with API/WS-D contract coverage and plan text alignment.
 193. Rollback unknown-payload contract text alignment implemented (`VS3-IMP-186`): rollback API contract documentation now explicitly requires deterministic `invalidField: payload` metadata on unknown top-level payload validation errors, aligned with implemented API/WS-E behavior.
+194. Copy-slots `draftId` query validation metadata hardening implemented (`VS3-IMP-187`): `GET /sites/:siteId/copy/slots` missing/non-string `draftId` query validation errors now return deterministic `invalidField`, `expectedType`, and `receivedType` metadata, with API/WS-D contract coverage and plan text alignment.
+195. Required-string helper metadata hardening implemented (`VS3-IMP-188`): shared required-string validation failures now return deterministic `invalidField`, `expectedType`, and `receivedType` metadata, with compose-propose required-field API/WS-D contract coverage and plan text alignment.
+196. Compose-select required-field metadata contract alignment implemented (`VS3-IMP-189`): `POST /sites/:siteId/compose/select` required `draftId` and `proposalId` validation now has deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-D tests and API contract text.
 
 ## In Progress
 
