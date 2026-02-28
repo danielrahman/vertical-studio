@@ -376,16 +376,17 @@ Request:
 ```
 
 Rules:
-1. Every selection item must include `slotId`, `locale`, and `candidateId`.
-2. `candidateId` must resolve to a generated candidate for the draft.
-3. Selected candidate `slotId` and `locale` must match the request tuple.
-4. A request must not contain duplicate `slotId`+`locale` tuples.
-5. `selections` is required and must be an array; missing or non-array values return `400 validation_error` with deterministic `invalidField` details.
-6. `selections` must contain at least one item.
-7. If `selectedBy` is provided, it must match the authenticated actor role; server-side actor identity remains source of truth.
-8. Unknown top-level payload fields and unknown per-selection object fields are rejected with `400 validation_error`.
-9. Selection-level validation failures for `selections` (empty array, tuple mismatch, duplicate tuple, selectedBy actor mismatch) return deterministic `invalidField` details.
-10. Per-item `selections` validation failures (item type, unknown fields, missing/invalid `slotId|locale|candidateId`, invalid `selectedBy`) return deterministic `invalidField` details using index-aware paths (for example `selections[0].locale`).
+1. `draftId` is required and must be a string; missing or non-string values return `400 validation_error` with deterministic `invalidField` details.
+2. Every selection item must include `slotId`, `locale`, and `candidateId`.
+3. `candidateId` must resolve to a generated candidate for the draft.
+4. Selected candidate `slotId` and `locale` must match the request tuple.
+5. A request must not contain duplicate `slotId`+`locale` tuples.
+6. `selections` is required and must be an array; missing or non-array values return `400 validation_error` with deterministic `invalidField` details.
+7. `selections` must contain at least one item.
+8. If `selectedBy` is provided, it must match the authenticated actor role; server-side actor identity remains source of truth.
+9. Unknown top-level payload fields and unknown per-selection object fields are rejected with `400 validation_error`.
+10. Selection-level validation failures for `selections` (empty array, tuple mismatch, duplicate tuple, selectedBy actor mismatch) return deterministic `invalidField` details.
+11. Per-item `selections` validation failures (item type, unknown fields, missing/invalid `slotId|locale|candidateId`, invalid `selectedBy`) return deterministic `invalidField` details using index-aware paths (for example `selections[0].locale`).
 
 ### 4.6 Manual Override Lifecycle
 

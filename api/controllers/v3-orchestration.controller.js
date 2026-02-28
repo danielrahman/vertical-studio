@@ -1666,7 +1666,12 @@ function getCopySlots(req, res, next) {
 function postCopySelect(req, res, next) {
   try {
     assertString(req.params.siteId, 'siteId');
-    assertString(req.body?.draftId, 'draftId');
+    const draftId = req.body?.draftId;
+    if (!draftId || typeof draftId !== 'string') {
+      throw createError('draftId is required', 400, 'validation_error', {
+        invalidField: 'draftId'
+      });
+    }
     const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
       return !COPY_SELECT_ALLOWED_TOP_LEVEL_FIELDS.has(field);
     });
@@ -1690,7 +1695,7 @@ function postCopySelect(req, res, next) {
       });
     }
     req.body.selections.forEach((selection, index) => assertCopySelectionShape(selection, index));
-    const candidates = state.copyCandidatesByDraft.get(req.body.draftId) || [];
+    const candidates = state.copyCandidatesByDraft.get(draftId) || [];
     const candidateById = new Map(candidates.map((candidate) => [candidate.candidateId, candidate]));
 
     const missingCandidate = req.body.selections.find((selection) => {
@@ -1753,20 +1758,20 @@ function postCopySelect(req, res, next) {
       selectedBy: selectedByRole
     }));
 
-    state.copySelectionsByDraft.set(req.body.draftId, normalizedSelections);
+    state.copySelectionsByDraft.set(draftId, normalizedSelections);
     state.auditEvents.push({
       id: randomUUID(),
       action: 'ops_copy_selected',
       occurredAt: new Date().toISOString(),
       entityType: 'draft',
-      entityId: req.body.draftId,
+      entityId: draftId,
       siteId: req.params.siteId,
       selectedCount: req.body.selections.length,
       selectedByRole
     });
 
     res.status(200).json({
-      draftId: req.body.draftId,
+      draftId,
       selected: req.body.selections.length,
       selectedByRole
     });

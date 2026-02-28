@@ -1679,6 +1679,41 @@ test('copy select requires selections array and reports invalidField details', a
   }
 });
 
+test('copy select requires draftId and reports invalidField details', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-select-draft-id/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-1' }]
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdBody = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdBody.code, 'validation_error');
+    assert.equal(missingDraftIdBody.message, 'draftId is required');
+    assert.equal(missingDraftIdBody.details.invalidField, 'draftId');
+
+    const nonStringDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-select-draft-id/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 123,
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-1' }]
+      })
+    });
+    assert.equal(nonStringDraftIdRes.status, 400);
+    const nonStringDraftIdBody = await nonStringDraftIdRes.json();
+    assert.equal(nonStringDraftIdBody.code, 'validation_error');
+    assert.equal(nonStringDraftIdBody.message, 'draftId is required');
+    assert.equal(nonStringDraftIdBody.details.invalidField, 'draftId');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select selectedBy must match authenticated actor role', async () => {
   const { server, baseUrl } = await startServer();
 

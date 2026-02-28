@@ -2002,6 +2002,41 @@ test('WS-D contract: copy selection requires selections array with invalidField 
   }
 });
 
+test('WS-D contract: copy selection requires draftId with invalidField details', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-draft-id/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-1' }]
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdPayload = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdPayload.code, 'validation_error');
+    assert.equal(missingDraftIdPayload.message, 'draftId is required');
+    assert.equal(missingDraftIdPayload.details.invalidField, 'draftId');
+
+    const nonStringDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-draft-id/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 123,
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-1' }]
+      })
+    });
+    assert.equal(nonStringDraftIdRes.status, 400);
+    const nonStringDraftIdPayload = await nonStringDraftIdRes.json();
+    assert.equal(nonStringDraftIdPayload.code, 'validation_error');
+    assert.equal(nonStringDraftIdPayload.message, 'draftId is required');
+    assert.equal(nonStringDraftIdPayload.details.invalidField, 'draftId');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy selection selectedBy must match authenticated actor', async () => {
   const { app, server, baseUrl } = await startServer();
 
