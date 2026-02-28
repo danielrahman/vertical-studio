@@ -2667,15 +2667,25 @@ function postSecretRef(req, res, next) {
       });
     }
 
-    const ref = normalizeOptionalString(req.body?.ref);
+    const rawRef = req.body?.ref;
+    const ref = normalizeOptionalString(rawRef);
     if (!ref) {
-      throw createError('ref is required', 400, 'validation_error', { invalidField: 'ref' });
+      throw createError('ref is required', 400, 'validation_error', {
+        invalidField: 'ref',
+        expectedType: 'string',
+        receivedType: getValueType(rawRef)
+      });
     }
 
     const refParts = parseSecretRef(ref);
-    const tenantId = normalizeOptionalString(req.body?.tenantId);
+    const rawTenantId = req.body?.tenantId;
+    const tenantId = normalizeOptionalString(rawTenantId);
     if (!tenantId) {
-      throw createError('tenantId is required', 400, 'validation_error', { invalidField: 'tenantId' });
+      throw createError('tenantId is required', 400, 'validation_error', {
+        invalidField: 'tenantId',
+        expectedType: 'string',
+        receivedType: getValueType(rawTenantId)
+      });
     }
 
     const provider = assertSegment(normalizeOptionalString(req.body?.provider), 'provider');

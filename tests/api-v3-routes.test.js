@@ -4004,6 +4004,25 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     const missingRefBody = await missingRefRes.json();
     assert.equal(missingRefBody.code, 'validation_error');
     assert.equal(missingRefBody.details.invalidField, 'ref');
+    assert.equal(missingRefBody.details.expectedType, 'string');
+    assert.equal(missingRefBody.details.receivedType, 'undefined');
+
+    const nonStringRefRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        ref: ['tenant.tenant-1.openai.api'],
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(nonStringRefRes.status, 400);
+    const nonStringRefBody = await nonStringRefRes.json();
+    assert.equal(nonStringRefBody.code, 'validation_error');
+    assert.equal(nonStringRefBody.details.invalidField, 'ref');
+    assert.equal(nonStringRefBody.details.expectedType, 'string');
+    assert.equal(nonStringRefBody.details.receivedType, 'array');
 
     const missingTenantIdRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
@@ -4018,6 +4037,25 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     const missingTenantIdBody = await missingTenantIdRes.json();
     assert.equal(missingTenantIdBody.code, 'validation_error');
     assert.equal(missingTenantIdBody.details.invalidField, 'tenantId');
+    assert.equal(missingTenantIdBody.details.expectedType, 'string');
+    assert.equal(missingTenantIdBody.details.receivedType, 'undefined');
+
+    const nonStringTenantIdRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: ['tenant-1'],
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(nonStringTenantIdRes.status, 400);
+    const nonStringTenantIdBody = await nonStringTenantIdRes.json();
+    assert.equal(nonStringTenantIdBody.code, 'validation_error');
+    assert.equal(nonStringTenantIdBody.details.invalidField, 'tenantId');
+    assert.equal(nonStringTenantIdBody.details.expectedType, 'string');
+    assert.equal(nonStringTenantIdBody.details.receivedType, 'array');
 
     const plaintextRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',

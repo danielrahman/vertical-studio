@@ -343,6 +343,80 @@ test('WS-G contract: secret refs endpoint rejects unknown top-level payload fiel
   }
 });
 
+test('WS-G contract: secret refs required fields return deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingRefRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-required',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(missingRefRes.status, 400);
+    const missingRefPayload = await missingRefRes.json();
+    assert.equal(missingRefPayload.code, 'validation_error');
+    assert.equal(missingRefPayload.details.invalidField, 'ref');
+    assert.equal(missingRefPayload.details.expectedType, 'string');
+    assert.equal(missingRefPayload.details.receivedType, 'undefined');
+
+    const nonStringRefRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-required',
+        ref: ['tenant.tenant-wsg-secret-required.openai.api'],
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(nonStringRefRes.status, 400);
+    const nonStringRefPayload = await nonStringRefRes.json();
+    assert.equal(nonStringRefPayload.code, 'validation_error');
+    assert.equal(nonStringRefPayload.details.invalidField, 'ref');
+    assert.equal(nonStringRefPayload.details.expectedType, 'string');
+    assert.equal(nonStringRefPayload.details.receivedType, 'array');
+
+    const missingTenantIdRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        ref: 'tenant.tenant-wsg-secret-required.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(missingTenantIdRes.status, 400);
+    const missingTenantIdPayload = await missingTenantIdRes.json();
+    assert.equal(missingTenantIdPayload.code, 'validation_error');
+    assert.equal(missingTenantIdPayload.details.invalidField, 'tenantId');
+    assert.equal(missingTenantIdPayload.details.expectedType, 'string');
+    assert.equal(missingTenantIdPayload.details.receivedType, 'undefined');
+
+    const nonStringTenantIdRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: ['tenant-wsg-secret-required'],
+        ref: 'tenant.tenant-wsg-secret-required.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(nonStringTenantIdRes.status, 400);
+    const nonStringTenantIdPayload = await nonStringTenantIdRes.json();
+    assert.equal(nonStringTenantIdPayload.code, 'validation_error');
+    assert.equal(nonStringTenantIdPayload.details.invalidField, 'tenantId');
+    assert.equal(nonStringTenantIdPayload.details.expectedType, 'string');
+    assert.equal(nonStringTenantIdPayload.details.receivedType, 'array');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-G contract: secret refs segment mismatch errors use invalidField metadata', async () => {
   const { server, baseUrl } = await startServer();
 
