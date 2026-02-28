@@ -1929,6 +1929,8 @@ test('copy select per-item validation failures report invalidField and selection
       'selection locale must be one of cs-CZ or en-US',
       'selections[0].locale',
       (details) =>
+        details.expectedType === 'string' &&
+        details.receivedType === 'string' &&
         Array.isArray(details.allowedLocales) &&
         details.allowedLocales.length === 2 &&
         details.allowedLocales[0] === 'cs-CZ' &&
