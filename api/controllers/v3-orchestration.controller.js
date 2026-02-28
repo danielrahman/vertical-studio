@@ -2645,6 +2645,9 @@ function postCmsPublishWebhook(req, res, next) {
         invalidField: 'payload',
         unknownFields: unknownTopLevelFields,
         unknownTopLevelFieldCount: unknownTopLevelFields.length,
+        unknownTopLevelFieldIndexes: unknownTopLevelFields.map((field) => {
+          return receivedTopLevelFields.indexOf(field);
+        }),
         receivedTopLevelFieldCount: receivedTopLevelFields.length,
         receivedTopLevelFields,
         allowedTopLevelFields: Array.from(CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS).sort()

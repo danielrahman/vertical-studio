@@ -1092,6 +1092,7 @@ test('cms webhook publish ingress rejects unknown top-level payload fields', asy
     assert.equal(body.details.invalidField, 'payload');
     assert.deepEqual(body.details.unknownFields, ['alphaPreview', 'zetaDryRun']);
     assert.equal(body.details.unknownTopLevelFieldCount, 2);
+    assert.deepEqual(body.details.unknownTopLevelFieldIndexes, [0, 3]);
     assert.equal(body.details.receivedTopLevelFieldCount, 4);
     assert.deepEqual(body.details.receivedTopLevelFields, ['alphaPreview', 'event', 'siteId', 'zetaDryRun']);
     assert.deepEqual(body.details.allowedTopLevelFields, ['event', 'siteId']);
