@@ -1918,8 +1918,9 @@ test('copy select per-item validation failures report invalidField details', asy
       'selections[0].selectedBy',
       (details) =>
         Array.isArray(details.allowedSelectedByRoles) &&
-        details.allowedSelectedByRoles.includes('internal_admin') &&
-        details.allowedSelectedByRoles.includes('owner')
+        details.allowedSelectedByRoles.length === 2 &&
+        details.allowedSelectedByRoles[0] === 'internal_admin' &&
+        details.allowedSelectedByRoles[1] === 'owner'
     );
   } finally {
     await stopServer(server);
