@@ -286,6 +286,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 265. Public-web runtime-client incomplete fallback-identifier retry guard coverage implemented (`VS3-IMP-259`): runtime-client unit coverage now verifies that storage-key `runtime_snapshot_not_found` errors are propagated unchanged and do not trigger compatibility fallback when resolve payload fallback identifiers are incomplete (`siteId` or `versionId` missing/blank).
 266. Public-web runtime-client non-string fallback-identifier retry guard coverage implemented (`VS3-IMP-260`): runtime-client unit coverage now verifies that storage-key `runtime_snapshot_not_found` errors are propagated unchanged and do not trigger compatibility fallback when resolve payload fallback identifiers are non-string (`siteId` or `versionId`).
 267. Public-web runtime-client trim-empty dual fallback-identifier retry guard coverage implemented (`VS3-IMP-261`): runtime-client unit coverage now verifies that storage-key `runtime_snapshot_not_found` errors are propagated unchanged and do not trigger compatibility fallback when both resolve payload fallback identifiers trim to empty strings.
+268. Public-web runtime-client retry-path compatibility error-metadata coverage implemented (`VS3-IMP-262`): runtime-client unit coverage now verifies that compatibility endpoint failures during storage-key `runtime_snapshot_not_found` retry preserve API error metadata (`code`, `statusCode`, `details`) unchanged.
 
 ## In Progress
 
@@ -294,7 +295,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after trim-empty dual fallback-identifier retry guard coverage (candidate: add runtime-client unit coverage that compatibility endpoint errors surfaced during storage-key `runtime_snapshot_not_found` retry preserve API error metadata).
+1. Select and start the next smallest non-hardening implementation slice after retry-path compatibility error-metadata coverage (candidate: add runtime-client unit coverage that retry-path compatibility `runtime_snapshot_not_found` errors preserve API metadata and stop without extra retries).
 
 ## Known Constraints
 

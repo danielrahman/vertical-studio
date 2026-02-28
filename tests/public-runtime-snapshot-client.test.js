@@ -452,6 +452,63 @@ test('renderSiteFromRuntime falls back to compatibility snapshot when storage-ke
   assert.equal(result.html.includes('Stale storage key fallback'), true);
 });
 
+test('renderSiteFromRuntime retry-path compatibility failures preserve API error metadata', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'runtime-retry-compat-failure.example.test',
+        siteId: 'site-retry-compat-failure',
+        versionId: 'version-retry-compat-failure',
+        storageKey: 'site-versions/site-retry-compat-failure/stale-pointer.json'
+      }),
+      jsonResponse(404, {
+        code: 'runtime_snapshot_not_found',
+        message: 'Runtime snapshot not found',
+        details: {
+          storageKey: 'site-versions/site-retry-compat-failure/stale-pointer.json'
+        }
+      }),
+      jsonResponse(404, {
+        code: 'runtime_version_not_found',
+        message: 'Runtime version not found',
+        details: {
+          siteId: 'site-retry-compat-failure',
+          versionId: 'version-retry-compat-failure'
+        }
+      })
+    ],
+    calls
+  );
+
+  await assert.rejects(
+    renderSiteFromRuntime({
+      apiBaseUrl: 'http://localhost:3000',
+      host: 'runtime-retry-compat-failure.example.test',
+      fetchImpl
+    }),
+    (error) => {
+      assert.equal(error.code, 'runtime_version_not_found');
+      assert.equal(error.statusCode, 404);
+      assert.deepEqual(error.details, {
+        siteId: 'site-retry-compat-failure',
+        versionId: 'version-retry-compat-failure'
+      });
+      return true;
+    }
+  );
+
+  assert.equal(calls.length, 3);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-retry-compat-failure%2Fstale-pointer.json'
+  );
+  assert.equal(
+    calls[2],
+    'http://localhost:3000/api/v1/public/runtime/snapshot?siteId=site-retry-compat-failure&versionId=version-retry-compat-failure'
+  );
+});
+
 test('renderSiteFromRuntime uses compatibility response selected by lexicographic storageKey tie-break when no valid generatedAt candidates exist', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(
