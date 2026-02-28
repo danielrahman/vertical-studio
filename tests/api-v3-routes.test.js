@@ -169,14 +169,15 @@ test('vertical research build rejects unknown top-level payload fields', async (
       body: JSON.stringify({
         targetCompetitorCount: 15,
         sources: ['public_web', 'legal_pages', 'selected_listings'],
-        crawlDepth: 2
+        zetaDepth: 2,
+        alphaDepth: 1
       })
     });
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'vertical research build payload contains unknown top-level fields');
-    assert.deepEqual(payload.details.unknownFields, ['crawlDepth']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaDepth', 'zetaDepth']);
   } finally {
     await stopServer(server);
   }

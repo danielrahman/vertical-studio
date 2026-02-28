@@ -1214,9 +1214,11 @@ function postBootstrapFromExtraction(req, res, next) {
 function postVerticalResearchBuild(req, res, next) {
   try {
     assertInternalAdmin(req);
-    const unknownTopLevelFields = Object.keys(req.body || {}).filter((field) => {
-      return !VERTICAL_RESEARCH_BUILD_ALLOWED_TOP_LEVEL_FIELDS.has(field);
-    });
+    const unknownTopLevelFields = Object.keys(req.body || {})
+      .filter((field) => {
+        return !VERTICAL_RESEARCH_BUILD_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+      })
+      .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('vertical research build payload contains unknown top-level fields', 400, 'validation_error', {
         unknownFields: unknownTopLevelFields

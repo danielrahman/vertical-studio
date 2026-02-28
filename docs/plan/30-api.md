@@ -208,7 +208,7 @@ Validation:
 2. `sources` must be an array and non-empty, contain only `public_web`, `legal_pages`, and `selected_listings`, and must not include duplicates.
 3. If `sourceDomains` is provided, it must be an array; every entry must be a valid domain hostname and duplicate values are rejected after trim/lowercase normalization.
 4. Pattern extraction scope is limited to `IA + CTA + trust + tone`.
-5. Unknown top-level payload fields are rejected with `400 validation_error`.
+5. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
 
 #### `GET /api/v1/verticals/:verticalKey/research/latest`
 Return latest research run summary and references.
