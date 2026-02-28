@@ -1409,7 +1409,7 @@ test('copy generate rejects unsupported highImpactOnlyThreeVariants mode when pr
   }
 });
 
-test('copy generate enforces locale allow-list and normalizes duplicate locales', async () => {
+test('copy generate enforces locale allow-list and rejects duplicate locales', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -1468,14 +1468,12 @@ test('copy generate enforces locale allow-list and normalizes duplicate locales'
         verticalStandardVersion: '2026.02'
       })
     });
-    assert.equal(duplicateLocaleRes.status, 200);
+    assert.equal(duplicateLocaleRes.status, 400);
     const duplicateLocaleBody = await duplicateLocaleRes.json();
-    assert.deepEqual(duplicateLocaleBody.candidateCounts, {
-      A: 12,
-      B: 12,
-      C: 12,
-      SINGLE: 6
-    });
+    assert.equal(duplicateLocaleBody.code, 'validation_error');
+    assert.equal(duplicateLocaleBody.message, 'locales must not contain duplicate values');
+    assert.equal(duplicateLocaleBody.details.invalidField, 'locales');
+    assert.deepEqual(duplicateLocaleBody.details.duplicateLocales, ['cs-CZ']);
   } finally {
     await stopServer(server);
   }

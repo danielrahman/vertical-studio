@@ -114,6 +114,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 93. Bootstrap `extractedFields[].extractedAt` ISO-8601 enforcement implemented (`VS3-IMP-086`): bootstrap-from-extraction now rejects non-ISO-8601 provided `extractedAt` datetime strings in extracted-field items with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
 94. Copy-generate `locales` array-type enforcement implemented (`VS3-IMP-087`): `POST /sites/:siteId/copy/generate` now rejects non-array provided `locales` payload values with deterministic `validation_error` details (`invalidField`) instead of coercing to empty arrays.
 95. Copy-generate `locales` item-type enforcement implemented (`VS3-IMP-088`): `POST /sites/:siteId/copy/generate` now rejects non-string `locales` array entries with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
+96. Copy-generate `locales` duplicate-value enforcement implemented (`VS3-IMP-089`): `POST /sites/:siteId/copy/generate` now rejects duplicate `locales` values with deterministic `validation_error` details (`invalidField`, `duplicateLocales`) instead of silently de-duplicating.
 
 ## In Progress
 
@@ -121,7 +122,8 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Backlog currently has no remaining `todo` items; define and prioritize the next post-harness implementation slice for runtime and rollout hardening.
+1. Complete `VS3-IMP-090` by adding deterministic `missingLocales` validation details when required locales are not included in copy-generate requests.
+2. Complete `VS3-IMP-091` by standardizing deterministic `invalidField` details for `highImpactOnlyThreeVariants` validation errors.
 
 ## Known Constraints
 

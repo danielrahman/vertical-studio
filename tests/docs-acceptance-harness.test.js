@@ -1766,7 +1766,7 @@ test('WS-D contract: copy generation rejects unsupported high-impact variant mod
   }
 });
 
-test('WS-D contract: copy generation accepts only supported locales and de-duplicates inputs', async () => {
+test('WS-D contract: copy generation accepts only supported locales and rejects duplicates', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -1824,14 +1824,12 @@ test('WS-D contract: copy generation accepts only supported locales and de-dupli
         verticalStandardVersion: '2026.02'
       })
     });
-    assert.equal(duplicateLocaleRes.status, 200);
-    const duplicateLocaleSummary = await duplicateLocaleRes.json();
-    assert.deepEqual(duplicateLocaleSummary.candidateCounts, {
-      A: 12,
-      B: 12,
-      C: 12,
-      SINGLE: 6
-    });
+    assert.equal(duplicateLocaleRes.status, 400);
+    const duplicateLocalePayload = await duplicateLocaleRes.json();
+    assert.equal(duplicateLocalePayload.code, 'validation_error');
+    assert.equal(duplicateLocalePayload.message, 'locales must not contain duplicate values');
+    assert.equal(duplicateLocalePayload.details.invalidField, 'locales');
+    assert.deepEqual(duplicateLocalePayload.details.duplicateLocales, ['cs-CZ']);
   } finally {
     await stopServer(server);
   }

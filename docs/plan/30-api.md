@@ -340,9 +340,10 @@ Rules:
 4. If `highImpactOnlyThreeVariants` is present, it must be `true` (other values return `400 validation_error`).
 5. If `locales` is provided, it must be an array.
 6. If `locales` is provided, every item must be a string.
-7. `locales` may contain only `cs-CZ` and `en-US`; unsupported locales return `400 validation_error`.
-8. `verticalStandardVersion` is required for versioned prompt/audit reproducibility.
-9. Unknown top-level payload fields are rejected with `400 validation_error`.
+7. Duplicate `locales` values are rejected with `400 validation_error`.
+8. `locales` may contain only `cs-CZ` and `en-US`; unsupported locales return `400 validation_error`.
+9. `verticalStandardVersion` is required for versioned prompt/audit reproducibility.
+10. Unknown top-level payload fields are rejected with `400 validation_error`.
 
 #### `GET /api/v1/sites/:siteId/copy/slots?draftId=:id`
 Read bounded slot definitions and generation status.

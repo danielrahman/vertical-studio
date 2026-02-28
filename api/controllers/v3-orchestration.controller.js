@@ -1565,7 +1565,14 @@ function postCopyGenerate(req, res, next) {
         invalidItemIndexes: invalidLocaleItemIndexes
       });
     }
-    const locales = Array.from(new Set(requestedLocales));
+    const duplicateLocales = Array.from(new Set(requestedLocales.filter((locale, index) => requestedLocales.indexOf(locale) !== index)));
+    if (duplicateLocales.length > 0) {
+      throw createError('locales must not contain duplicate values', 400, 'validation_error', {
+        invalidField: 'locales',
+        duplicateLocales
+      });
+    }
+    const locales = requestedLocales;
     const unsupportedLocales = locales.filter((locale) => !COPY_LOCALES.has(locale));
     if (unsupportedLocales.length > 0) {
       throw createError('locales must contain only supported locales', 400, 'validation_error', {
