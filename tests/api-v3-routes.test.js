@@ -480,14 +480,15 @@ test('tenant create rejects unknown top-level payload fields', async () => {
       body: JSON.stringify({
         tenantId: 'tenant-unknown-fields',
         name: 'Tenant Unknown Fields',
-        provisioningMode: 'manual'
+        zetaMode: 'manual',
+        alphaMode: 'strict'
       })
     });
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'tenant payload contains unknown top-level fields');
-    assert.deepEqual(payload.details.unknownFields, ['provisioningMode']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaMode', 'zetaMode']);
   } finally {
     await stopServer(server);
   }

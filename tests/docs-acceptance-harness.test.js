@@ -343,13 +343,14 @@ test('WS-B contract: tenant create rejects unknown top-level payload fields', as
       body: JSON.stringify({
         tenantId: 'tenant-wsb-unknown-fields',
         name: 'Tenant WSB Unknown',
-        provisioningMode: 'manual'
+        zetaMode: 'manual',
+        alphaMode: 'strict'
       })
     });
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
-    assert.deepEqual(payload.details.unknownFields, ['provisioningMode']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaMode', 'zetaMode']);
   } finally {
     await stopServer(server);
   }
