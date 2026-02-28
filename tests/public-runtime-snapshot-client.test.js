@@ -180,6 +180,50 @@ test('renderSiteFromRuntime storageKey path surfaces API error metadata', async 
   );
 });
 
+test('renderSiteFromRuntime does not trigger compatibility fallback for non-not-found storageKey errors', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'runtime-storage-error.example.test',
+        siteId: 'site-storage-error',
+        versionId: 'version-storage-error',
+        storageKey: 'site-versions/site-storage-error/version-storage-error.json'
+      }),
+      jsonResponse(503, {
+        code: 'runtime_storage_unavailable',
+        message: 'Runtime storage unavailable',
+        details: {
+          storageKey: 'site-versions/site-storage-error/version-storage-error.json'
+        }
+      })
+    ],
+    calls
+  );
+
+  await assert.rejects(
+    renderSiteFromRuntime({
+      apiBaseUrl: 'http://localhost:3000',
+      host: 'runtime-storage-error.example.test',
+      fetchImpl
+    }),
+    (error) => {
+      assert.equal(error.code, 'runtime_storage_unavailable');
+      assert.equal(error.statusCode, 503);
+      assert.deepEqual(error.details, {
+        storageKey: 'site-versions/site-storage-error/version-storage-error.json'
+      });
+      return true;
+    }
+  );
+
+  assert.equal(calls.length, 2);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-storage-error%2Fversion-storage-error.json'
+  );
+});
+
 test('renderSiteFromRuntime falls back to compatibility snapshot when storage-key fetch returns runtime_snapshot_not_found', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(
