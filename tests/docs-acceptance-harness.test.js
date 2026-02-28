@@ -807,6 +807,7 @@ test('WS-B contract: vertical research build rejects unknown top-level payload f
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaDepth', 'zetaDepth']);
   } finally {
     await stopServer(server);

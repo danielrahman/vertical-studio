@@ -177,6 +177,7 @@ test('vertical research build rejects unknown top-level payload fields', async (
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'vertical research build payload contains unknown top-level fields');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaDepth', 'zetaDepth']);
   } finally {
     await stopServer(server);
