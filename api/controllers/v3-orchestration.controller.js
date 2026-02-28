@@ -2683,6 +2683,7 @@ function postSecretRef(req, res, next) {
       throw createError('secret ref payload contains unknown top-level fields', 400, 'validation_error', {
         invalidField: 'payload',
         unknownFields: unknownTopLevelFields,
+        receivedTopLevelFieldCount: Object.keys(req.body || {}).length,
         allowedTopLevelFields: Array.from(SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS).sort()
       });
     }
