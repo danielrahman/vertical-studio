@@ -1542,6 +1542,31 @@ test('copy generate rejects unknown top-level payload fields', async () => {
   }
 });
 
+test('copy select returns deterministic tuple details when candidate is missing', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-copy-select-missing-candidate/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-select-missing-candidate',
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-missing-1' }]
+      })
+    });
+    assert.equal(response.status, 404);
+    const payload = await response.json();
+    assert.equal(payload.code, 'copy_candidate_not_found');
+    assert.equal(payload.message, 'copy candidate not found');
+    assert.equal(payload.details.invalidField, 'selections');
+    assert.equal(payload.details.candidateId, 'candidate-missing-1');
+    assert.equal(payload.details.slotId, 'hero.h1');
+    assert.equal(payload.details.locale, 'cs-CZ');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select rejects slotId/locale mismatch for an existing candidate', async () => {
   const { server, baseUrl } = await startServer();
 

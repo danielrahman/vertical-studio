@@ -123,6 +123,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 102. Copy-select per-item field-key standardization implemented (`VS3-IMP-095`): `POST /sites/:siteId/copy/select` now reports deterministic `validation_error` details using `invalidField` (instead of `field`) for per-item shape validation failures, including index-aware paths like `selections[0].locale`.
 103. Copy-select selections-array required details implemented (`VS3-IMP-096`): `POST /sites/:siteId/copy/select` now reports deterministic `validation_error` details (`invalidField`) when `selections` is missing or not an array.
 104. Copy-select draftId required details implemented (`VS3-IMP-097`): `POST /sites/:siteId/copy/select` now reports deterministic `validation_error` details (`invalidField`) when `draftId` is missing or not a string.
+105. Copy-select missing-candidate triage details implemented (`VS3-IMP-098`): `POST /sites/:siteId/copy/select` `copy_candidate_not_found` errors now include deterministic tuple details (`candidateId`, `slotId`, `locale`) to speed operator debugging.
 
 ## In Progress
 
@@ -130,8 +131,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Complete `VS3-IMP-098` by exposing deterministic candidate tuple details on copy-select `copy_candidate_not_found` errors.
-2. Define and prioritize the next copy-select operator-triage hardening slice once `VS3-IMP-098` is complete.
+1. Backlog currently has no remaining `todo` items; define and prioritize the next post-copy-select hardening slice.
 
 ## Known Constraints
 

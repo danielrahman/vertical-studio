@@ -1897,6 +1897,31 @@ test('WS-D contract: copy generation rejects unknown top-level payload fields', 
   }
 });
 
+test('WS-D contract: copy selection missing-candidate errors expose deterministic tuple details', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-missing-candidate/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-select-missing-candidate-1',
+        selections: [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-missing-1' }]
+      })
+    });
+    assert.equal(response.status, 404);
+    const payload = await response.json();
+    assert.equal(payload.code, 'copy_candidate_not_found');
+    assert.equal(payload.message, 'copy candidate not found');
+    assert.equal(payload.details.invalidField, 'selections');
+    assert.equal(payload.details.candidateId, 'candidate-missing-1');
+    assert.equal(payload.details.slotId, 'hero.h1');
+    assert.equal(payload.details.locale, 'cs-CZ');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy selection enforces unique slot-locale tuples per request', async () => {
   const { app, server, baseUrl } = await startServer();
 

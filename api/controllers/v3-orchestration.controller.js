@@ -1703,7 +1703,12 @@ function postCopySelect(req, res, next) {
     });
 
     if (missingCandidate) {
-      throw createError('copy candidate not found', 404, 'copy_candidate_not_found');
+      throw createError('copy candidate not found', 404, 'copy_candidate_not_found', {
+        invalidField: 'selections',
+        candidateId: missingCandidate.candidateId,
+        slotId: missingCandidate.slotId,
+        locale: missingCandidate.locale
+      });
     }
 
     const mismatchedSelection = req.body.selections.find((selection) => {
