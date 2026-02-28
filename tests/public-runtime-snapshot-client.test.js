@@ -373,6 +373,40 @@ test('renderSiteFromRuntime treats non-string fallback siteId/versionId as missi
   assert.equal(calls.length, 1);
 });
 
+test('renderSiteFromRuntime treats whitespace storageKey as missing before fallback identifier validation', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'blank-storage-key.example.test',
+        storageKey: '   ',
+        siteId: 'site-blank-storage',
+        versionId: 0
+      })
+    ],
+    calls
+  );
+
+  await assert.rejects(
+    renderSiteFromRuntime({
+      apiBaseUrl: 'http://localhost:3000',
+      host: 'blank-storage-key.example.test',
+      fetchImpl
+    }),
+    (error) => {
+      assert.equal(error.code, 'runtime_resolve_incomplete');
+      assert.equal(error.message, 'Runtime resolve payload must include storageKey or siteId+versionId');
+      assert.deepEqual(error.details, {
+        hasStorageKey: false,
+        hasSiteId: true,
+        hasVersionId: false
+      });
+      return true;
+    }
+  );
+  assert.equal(calls.length, 1);
+});
+
 test('fetchRuntimeSnapshot surfaces API error metadata', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(
