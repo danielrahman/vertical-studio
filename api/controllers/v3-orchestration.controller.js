@@ -326,7 +326,9 @@ function assertCopySelectionShape(selection, index) {
   if (!selection || typeof selection !== 'object' || Array.isArray(selection)) {
     throw createError('selection item must be an object', 400, 'validation_error', {
       invalidField: `selections[${index}]`,
-      selectionIndex: index
+      selectionIndex: index,
+      expectedType: 'object',
+      receivedType: getValueType(selection)
     });
   }
 
