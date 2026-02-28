@@ -1272,7 +1272,7 @@ function postVerticalResearchBuild(req, res, next) {
     });
     const invalidSourceDomains = normalizedSourceDomains.filter((domain) => {
       return typeof domain !== 'string' || !domain || !isValidSourceDomain(domain);
-    });
+    }).sort((left, right) => String(left).localeCompare(String(right)));
     if (invalidSourceDomains.length > 0) {
       throw createError('sourceDomains must contain valid domain hostnames when provided', 400, 'validation_error', {
         invalidSourceDomains

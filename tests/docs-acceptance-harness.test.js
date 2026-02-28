@@ -959,7 +959,7 @@ test('WS-B contract: vertical research build validates and normalizes sourceDoma
     const malformedPayload = await malformedResponse.json();
     assert.equal(malformedPayload.code, 'validation_error');
     assert.equal(malformedPayload.message, 'sourceDomains must contain valid domain hostnames when provided');
-    assert.deepEqual(malformedPayload.details.invalidSourceDomains, ['https://example-1.com', 'example']);
+    assert.deepEqual(malformedPayload.details.invalidSourceDomains, ['example', 'https://example-1.com']);
 
     const duplicateResponse = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',

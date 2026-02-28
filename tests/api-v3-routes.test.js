@@ -312,7 +312,7 @@ test('vertical research build validates sourceDomains entries and persists norma
     const malformedDomainsPayload = await malformedDomainsRes.json();
     assert.equal(malformedDomainsPayload.code, 'validation_error');
     assert.equal(malformedDomainsPayload.message, 'sourceDomains must contain valid domain hostnames when provided');
-    assert.deepEqual(malformedDomainsPayload.details.invalidSourceDomains, ['https://example-1.com', 'example']);
+    assert.deepEqual(malformedDomainsPayload.details.invalidSourceDomains, ['example', 'https://example-1.com']);
 
     const duplicateDomainsRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
