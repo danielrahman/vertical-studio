@@ -169,10 +169,11 @@ Contract:
 7. If `fieldPath` is provided in an `extractedFields` item, it must be a non-empty string.
 8. If `sourceUrl` is provided in an `extractedFields` item, it must be a non-empty string or `null`.
 9. If `method` is provided in an `extractedFields` item, it must be one of `dom`, `ocr`, `inference`, or `manual`.
-10. If `lowConfidence` is provided, it must be a boolean.
-11. If `sitePolicy` is provided, it must be an object.
-12. `sitePolicy` may contain only `allowOwnerDraftCopyEdits`.
-13. Unknown top-level payload fields are rejected with `400 validation_error`.
+10. If `required` is provided in an `extractedFields` item, it must be a boolean.
+11. If `lowConfidence` is provided, it must be a boolean.
+12. If `sitePolicy` is provided, it must be an object.
+13. `sitePolicy` may contain only `allowOwnerDraftCopyEdits`.
+14. Unknown top-level payload fields are rejected with `400 validation_error`.
 
 ### 4.2 Vertical Intelligence Lifecycle
 

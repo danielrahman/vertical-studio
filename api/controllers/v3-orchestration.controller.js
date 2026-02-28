@@ -1013,6 +1013,21 @@ function postBootstrapFromExtraction(req, res, next) {
         }
       );
     }
+    const invalidExtractedFieldRequiredItemIndexes = rawExtractedFields.reduce((indexes, field, index) => {
+      if (!Object.prototype.hasOwnProperty.call(field, 'required')) {
+        return indexes;
+      }
+      if (typeof field.required !== 'boolean') {
+        indexes.push(index);
+      }
+      return indexes;
+    }, []);
+    if (invalidExtractedFieldRequiredItemIndexes.length > 0) {
+      throw createError('extractedFields.required must be a boolean when provided', 400, 'validation_error', {
+        invalidField: 'extractedFields.required',
+        invalidItemIndexes: invalidExtractedFieldRequiredItemIndexes
+      });
+    }
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
     const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;
     const lowConfidenceProvided = Object.prototype.hasOwnProperty.call(req.body || {}, 'lowConfidence');

@@ -617,6 +617,38 @@ test('WS-B contract: bootstrap-from-extraction enforces method allow-list when p
   }
 });
 
+test('WS-B contract: bootstrap-from-extraction enforces required boolean type when provided', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap-shape/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-shape-10',
+        extractedFields: [
+          {
+            fieldPath: 'brand.tagline',
+            value: 'Premium development team',
+            sourceUrl: 'https://example.test/about',
+            method: 'dom',
+            confidence: 0.91,
+            required: 'true'
+          }
+        ]
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'extractedFields.required must be a boolean when provided');
+    assert.equal(payload.details.invalidField, 'extractedFields.required');
+    assert.deepEqual(payload.details.invalidItemIndexes, [0]);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: vertical research build rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 

@@ -701,6 +701,36 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.deepEqual(invalidExtractedFieldMethodPayload.details.invalidItemIndexes, [0]);
     assert.deepEqual(invalidExtractedFieldMethodPayload.details.allowedMethods, ['dom', 'inference', 'manual', 'ocr']);
 
+    const invalidExtractedFieldRequiredResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          extractedFields: [
+            {
+              fieldPath: 'brand.tagline',
+              value: 'Premium development team',
+              sourceUrl: 'https://example.test/about',
+              method: 'dom',
+              confidence: 0.91,
+              required: 'true'
+            }
+          ]
+        })
+      }
+    );
+    assert.equal(invalidExtractedFieldRequiredResponse.status, 400);
+    const invalidExtractedFieldRequiredPayload = await invalidExtractedFieldRequiredResponse.json();
+    assert.equal(invalidExtractedFieldRequiredPayload.code, 'validation_error');
+    assert.equal(
+      invalidExtractedFieldRequiredPayload.message,
+      'extractedFields.required must be a boolean when provided'
+    );
+    assert.equal(invalidExtractedFieldRequiredPayload.details.invalidField, 'extractedFields.required');
+    assert.deepEqual(invalidExtractedFieldRequiredPayload.details.invalidItemIndexes, [0]);
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
