@@ -272,6 +272,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 251. Runtime-client storage-key error-propagation coverage implemented (`VS3-IMP-245`): public-web runtime client tests now assert storage-key runtime path surfaces immutable snapshot API error metadata (`code`, `statusCode`, `details`) unchanged through `renderSiteFromRuntime`.
 252. Runtime-client non-string resolve-identifier edge coverage implemented (`VS3-IMP-246`): public-web runtime client tests now assert non-string fallback `siteId`/`versionId` values in resolve payload are treated as missing identifiers and deterministically trigger `runtime_resolve_incomplete`.
 253. Runtime-client trimmed-empty-`storageKey` edge coverage implemented (`VS3-IMP-247`): public-web runtime client tests now assert whitespace `storageKey` is treated as missing and combined invalid fallback identifiers deterministically trigger `runtime_resolve_incomplete`.
+254. Runtime-resolve fallback payload-shape API coverage and compatibility snapshot fallback implemented (`VS3-IMP-248`): API + WS-E acceptance suites now assert resolve responses preserve non-empty compatibility identifiers (`siteId`,`versionId`) when `storageKey` is unavailable, and compatibility snapshot reads now fall back to `siteId+versionId` lookup when stored version `storageKey` metadata is missing or stale.
 
 ## In Progress
 
@@ -280,7 +281,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after runtime-client trimmed-empty-`storageKey` coverage (candidate: add API-level WS-E assertions for runtime-resolve payload shape guarantees expected by the public-web runtime client).
+1. Select and start the next smallest non-hardening implementation slice after runtime-resolve fallback payload-shape coverage (candidate: add explicit WS-E API + acceptance assertions that compatibility snapshot lookup succeeds when version metadata contains stale-but-non-empty `storageKey`).
 
 ## Known Constraints
 

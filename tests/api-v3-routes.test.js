@@ -51,6 +51,7 @@ async function startServer() {
 
   const address = server.address();
   return {
+    app,
     server,
     baseUrl: `http://127.0.0.1:${address.port}`
   };
@@ -3264,6 +3265,57 @@ test('public runtime resolves active site version by host and serves immutable s
     assert.equal(latestSnapshotRes.status, 200);
     const latestSnapshotBody = await latestSnapshotRes.json();
     assert.equal(latestSnapshotBody.snapshot.proposalId, 'proposal-runtime-b');
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('public runtime resolve preserves fallback identifiers when storageKey is unavailable', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-runtime-fallback-shape';
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-runtime-fallback-shape',
+        proposalId: 'proposal-runtime-fallback-shape',
+        host: 'fallback-shape.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const state = app.locals.v3State;
+    const versions = state.siteVersions.get(siteId) || [];
+    const activeVersion = versions.find((item) => item.active);
+    assert.ok(activeVersion);
+
+    // Simulate a legacy active version where resolve cannot provide a usable storage key.
+    activeVersion.storageKey = '   ';
+
+    const resolveRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/resolve?host=${encodeURIComponent('  HTTPS://Fallback-Shape.Example.Test:443/path  ')}`
+    );
+    assert.equal(resolveRes.status, 200);
+    const resolveBody = await resolveRes.json();
+    assert.equal(resolveBody.host, 'fallback-shape.example.test');
+    assert.equal(resolveBody.siteId, siteId);
+    assert.equal(resolveBody.versionId, publishBody.versionId);
+    assert.equal(typeof resolveBody.siteId, 'string');
+    assert.equal(typeof resolveBody.versionId, 'string');
+    assert.equal(resolveBody.siteId.trim().length > 0, true);
+    assert.equal(resolveBody.versionId.trim().length > 0, true);
+    assert.equal(resolveBody.storageKey, '   ');
+
+    const fallbackSnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=${encodeURIComponent(resolveBody.siteId)}&versionId=${encodeURIComponent(resolveBody.versionId)}`
+    );
+    assert.equal(fallbackSnapshotRes.status, 200);
+    const fallbackSnapshotBody = await fallbackSnapshotRes.json();
+    assert.equal(fallbackSnapshotBody.siteId, siteId);
+    assert.equal(fallbackSnapshotBody.versionId, publishBody.versionId);
   } finally {
     await stopServer(server);
   }

@@ -1035,6 +1035,23 @@ function loadRuntimeSnapshotByStorageKey(req, storageKey) {
   };
 }
 
+function loadRuntimeSnapshotBySiteVersion(req, siteId, versionId) {
+  const state = getState(req);
+  for (const [storageKey, snapshot] of state.runtimeSnapshotsByStorageKey.entries()) {
+    if (snapshot?.siteId === siteId && snapshot?.versionId === versionId) {
+      return {
+        siteId: snapshot.siteId,
+        versionId: snapshot.versionId,
+        storageKey,
+        immutable: true,
+        snapshot
+      };
+    }
+  }
+
+  throw createError('Runtime snapshot not found', 404, 'runtime_snapshot_not_found');
+}
+
 function postCreateTenant(req, res, next) {
   try {
     assertInternalAdmin(req);
@@ -2721,7 +2738,22 @@ function getPublicRuntimeSnapshot(req, res, next) {
       throw createError('Runtime version not found', 404, 'runtime_version_not_found');
     }
 
-    const response = loadRuntimeSnapshotByStorageKey(req, version.storageKey);
+    const storageKey = normalizeOptionalString(version.storageKey);
+    let response = null;
+    if (storageKey) {
+      try {
+        response = loadRuntimeSnapshotByStorageKey(req, storageKey);
+      } catch (error) {
+        if (error?.code !== 'runtime_snapshot_not_found') {
+          throw error;
+        }
+      }
+    }
+
+    if (!response) {
+      response = loadRuntimeSnapshotBySiteVersion(req, req.query.siteId, req.query.versionId);
+    }
+
     res.status(200).json(response);
   } catch (error) {
     next(error);

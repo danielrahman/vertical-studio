@@ -552,11 +552,12 @@ Required additional codes:
 ## 6. Public Runtime Resolution Contract
 1. Public renderer resolves host/subdomain to active `site_version`.
 2. Renderer fetches immutable snapshot by `storageKey` when present and may use compatibility `siteId+versionId` snapshot fetch when resolve payload omits `storageKey`.
-3. Renderer must never read mutable draft data.
-4. `GET /api/v1/public/runtime/resolve` requires a non-empty `host` (query or host header fallback); missing or non-string values return `400 validation_error` with deterministic metadata (`invalidField`, `expectedType`, `receivedType`).
-5. `GET /api/v1/public/runtime/snapshot/by-storage-key` requires a non-empty `storageKey` query; missing or non-string values return `400 validation_error` with deterministic metadata (`invalidField`, `expectedType`, `receivedType`).
-6. Compatibility path `GET /api/v1/public/runtime/snapshot` requires non-empty `siteId` and `versionId` queries; missing or non-string values return `400 validation_error` with deterministic metadata (`invalidField`, `expectedType`, `receivedType`).
-7. Publish-time immutable snapshot generation must prefer selected copy-candidate text for mapped runtime slots (`hero.h1` -> `hero.slots.h1`, `hero.subhead` -> `hero.slots.subhead`, `hero.primary_cta_label` -> `hero.slots.primaryCtaLabel`, `value_props.intro` -> `value_props.slots.intro`, `about.intro` -> `about.slots.intro`, `process.step_1_title` -> `process.slots.step1Title`, `faq.q1` -> `faq.slots.question1`, `faq.a1` -> `faq.slots.answer1`, `contact.primary_cta_label` -> `contact.slots.primaryCtaLabel`) when draft selections exist; otherwise fallback placeholder copy remains unchanged.
+3. Resolve responses must always include non-empty `siteId` and `versionId` identifiers for compatibility fallback usage, even when `storageKey` is unavailable.
+4. Renderer must never read mutable draft data.
+5. `GET /api/v1/public/runtime/resolve` requires a non-empty `host` (query or host header fallback); missing or non-string values return `400 validation_error` with deterministic metadata (`invalidField`, `expectedType`, `receivedType`).
+6. `GET /api/v1/public/runtime/snapshot/by-storage-key` requires a non-empty `storageKey` query; missing or non-string values return `400 validation_error` with deterministic metadata (`invalidField`, `expectedType`, `receivedType`).
+7. Compatibility path `GET /api/v1/public/runtime/snapshot` requires non-empty `siteId` and `versionId` queries; missing or non-string values return `400 validation_error` with deterministic metadata (`invalidField`, `expectedType`, `receivedType`).
+8. Publish-time immutable snapshot generation must prefer selected copy-candidate text for mapped runtime slots (`hero.h1` -> `hero.slots.h1`, `hero.subhead` -> `hero.slots.subhead`, `hero.primary_cta_label` -> `hero.slots.primaryCtaLabel`, `value_props.intro` -> `value_props.slots.intro`, `about.intro` -> `about.slots.intro`, `process.step_1_title` -> `process.slots.step1Title`, `faq.q1` -> `faq.slots.question1`, `faq.a1` -> `faq.slots.answer1`, `contact.primary_cta_label` -> `contact.slots.primaryCtaLabel`) when draft selections exist; otherwise fallback placeholder copy remains unchanged.
 
 ## 7. LLM Prompt Contract Surfaces (Documented API Inputs)
 1. Compose and copy jobs must pass structured prompt payloads, not free text blobs.
