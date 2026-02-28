@@ -2279,7 +2279,8 @@ test('WS-D contract: copy selection per-item validation failures report invalidF
     await assertInvalidSelectionField(
       [{ slotId: '', locale: 'cs-CZ', candidateId: 'candidate-1' }],
       'selection slotId is required',
-      'selections[0].slotId'
+      'selections[0].slotId',
+      (details) => details.expectedType === 'string' && details.receivedType === 'string'
     );
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'de-DE', candidateId: 'candidate-1' }],

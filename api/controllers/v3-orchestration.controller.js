@@ -349,7 +349,9 @@ function assertCopySelectionShape(selection, index) {
   if (typeof selection.slotId !== 'string' || !selection.slotId.trim()) {
     throw createError('selection slotId is required', 400, 'validation_error', {
       invalidField: `selections[${index}].slotId`,
-      selectionIndex: index
+      selectionIndex: index,
+      expectedType: 'string',
+      receivedType: getValueType(selection.slotId)
     });
   }
 

@@ -152,6 +152,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 131. Copy-select selectedBy actor-mismatch role-metadata hardening implemented (`VS3-IMP-124`): `POST /sites/:siteId/copy/select` selectedBy actor-mismatch validation errors now include deterministic `expectedSelectedBy` and `receivedSelectedBy` details alongside index metadata.
 132. Copy-select top-level metadata contract label alignment implemented (`VS3-IMP-125`): API and WS-D acceptance labels now explicitly require deterministic top-level type/cardinality/role metadata keys in copy-select validation paths.
 133. Copy-select per-item object-shape type metadata hardening implemented (`VS3-IMP-126`): `POST /sites/:siteId/copy/select` non-object selection-item validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField` and `selectionIndex`, with API/WS-D contract coverage and plan text alignment.
+134. Copy-select per-item `slotId` type metadata hardening implemented (`VS3-IMP-127`): `POST /sites/:siteId/copy/select` per-item `slotId` validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField` and `selectionIndex`, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 
