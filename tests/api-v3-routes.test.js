@@ -731,6 +731,36 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(invalidExtractedFieldRequiredPayload.details.invalidField, 'extractedFields.required');
     assert.deepEqual(invalidExtractedFieldRequiredPayload.details.invalidItemIndexes, [0]);
 
+    const invalidExtractedFieldConfidenceResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          extractedFields: [
+            {
+              fieldPath: 'brand.tagline',
+              value: 'Premium development team',
+              sourceUrl: 'https://example.test/about',
+              method: 'dom',
+              confidence: '0.91',
+              required: true
+            }
+          ]
+        })
+      }
+    );
+    assert.equal(invalidExtractedFieldConfidenceResponse.status, 400);
+    const invalidExtractedFieldConfidencePayload = await invalidExtractedFieldConfidenceResponse.json();
+    assert.equal(invalidExtractedFieldConfidencePayload.code, 'validation_error');
+    assert.equal(
+      invalidExtractedFieldConfidencePayload.message,
+      'extractedFields.confidence must be a number when provided'
+    );
+    assert.equal(invalidExtractedFieldConfidencePayload.details.invalidField, 'extractedFields.confidence');
+    assert.deepEqual(invalidExtractedFieldConfidencePayload.details.invalidItemIndexes, [0]);
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

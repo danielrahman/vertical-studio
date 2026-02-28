@@ -1028,6 +1028,21 @@ function postBootstrapFromExtraction(req, res, next) {
         invalidItemIndexes: invalidExtractedFieldRequiredItemIndexes
       });
     }
+    const invalidExtractedFieldConfidenceItemIndexes = rawExtractedFields.reduce((indexes, field, index) => {
+      if (!Object.prototype.hasOwnProperty.call(field, 'confidence')) {
+        return indexes;
+      }
+      if (typeof field.confidence !== 'number' || !Number.isFinite(field.confidence)) {
+        indexes.push(index);
+      }
+      return indexes;
+    }, []);
+    if (invalidExtractedFieldConfidenceItemIndexes.length > 0) {
+      throw createError('extractedFields.confidence must be a number when provided', 400, 'validation_error', {
+        invalidField: 'extractedFields.confidence',
+        invalidItemIndexes: invalidExtractedFieldConfidenceItemIndexes
+      });
+    }
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
     const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;
     const lowConfidenceProvided = Object.prototype.hasOwnProperty.call(req.body || {}, 'lowConfidence');
