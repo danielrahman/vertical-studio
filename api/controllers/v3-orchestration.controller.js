@@ -2641,6 +2641,12 @@ function postCmsPublishWebhook(req, res, next) {
       return !CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS.has(field);
     });
     if (unknownTopLevelFields.length > 0) {
+      const allowedTopLevelFieldIndexes = receivedTopLevelFields.reduce((indexes, field, index) => {
+        if (CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS.has(field)) {
+          indexes.push(index);
+        }
+        return indexes;
+      }, []);
       throw createError('cms publish webhook payload contains unknown top-level fields', 400, 'validation_error', {
         invalidField: 'payload',
         unknownFields: unknownTopLevelFields,
@@ -2650,6 +2656,7 @@ function postCmsPublishWebhook(req, res, next) {
         }),
         receivedTopLevelFieldCount: receivedTopLevelFields.length,
         receivedTopLevelFields,
+        allowedTopLevelFieldIndexes,
         allowedTopLevelFieldCount: CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS.size,
         allowedTopLevelFields: Array.from(CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS).sort()
       });
