@@ -283,6 +283,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 262. Public-web runtime-client no-valid-timestamp fallback coverage implemented (`VS3-IMP-256`): runtime-client unit coverage now verifies that storage-key `runtime_snapshot_not_found` retry path correctly renders compatibility endpoint results that represent deterministic lexicographic `storageKey` selection when duplicate runtime mappings have no valid `snapshot.generatedAt`.
 263. Public-web runtime-client retry-path trim coverage implemented (`VS3-IMP-257`): runtime-client unit coverage now verifies that storage-key `runtime_snapshot_not_found` retry path trims whitespace `siteId` and `versionId` identifiers from resolve payload before compatibility snapshot fetch.
 264. Public-web runtime-client non-not-found error fallback guard coverage implemented (`VS3-IMP-258`): runtime-client unit coverage now verifies that storage-key fetch errors with codes other than `runtime_snapshot_not_found` are propagated unchanged and do not trigger compatibility fallback even when resolve payload includes `siteId+versionId`.
+265. Public-web runtime-client incomplete fallback-identifier retry guard coverage implemented (`VS3-IMP-259`): runtime-client unit coverage now verifies that storage-key `runtime_snapshot_not_found` errors are propagated unchanged and do not trigger compatibility fallback when resolve payload fallback identifiers are incomplete (`siteId` or `versionId` missing/blank).
 
 ## In Progress
 
@@ -291,7 +292,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after non-not-found fallback guard coverage (candidate: add runtime-client unit coverage that `runtime_snapshot_not_found` with incomplete fallback identifiers (`siteId` or `versionId` missing/blank) propagates original error without compatibility fetch).
+1. Select and start the next smallest non-hardening implementation slice after incomplete fallback-identifier retry guard coverage (candidate: add runtime-client unit coverage that `runtime_snapshot_not_found` with non-string fallback `siteId` or `versionId` also propagates original error without compatibility fetch).
 
 ## Known Constraints
 

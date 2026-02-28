@@ -224,6 +224,69 @@ test('renderSiteFromRuntime does not trigger compatibility fallback for non-not-
   );
 });
 
+test('renderSiteFromRuntime does not trigger compatibility fallback for not-found storageKey errors when fallback identifiers are incomplete', async () => {
+  const cases = [
+    {
+      name: 'missing siteId',
+      resolvedPayload: {
+        host: 'runtime-incomplete-fallback-site.example.test',
+        versionId: 'version-incomplete-fallback',
+        storageKey: 'site-versions/site-incomplete-fallback/version-incomplete-fallback.json'
+      }
+    },
+    {
+      name: 'blank versionId',
+      resolvedPayload: {
+        host: 'runtime-incomplete-fallback-version.example.test',
+        siteId: 'site-incomplete-fallback',
+        versionId: '   ',
+        storageKey: 'site-versions/site-incomplete-fallback/version-incomplete-fallback.json'
+      }
+    }
+  ];
+
+  for (const scenario of cases) {
+    const calls = [];
+    const fetchImpl = createMockFetch(
+      [
+        jsonResponse(200, scenario.resolvedPayload),
+        jsonResponse(404, {
+          code: 'runtime_snapshot_not_found',
+          message: 'Runtime snapshot not found',
+          details: {
+            storageKey: 'site-versions/site-incomplete-fallback/version-incomplete-fallback.json'
+          }
+        })
+      ],
+      calls
+    );
+
+    await assert.rejects(
+      renderSiteFromRuntime({
+        apiBaseUrl: 'http://localhost:3000',
+        host: scenario.resolvedPayload.host,
+        fetchImpl
+      }),
+      (error) => {
+        assert.equal(error.code, 'runtime_snapshot_not_found');
+        assert.equal(error.statusCode, 404);
+        assert.deepEqual(error.details, {
+          storageKey: 'site-versions/site-incomplete-fallback/version-incomplete-fallback.json'
+        });
+        return true;
+      },
+      scenario.name
+    );
+
+    assert.equal(calls.length, 2, scenario.name);
+    assert.equal(
+      calls[1],
+      'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-incomplete-fallback%2Fversion-incomplete-fallback.json',
+      scenario.name
+    );
+  }
+});
+
 test('renderSiteFromRuntime falls back to compatibility snapshot when storage-key fetch returns runtime_snapshot_not_found', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(
