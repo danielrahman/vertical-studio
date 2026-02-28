@@ -1802,6 +1802,8 @@ test('WS-D contract: copy generation accepts only supported locales and rejects 
     assert.equal(nonStringLocalesPayload.message, 'locales must contain only string items');
     assert.equal(nonStringLocalesPayload.details.invalidField, 'locales');
     assert.deepEqual(nonStringLocalesPayload.details.invalidItemIndexes, [1]);
+    assert.equal(nonStringLocalesPayload.details.expectedItemType, 'string');
+    assert.deepEqual(nonStringLocalesPayload.details.receivedItemTypes, ['number']);
 
     const invalidLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-locales/copy/generate`, {
       method: 'POST',

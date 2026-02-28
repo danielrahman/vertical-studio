@@ -339,7 +339,7 @@ Rules:
 3. Every candidate must satisfy slot hard limits before response finalization.
 4. If `highImpactOnlyThreeVariants` is present, it must be `true` (other values return `400 validation_error` with deterministic `invalidField` details).
 5. If `locales` is provided, it must be an array; non-array values return `400 validation_error` with deterministic `invalidField` details and deterministic type metadata (`expectedType`, `receivedType`).
-6. If `locales` is provided, every item must be a string.
+6. If `locales` is provided, every item must be a string; non-string items return `400 validation_error` with deterministic `invalidField` details, deterministic index details (`invalidItemIndexes`), and deterministic item type metadata (`expectedItemType`, `receivedItemTypes`).
 7. Duplicate `locales` values are rejected with `400 validation_error`.
 8. `locales` may contain only `cs-CZ` and `en-US`; unsupported locales return `400 validation_error` with deterministic `invalidField` details.
 9. `locales` must include both required locales (`cs-CZ`, `en-US`); missing values return `400 validation_error` with deterministic `missingLocales` details.

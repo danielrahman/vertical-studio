@@ -1603,7 +1603,9 @@ function postCopyGenerate(req, res, next) {
     if (invalidLocaleItemIndexes.length > 0) {
       throw createError('locales must contain only string items', 400, 'validation_error', {
         invalidField: 'locales',
-        invalidItemIndexes: invalidLocaleItemIndexes
+        invalidItemIndexes: invalidLocaleItemIndexes,
+        expectedItemType: 'string',
+        receivedItemTypes: invalidLocaleItemIndexes.map((index) => getValueType(requestedLocales[index]))
       });
     }
     const duplicateLocales = Array.from(new Set(requestedLocales.filter((locale, index) => requestedLocales.indexOf(locale) !== index)));

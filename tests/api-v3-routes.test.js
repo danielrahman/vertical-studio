@@ -1445,6 +1445,8 @@ test('copy generate enforces locale allow-list and rejects duplicate locales', a
     assert.equal(nonStringLocalesBody.message, 'locales must contain only string items');
     assert.equal(nonStringLocalesBody.details.invalidField, 'locales');
     assert.deepEqual(nonStringLocalesBody.details.invalidItemIndexes, [1]);
+    assert.equal(nonStringLocalesBody.details.expectedItemType, 'string');
+    assert.deepEqual(nonStringLocalesBody.details.receivedItemTypes, ['number']);
 
     const invalidLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-locales/copy/generate`, {
       method: 'POST',
