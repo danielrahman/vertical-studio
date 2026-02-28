@@ -1902,6 +1902,7 @@ function postOverrides(req, res, next) {
       .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('Invalid override payload: contains unknown top-level fields', 400, 'invalid_override_payload', {
+        invalidField: 'payload',
         unknownFields: unknownTopLevelFields,
         allowedTopLevelFields: Array.from(OVERRIDE_ALLOWED_TOP_LEVEL_FIELDS).sort()
       });

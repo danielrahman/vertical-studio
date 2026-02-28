@@ -193,6 +193,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 172. Override no-op cardinality metadata hardening implemented (`VS3-IMP-165`): `POST /sites/:siteId/overrides` empty/no-op override validation errors now include deterministic cardinality metadata (`minimumNonEmptyOverrideArrays`, `receivedNonEmptyOverrideArrays`) alongside sorted `fields`, with API/WS-D contract coverage and plan text alignment.
 173. Override blank-value invalid-index metadata hardening implemented (`VS3-IMP-166`): `POST /sites/:siteId/overrides` blank-string override array validation errors now include deterministic `invalidIndexes` metadata alongside `field`, with API/WS-D contract coverage and plan text alignment.
 174. Override duplicate-value index metadata hardening implemented (`VS3-IMP-167`): `POST /sites/:siteId/overrides` duplicate-value validation errors now include deterministic `duplicateIndexes` metadata alongside sorted `duplicateValues`, with API/WS-D contract coverage and plan text alignment.
+175. Override unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-168`): `POST /sites/:siteId/overrides` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown/allowed field details, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 

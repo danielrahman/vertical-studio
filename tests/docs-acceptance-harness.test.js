@@ -1784,6 +1784,7 @@ test('WS-D contract: override payload rejects unknown top-level fields', async (
     assert.equal(invalidOverrideRes.status, 400);
     const invalidOverridePayload = await invalidOverrideRes.json();
     assert.equal(invalidOverridePayload.code, 'invalid_override_payload');
+    assert.equal(invalidOverridePayload.details.invalidField, 'payload');
     assert.deepEqual(invalidOverridePayload.details.unknownFields, ['alphaUnexpectedField', 'zetaUnexpectedField']);
     assert.deepEqual(invalidOverridePayload.details.allowedTopLevelFields, [
       'actorRole',
