@@ -296,6 +296,7 @@ test('WS-G contract: secret refs endpoint rejects unknown top-level payload fiel
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaRotationPolicy', 'zetaRotationWindowDays']);
   } finally {
     await stopServer(server);

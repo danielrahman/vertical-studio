@@ -3704,6 +3704,7 @@ test('secret refs endpoint rejects unknown top-level payload fields', async () =
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'secret ref payload contains unknown top-level fields');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaRotationPolicy', 'zetaRotationWindowDays']);
   } finally {
     await stopServer(server);
