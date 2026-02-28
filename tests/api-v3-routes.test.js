@@ -3063,6 +3063,7 @@ test('rollback rejects unknown top-level payload fields', async () => {
     const payload = await rollbackRes.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'rollback payload contains unknown top-level fields');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaReason', 'zetaReason']);
   } finally {
     await stopServer(server);

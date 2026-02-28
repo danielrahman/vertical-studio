@@ -199,6 +199,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 178. Compose-select unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-171`): `POST /sites/:siteId/compose/select` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-D contract coverage and plan text alignment.
 179. Review-transition unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-172`): `POST /sites/:siteId/review/transition` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-D contract coverage and plan text alignment.
 180. Publish unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-173`): `POST /sites/:siteId/publish` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-F contract coverage and plan text alignment.
+181. Rollback unknown-top-level invalid-field metadata hardening implemented (`VS3-IMP-174`): `POST /sites/:siteId/rollback/:versionId` unknown top-level payload validation errors now include deterministic `invalidField: payload` metadata alongside sorted unknown-field details, with API/WS-E contract coverage and plan text alignment.
 
 ## In Progress
 
