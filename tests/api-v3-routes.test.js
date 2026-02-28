@@ -566,6 +566,24 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(nonArrayFieldsPayload.message, 'extractedFields must be an array when provided');
     assert.equal(nonArrayFieldsPayload.details.invalidField, 'extractedFields');
 
+    const nonObjectExtractedFieldItemResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          extractedFields: [null, 'invalid-item', { fieldPath: 'brand.tagline' }]
+        })
+      }
+    );
+    assert.equal(nonObjectExtractedFieldItemResponse.status, 400);
+    const nonObjectExtractedFieldItemPayload = await nonObjectExtractedFieldItemResponse.json();
+    assert.equal(nonObjectExtractedFieldItemPayload.code, 'validation_error');
+    assert.equal(nonObjectExtractedFieldItemPayload.message, 'extractedFields must contain only object items');
+    assert.equal(nonObjectExtractedFieldItemPayload.details.invalidField, 'extractedFields');
+    assert.deepEqual(nonObjectExtractedFieldItemPayload.details.invalidItemIndexes, [0, 1]);
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

@@ -102,6 +102,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 81. Bootstrap `lowConfidence` boolean-type enforcement implemented (`VS3-IMP-074`): bootstrap-from-extraction now rejects non-boolean `lowConfidence` payload values with deterministic `validation_error` details (`invalidField`) instead of coercing truthy/falsy values.
 82. Bootstrap `sitePolicy` object-type enforcement implemented (`VS3-IMP-075`): bootstrap-from-extraction now rejects non-object `sitePolicy` payload values with deterministic `validation_error` details (`invalidField`) when provided.
 83. Bootstrap `sitePolicy` nested-shape enforcement implemented (`VS3-IMP-076`): bootstrap-from-extraction now rejects unknown nested `sitePolicy` keys with deterministic `validation_error` details (`invalidField`, `unknownFields`) when provided.
+84. Bootstrap `extractedFields` item-type enforcement implemented (`VS3-IMP-077`): bootstrap-from-extraction now rejects non-object `extractedFields` items with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`) when provided.
 
 ## In Progress
 

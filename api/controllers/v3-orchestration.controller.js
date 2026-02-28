@@ -922,6 +922,18 @@ function postBootstrapFromExtraction(req, res, next) {
       });
     }
     const rawExtractedFields = Array.isArray(req.body?.extractedFields) ? req.body.extractedFields : [];
+    const invalidExtractedFieldItemIndexes = rawExtractedFields.reduce((indexes, field, index) => {
+      if (typeof field !== 'object' || field === null || Array.isArray(field)) {
+        indexes.push(index);
+      }
+      return indexes;
+    }, []);
+    if (invalidExtractedFieldItemIndexes.length > 0) {
+      throw createError('extractedFields must contain only object items', 400, 'validation_error', {
+        invalidField: 'extractedFields',
+        invalidItemIndexes: invalidExtractedFieldItemIndexes
+      });
+    }
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
     const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;
     const lowConfidenceProvided = Object.prototype.hasOwnProperty.call(req.body || {}, 'lowConfidence');
