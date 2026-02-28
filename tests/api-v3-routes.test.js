@@ -642,6 +642,35 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(invalidExtractedFieldPathPayload.details.invalidField, 'extractedFields.fieldPath');
     assert.deepEqual(invalidExtractedFieldPathPayload.details.invalidItemIndexes, [0]);
 
+    const invalidExtractedFieldSourceUrlResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          extractedFields: [
+            {
+              fieldPath: 'brand.tagline',
+              value: 'Premium development team',
+              sourceUrl: '   ',
+              method: 'dom',
+              confidence: 0.91
+            }
+          ]
+        })
+      }
+    );
+    assert.equal(invalidExtractedFieldSourceUrlResponse.status, 400);
+    const invalidExtractedFieldSourceUrlPayload = await invalidExtractedFieldSourceUrlResponse.json();
+    assert.equal(invalidExtractedFieldSourceUrlPayload.code, 'validation_error');
+    assert.equal(
+      invalidExtractedFieldSourceUrlPayload.message,
+      'extractedFields.sourceUrl must be a non-empty string or null when provided'
+    );
+    assert.equal(invalidExtractedFieldSourceUrlPayload.details.invalidField, 'extractedFields.sourceUrl');
+    assert.deepEqual(invalidExtractedFieldSourceUrlPayload.details.invalidItemIndexes, [0]);
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
