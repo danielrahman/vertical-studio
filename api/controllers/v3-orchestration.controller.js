@@ -2542,9 +2542,11 @@ function getPublicRuntimeSnapshotByStorageKey(req, res, next) {
 function postCmsPublishWebhook(req, res, next) {
   try {
     assertCmsWebhookSignature(req);
-    const unknownTopLevelFields = Object.keys(req.body || {}).filter((field) => {
-      return !CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS.has(field);
-    });
+    const unknownTopLevelFields = Object.keys(req.body || {})
+      .filter((field) => {
+        return !CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+      })
+      .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('cms publish webhook payload contains unknown top-level fields', 400, 'validation_error', {
         unknownFields: unknownTopLevelFields

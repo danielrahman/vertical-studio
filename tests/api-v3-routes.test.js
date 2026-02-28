@@ -1006,7 +1006,8 @@ test('cms webhook publish ingress rejects unknown top-level payload fields', asy
     const payload = {
       siteId: 'site-webhook-unknown',
       event: 'publish_requested',
-      dryRun: true
+      zetaDryRun: true,
+      alphaPreview: true
     };
 
     const response = await fetch(`${baseUrl}/api/v1/cms/webhooks/publish`, {
@@ -1021,7 +1022,7 @@ test('cms webhook publish ingress rejects unknown top-level payload fields', asy
     const body = await response.json();
     assert.equal(body.code, 'validation_error');
     assert.equal(body.message, 'cms publish webhook payload contains unknown top-level fields');
-    assert.deepEqual(body.details.unknownFields, ['dryRun']);
+    assert.deepEqual(body.details.unknownFields, ['alphaPreview', 'zetaDryRun']);
   } finally {
     await stopServer(server);
   }
