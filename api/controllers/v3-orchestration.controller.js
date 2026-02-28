@@ -789,6 +789,22 @@ function listDuplicateValues(values) {
   return Array.from(duplicates).sort();
 }
 
+function listDuplicateIndexes(values) {
+  const counts = new Map();
+  values.forEach((value) => {
+    counts.set(value, (counts.get(value) || 0) + 1);
+  });
+
+  const duplicateIndexes = [];
+  values.forEach((value, index) => {
+    if ((counts.get(value) || 0) > 1) {
+      duplicateIndexes.push(index);
+    }
+  });
+
+  return duplicateIndexes;
+}
+
 function normalizeManualOverrides(overrides) {
   if (!overrides || typeof overrides !== 'object') {
     return null;
@@ -1918,7 +1934,8 @@ function postOverrides(req, res, next) {
         if (duplicateValues.length > 0) {
           throw createError(`Invalid override payload: ${key} must not contain duplicate values`, 400, 'invalid_override_payload', {
             field: key,
-            duplicateValues
+            duplicateValues,
+            duplicateIndexes: listDuplicateIndexes(normalizedValues)
           });
         }
 

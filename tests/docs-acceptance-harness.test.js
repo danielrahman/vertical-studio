@@ -1567,6 +1567,7 @@ test('WS-D contract: override arrays must not contain duplicate values', async (
     assert.equal(duplicateOverridePayload.code, 'invalid_override_payload');
     assert.equal(duplicateOverridePayload.details.field, 'requiredComponents');
     assert.deepEqual(duplicateOverridePayload.details.duplicateValues, ['cards-3up', 'hero']);
+    assert.deepEqual(duplicateOverridePayload.details.duplicateIndexes, [0, 1, 2, 3]);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-duplicates/overrides`, {
       method: 'POST',

@@ -192,6 +192,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 171. Override unknown-section allow-list metadata hardening implemented (`VS3-IMP-164`): `POST /sites/:siteId/overrides` unknown section-key validation errors now include lexicographically sorted `allowedSectionKeys` metadata alongside sorted `unknownSections`, with API/WS-D contract coverage and plan text alignment.
 172. Override no-op cardinality metadata hardening implemented (`VS3-IMP-165`): `POST /sites/:siteId/overrides` empty/no-op override validation errors now include deterministic cardinality metadata (`minimumNonEmptyOverrideArrays`, `receivedNonEmptyOverrideArrays`) alongside sorted `fields`, with API/WS-D contract coverage and plan text alignment.
 173. Override blank-value invalid-index metadata hardening implemented (`VS3-IMP-166`): `POST /sites/:siteId/overrides` blank-string override array validation errors now include deterministic `invalidIndexes` metadata alongside `field`, with API/WS-D contract coverage and plan text alignment.
+174. Override duplicate-value index metadata hardening implemented (`VS3-IMP-167`): `POST /sites/:siteId/overrides` duplicate-value validation errors now include deterministic `duplicateIndexes` metadata alongside sorted `duplicateValues`, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 

@@ -2582,6 +2582,7 @@ test('overrides rejects duplicate values inside override arrays', async () => {
       'Invalid override payload: keywords must not contain duplicate values'
     );
     assert.deepEqual(duplicateOverrideBody.details.duplicateValues, ['alpha', 'zeta']);
+    assert.deepEqual(duplicateOverrideBody.details.duplicateIndexes, [0, 1, 2, 3]);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-duplicates/overrides`, {
       method: 'POST',
@@ -2753,6 +2754,7 @@ test('overrides rejects empty string values and trims values before duplicate ch
     const normalizedDuplicateBody = await normalizedDuplicateRes.json();
     assert.equal(normalizedDuplicateBody.code, 'invalid_override_payload');
     assert.deepEqual(normalizedDuplicateBody.details.duplicateValues, ['trust']);
+    assert.deepEqual(normalizedDuplicateBody.details.duplicateIndexes, [0, 1]);
   } finally {
     await stopServer(server);
   }
