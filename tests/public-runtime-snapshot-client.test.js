@@ -146,6 +146,38 @@ test('renderSiteFromRuntime falls back to site/version snapshot endpoint when st
   assert.equal(result.html.includes('Compatibility fetch path'), true);
 });
 
+test('renderSiteFromRuntime throws deterministic error when resolve payload lacks storageKey and site/version pair', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'broken-runtime.example.test',
+        siteId: 'site-broken'
+      })
+    ],
+    calls
+  );
+
+  await assert.rejects(
+    renderSiteFromRuntime({
+      apiBaseUrl: 'http://localhost:3000',
+      host: 'broken-runtime.example.test',
+      fetchImpl
+    }),
+    (error) => {
+      assert.equal(error.code, 'runtime_resolve_incomplete');
+      assert.equal(error.message, 'Runtime resolve payload must include storageKey or siteId+versionId');
+      assert.deepEqual(error.details, {
+        hasStorageKey: false,
+        hasSiteId: true,
+        hasVersionId: false
+      });
+      return true;
+    }
+  );
+  assert.equal(calls.length, 1);
+});
+
 test('fetchRuntimeSnapshot surfaces API error metadata', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(

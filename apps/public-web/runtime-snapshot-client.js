@@ -76,11 +76,24 @@ function renderRuntimeHtml(snapshotEnvelope) {
 async function renderSiteFromRuntime({ apiBaseUrl, host, fetchImpl = fetch }) {
   const resolved = await resolveRuntimeVersion({ apiBaseUrl, host, fetchImpl });
   const storageKey = typeof resolved?.storageKey === 'string' ? resolved.storageKey.trim() : '';
+  const siteId = typeof resolved?.siteId === 'string' ? resolved.siteId.trim() : '';
+  const versionId = typeof resolved?.versionId === 'string' ? resolved.versionId.trim() : '';
+  if (!storageKey && (!siteId || !versionId)) {
+    const error = new Error('Runtime resolve payload must include storageKey or siteId+versionId');
+    error.code = 'runtime_resolve_incomplete';
+    error.details = {
+      hasStorageKey: Boolean(storageKey),
+      hasSiteId: Boolean(siteId),
+      hasVersionId: Boolean(versionId)
+    };
+    throw error;
+  }
+
   const snapshot = await fetchRuntimeSnapshot({
     apiBaseUrl,
     storageKey: storageKey || undefined,
-    siteId: storageKey ? undefined : resolved?.siteId,
-    versionId: storageKey ? undefined : resolved?.versionId,
+    siteId: storageKey ? undefined : siteId,
+    versionId: storageKey ? undefined : versionId,
     fetchImpl
   });
 
