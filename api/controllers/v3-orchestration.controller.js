@@ -254,13 +254,24 @@ function assertString(value, fieldName) {
 }
 
 function assertSegment(value, fieldName) {
-  if (typeof value !== 'string' || !SECRET_REF_SEGMENT_PATTERN.test(value)) {
+  if (typeof value !== 'string') {
     throw createError(`${fieldName} must contain only lowercase letters, numbers, and hyphen`, 400, 'validation_error', {
-      invalidField: fieldName
+      invalidField: fieldName,
+      expectedType: 'string',
+      receivedType: getValueType(value)
     });
   }
 
-  return value;
+  const normalized = value.trim();
+  if (!normalized || !SECRET_REF_SEGMENT_PATTERN.test(normalized)) {
+    throw createError(`${fieldName} must contain only lowercase letters, numbers, and hyphen`, 400, 'validation_error', {
+      invalidField: fieldName,
+      expectedType: 'string',
+      receivedType: getValueType(value)
+    });
+  }
+
+  return normalized;
 }
 
 function parseSecretRef(ref) {
@@ -2688,8 +2699,8 @@ function postSecretRef(req, res, next) {
       });
     }
 
-    const provider = assertSegment(normalizeOptionalString(req.body?.provider), 'provider');
-    const key = assertSegment(normalizeOptionalString(req.body?.key), 'key');
+    const provider = assertSegment(req.body?.provider, 'provider');
+    const key = assertSegment(req.body?.key, 'key');
 
     if (provider !== refParts.provider) {
       throw createError('provider must match ref segment', 400, 'validation_error', {

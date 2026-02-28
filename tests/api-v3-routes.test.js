@@ -4057,6 +4057,40 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     assert.equal(nonStringTenantIdBody.details.expectedType, 'string');
     assert.equal(nonStringTenantIdBody.details.receivedType, 'array');
 
+    const nonStringProviderRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        ref: 'tenant.tenant-1.openai.api',
+        provider: ['openai'],
+        key: 'api'
+      })
+    });
+    assert.equal(nonStringProviderRes.status, 400);
+    const nonStringProviderBody = await nonStringProviderRes.json();
+    assert.equal(nonStringProviderBody.code, 'validation_error');
+    assert.equal(nonStringProviderBody.details.invalidField, 'provider');
+    assert.equal(nonStringProviderBody.details.expectedType, 'string');
+    assert.equal(nonStringProviderBody.details.receivedType, 'array');
+
+    const nonStringKeyRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'openai',
+        key: ['api']
+      })
+    });
+    assert.equal(nonStringKeyRes.status, 400);
+    const nonStringKeyBody = await nonStringKeyRes.json();
+    assert.equal(nonStringKeyBody.code, 'validation_error');
+    assert.equal(nonStringKeyBody.details.invalidField, 'key');
+    assert.equal(nonStringKeyBody.details.expectedType, 'string');
+    assert.equal(nonStringKeyBody.details.receivedType, 'array');
+
     const plaintextRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
