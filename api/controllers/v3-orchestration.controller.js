@@ -1984,7 +1984,8 @@ function postOverrides(req, res, next) {
     }
 
     if (Array.isArray(normalizedOverrideArrays.requiredComponents)) {
-      const knownComponentIds = new Set(listComponentContractIds(state));
+      const allowedComponentIds = listComponentContractIds(state).sort();
+      const knownComponentIds = new Set(allowedComponentIds);
       const unknownRequiredComponents = normalizedOverrideArrays.requiredComponents.filter((componentId) => {
         return !knownComponentIds.has(componentId);
       }).sort();
@@ -1995,7 +1996,8 @@ function postOverrides(req, res, next) {
           'invalid_override_payload',
           {
             field: 'requiredComponents',
-            unknownComponentIds: unknownRequiredComponents
+            unknownComponentIds: unknownRequiredComponents,
+            allowedComponentIds
           }
         );
       }

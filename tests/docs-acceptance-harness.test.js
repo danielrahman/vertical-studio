@@ -1356,6 +1356,7 @@ test('WS-D contract: overrides requiredComponents must reference loaded componen
     const invalidOverridePayload = await invalidOverrideRes.json();
     assert.equal(invalidOverridePayload.code, 'invalid_override_payload');
     assert.deepEqual(invalidOverridePayload.details.unknownComponentIds, ['alpha-component', 'zeta-component']);
+    assert.deepEqual(invalidOverridePayload.details.allowedComponentIds, ['cards-3up', 'cta-form', 'hero']);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides/overrides`, {
       method: 'POST',
