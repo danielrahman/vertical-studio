@@ -232,6 +232,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 211. Secret-ref plaintext-key forbidden-list metadata hardening implemented (`VS3-IMP-204`): `POST /api/v1/secrets/refs` plaintext payload-key rejection now includes lexicographically sorted `forbiddenKeys` metadata alongside deterministic `invalidField`, with API/WS-G contract coverage and plan text alignment.
 212. Secret-ref plaintext-key received-type metadata hardening implemented (`VS3-IMP-205`): `POST /api/v1/secrets/refs` plaintext payload-key rejection now includes deterministic `receivedType` metadata for the offending value alongside deterministic `invalidField` and sorted `forbiddenKeys`, with API/WS-G contract coverage and plan text alignment.
 213. Secret-ref unknown-payload field-count metadata hardening implemented (`VS3-IMP-206`): `POST /api/v1/secrets/refs` unknown top-level payload validation errors now include deterministic `receivedTopLevelFieldCount` metadata alongside deterministic `invalidField`, sorted `unknownFields`, and sorted `allowedTopLevelFields`, with API/WS-G contract coverage and plan text alignment.
+214. Secret-ref unknown-payload received-field-list metadata hardening implemented (`VS3-IMP-207`): `POST /api/v1/secrets/refs` unknown top-level payload validation errors now include deterministic sorted `receivedTopLevelFields` metadata alongside deterministic `invalidField`, `receivedTopLevelFieldCount`, sorted `unknownFields`, and sorted `allowedTopLevelFields`, with API/WS-G contract coverage and plan text alignment.
 
 ## In Progress
 
