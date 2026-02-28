@@ -320,14 +320,14 @@ test('vertical research build validates sourceDomains entries and persists norma
       body: JSON.stringify({
         targetCompetitorCount: 15,
         sources: ['public_web', 'legal_pages', 'selected_listings'],
-        sourceDomains: [' EXAMPLE-1.com ', 'example-1.com']
+        sourceDomains: ['B.com', 'a.com', 'b.com', 'A.com']
       })
     });
     assert.equal(duplicateDomainsRes.status, 400);
     const duplicateDomainsPayload = await duplicateDomainsRes.json();
     assert.equal(duplicateDomainsPayload.code, 'validation_error');
     assert.equal(duplicateDomainsPayload.message, 'sourceDomains must not contain duplicate values');
-    assert.deepEqual(duplicateDomainsPayload.details.duplicateSourceDomains, ['example-1.com']);
+    assert.deepEqual(duplicateDomainsPayload.details.duplicateSourceDomains, ['a.com', 'b.com']);
 
     const validDomainsRes = await fetch(`${baseUrl}/api/v1/verticals/boutique-developers/research/build`, {
       method: 'POST',
