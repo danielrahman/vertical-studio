@@ -365,13 +365,14 @@ test('WS-B contract: bootstrap-from-extraction rejects unknown top-level payload
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-wsb-bootstrap-unknown-1',
-        previewOnly: true
+        zetaPreview: true,
+        alphaPreview: false
       })
     });
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
-    assert.deepEqual(payload.details.unknownFields, ['previewOnly']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaPreview', 'zetaPreview']);
   } finally {
     await stopServer(server);
   }

@@ -949,9 +949,11 @@ function postBootstrapFromExtraction(req, res, next) {
   try {
     assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
-    const unknownTopLevelFields = Object.keys(req.body || {}).filter((field) => {
-      return !BOOTSTRAP_ALLOWED_TOP_LEVEL_FIELDS.has(field);
-    });
+    const unknownTopLevelFields = Object.keys(req.body || {})
+      .filter((field) => {
+        return !BOOTSTRAP_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+      })
+      .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('bootstrap payload contains unknown top-level fields', 400, 'validation_error', {
         unknownFields: unknownTopLevelFields
