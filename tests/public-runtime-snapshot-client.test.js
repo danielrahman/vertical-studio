@@ -138,6 +138,50 @@ test('renderSiteFromRuntime trims resolve storageKey before immutable snapshot f
   assert.equal(result.snapshot.immutable, true);
 });
 
+test('renderSiteFromRuntime storageKey path surfaces API error metadata', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'runtime-missing-storage-key.example.test',
+        siteId: 'site-storage-key-missing',
+        versionId: 'version-404',
+        storageKey: 'site-versions/site-storage-key-missing/version-404.json'
+      }),
+      jsonResponse(404, {
+        code: 'runtime_snapshot_not_found',
+        message: 'Runtime snapshot not found',
+        details: {
+          storageKey: 'site-versions/site-storage-key-missing/version-404.json'
+        }
+      })
+    ],
+    calls
+  );
+
+  await assert.rejects(
+    renderSiteFromRuntime({
+      apiBaseUrl: 'http://localhost:3000',
+      host: 'runtime-missing-storage-key.example.test',
+      fetchImpl
+    }),
+    (error) => {
+      assert.equal(error.code, 'runtime_snapshot_not_found');
+      assert.equal(error.statusCode, 404);
+      assert.deepEqual(error.details, {
+        storageKey: 'site-versions/site-storage-key-missing/version-404.json'
+      });
+      return true;
+    }
+  );
+
+  assert.equal(calls.length, 2);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-storage-key-missing%2Fversion-404.json'
+  );
+});
+
 test('renderSiteFromRuntime falls back to site/version snapshot endpoint when storageKey is missing', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(
