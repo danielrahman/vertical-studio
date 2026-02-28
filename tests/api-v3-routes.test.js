@@ -1903,8 +1903,9 @@ test('copy select per-item validation failures report invalidField details', asy
       'selections[0].locale',
       (details) =>
         Array.isArray(details.allowedLocales) &&
-        details.allowedLocales.includes('cs-CZ') &&
-        details.allowedLocales.includes('en-US')
+        details.allowedLocales.length === 2 &&
+        details.allowedLocales[0] === 'cs-CZ' &&
+        details.allowedLocales[1] === 'en-US'
     );
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: '' }],

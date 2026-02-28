@@ -341,7 +341,7 @@ function assertCopySelectionShape(selection, index) {
   if (!COPY_LOCALES.has(selection.locale)) {
     throw createError('selection locale must be one of cs-CZ or en-US', 400, 'validation_error', {
       invalidField: `selections[${index}].locale`,
-      allowedLocales: Array.from(COPY_LOCALES)
+      allowedLocales: Array.from(COPY_LOCALES).sort()
     });
   }
 
