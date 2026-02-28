@@ -206,14 +206,14 @@ test('vertical research build enforces supported source classes with determinist
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         targetCompetitorCount: 15,
-        sources: ['public_web', 'community_forums']
+        sources: ['public_web', 'z_source', 'community_forums']
       })
     });
     assert.equal(unsupportedSourceRes.status, 400);
     const unsupportedSourcePayload = await unsupportedSourceRes.json();
     assert.equal(unsupportedSourcePayload.code, 'validation_error');
     assert.equal(unsupportedSourcePayload.message, 'sources must use allowed research classes');
-    assert.deepEqual(unsupportedSourcePayload.details.invalidSources, ['community_forums']);
+    assert.deepEqual(unsupportedSourcePayload.details.invalidSources, ['community_forums', 'z_source']);
     assert.deepEqual(unsupportedSourcePayload.details.allowedSources, [
       'legal_pages',
       'public_web',

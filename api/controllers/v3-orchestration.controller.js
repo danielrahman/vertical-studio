@@ -1254,7 +1254,7 @@ function postVerticalResearchBuild(req, res, next) {
 
     const invalidSources = Array.from(
       new Set(sources.filter((source) => !SUPPORTED_RESEARCH_SOURCES.has(source)))
-    );
+    ).sort();
     if (!sources.length || invalidSources.length > 0) {
       throw createError('sources must use allowed research classes', 400, 'validation_error', {
         invalidSources,

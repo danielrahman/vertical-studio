@@ -205,7 +205,7 @@ Response `202`:
 
 Validation:
 1. `targetCompetitorCount` must be a numeric integer `>= 15` (string-coerced values are rejected) and violations return `insufficient_competitor_sample` with `minimumTargetCompetitorCount` and `receivedTargetCompetitorCount` details.
-2. `sources` must be an array and non-empty, contain only `public_web`, `legal_pages`, and `selected_listings`, and must not include duplicates; duplicate-source validation failures return lexicographically sorted `duplicateSources` details.
+2. `sources` must be an array and non-empty, contain only `public_web`, `legal_pages`, and `selected_listings`, and must not include duplicates; unsupported-source validation failures return lexicographically sorted `invalidSources` details and duplicate-source failures return lexicographically sorted `duplicateSources` details.
 3. If `sourceDomains` is provided, it must be an array; every entry must be a valid domain hostname and duplicate values are rejected after trim/lowercase normalization with lexicographically sorted `duplicateSourceDomains` details.
 4. Pattern extraction scope is limited to `IA + CTA + trust + tone`.
 5. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.

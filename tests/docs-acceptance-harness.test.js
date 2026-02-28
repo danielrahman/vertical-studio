@@ -876,14 +876,14 @@ test('WS-B contract: vertical research build enforces supported source classes',
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         targetCompetitorCount: 15,
-        sources: ['public_web', 'community_forums']
+        sources: ['public_web', 'z_source', 'community_forums']
       })
     });
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'sources must use allowed research classes');
-    assert.deepEqual(payload.details.invalidSources, ['community_forums']);
+    assert.deepEqual(payload.details.invalidSources, ['community_forums', 'z_source']);
     assert.deepEqual(payload.details.allowedSources, ['legal_pages', 'public_web', 'selected_listings']);
   } finally {
     await stopServer(server);
