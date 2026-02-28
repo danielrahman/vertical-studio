@@ -2094,6 +2094,8 @@ test('WS-D contract: copy selection requires draftId with invalidField details',
     assert.equal(missingDraftIdPayload.code, 'validation_error');
     assert.equal(missingDraftIdPayload.message, 'draftId is required');
     assert.equal(missingDraftIdPayload.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdPayload.details.expectedType, 'string');
+    assert.equal(missingDraftIdPayload.details.receivedType, 'undefined');
 
     const nonStringDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-draft-id/copy/select`, {
       method: 'POST',
@@ -2108,6 +2110,8 @@ test('WS-D contract: copy selection requires draftId with invalidField details',
     assert.equal(nonStringDraftIdPayload.code, 'validation_error');
     assert.equal(nonStringDraftIdPayload.message, 'draftId is required');
     assert.equal(nonStringDraftIdPayload.details.invalidField, 'draftId');
+    assert.equal(nonStringDraftIdPayload.details.expectedType, 'string');
+    assert.equal(nonStringDraftIdPayload.details.receivedType, 'number');
   } finally {
     await stopServer(server);
   }

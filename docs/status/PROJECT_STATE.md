@@ -146,15 +146,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 125. Copy-select per-item required-field selection-index details implemented (`VS3-IMP-118`): `POST /sites/:siteId/copy/select` per-item `slotId`/`locale`/`candidateId` validation errors now include deterministic `selectionIndex` alongside index-aware `invalidField`.
 126. Copy-select per-item invalid-selectedBy selection-index details implemented (`VS3-IMP-119`): `POST /sites/:siteId/copy/select` per-item invalid `selectedBy` allow-list validation errors now include deterministic `selectionIndex` alongside allowed-role details.
 127. Copy-select per-item selection-index contract-doc alignment implemented (`VS3-IMP-120`): `docs/plan/30-api.md` Rule 12 and WS-D/API test labels now explicitly require deterministic per-item `selectionIndex` metadata for item-level validation failures.
+128. Copy-select `draftId` type metadata hardening implemented (`VS3-IMP-121`): `POST /sites/:siteId/copy/select` `draftId` validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField`.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. Define and start the next deterministic copy-select hardening slice.
+2. `VS3-IMP-122` is in progress to add deterministic type metadata for copy-select `selections` array validation errors.
 
 ## Next
 
-1. Add the next highest-priority deterministic copy-select validation hardening item to backlog and execute it end-to-end.
+1. Complete `VS3-IMP-122` and continue through `VS3-IMP-123..125` deterministic copy-select top-level validation metadata hardening.
 
 ## Known Constraints
 

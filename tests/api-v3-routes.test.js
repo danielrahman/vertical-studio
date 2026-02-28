@@ -1732,6 +1732,8 @@ test('copy select requires draftId and reports invalidField details', async () =
     assert.equal(missingDraftIdBody.code, 'validation_error');
     assert.equal(missingDraftIdBody.message, 'draftId is required');
     assert.equal(missingDraftIdBody.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdBody.details.expectedType, 'string');
+    assert.equal(missingDraftIdBody.details.receivedType, 'undefined');
 
     const nonStringDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-select-draft-id/copy/select`, {
       method: 'POST',
@@ -1746,6 +1748,8 @@ test('copy select requires draftId and reports invalidField details', async () =
     assert.equal(nonStringDraftIdBody.code, 'validation_error');
     assert.equal(nonStringDraftIdBody.message, 'draftId is required');
     assert.equal(nonStringDraftIdBody.details.invalidField, 'draftId');
+    assert.equal(nonStringDraftIdBody.details.expectedType, 'string');
+    assert.equal(nonStringDraftIdBody.details.receivedType, 'number');
   } finally {
     await stopServer(server);
   }

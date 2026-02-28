@@ -132,6 +132,16 @@ function normalizeOptionalString(value) {
   return normalized || null;
 }
 
+function getValueType(value) {
+  if (value === null) {
+    return 'null';
+  }
+  if (Array.isArray(value)) {
+    return 'array';
+  }
+  return typeof value;
+}
+
 function getState(req) {
   if (!req.app.locals.v3State) {
     req.app.locals.v3State = {
@@ -1678,9 +1688,11 @@ function postCopySelect(req, res, next) {
   try {
     assertString(req.params.siteId, 'siteId');
     const draftId = req.body?.draftId;
-    if (!draftId || typeof draftId !== 'string') {
+    if (typeof draftId !== 'string' || !draftId.trim()) {
       throw createError('draftId is required', 400, 'validation_error', {
-        invalidField: 'draftId'
+        invalidField: 'draftId',
+        expectedType: 'string',
+        receivedType: getValueType(draftId)
       });
     }
     const unknownTopLevelFields = Object.keys(req.body)
