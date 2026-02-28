@@ -1904,10 +1904,13 @@ function postOverrides(req, res, next) {
 
       if (Array.isArray(req.body[key])) {
         const normalizedValues = req.body[key].map((item) => item.trim());
-        const hasEmptyValues = normalizedValues.some((value) => value.length === 0);
-        if (hasEmptyValues) {
+        const invalidIndexes = normalizedValues
+          .map((value, index) => (value.length === 0 ? index : null))
+          .filter((index) => index !== null);
+        if (invalidIndexes.length > 0) {
           throw createError(`Invalid override payload: ${key} must not contain empty values`, 400, 'invalid_override_payload', {
-            field: key
+            field: key,
+            invalidIndexes
           });
         }
 

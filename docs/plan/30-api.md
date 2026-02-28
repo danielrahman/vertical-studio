@@ -412,7 +412,7 @@ Request:
 ```
 
 Rules:
-1. Override fields in this payload are arrays of non-empty strings when provided (values are trimmed before validation/storage).
+1. Override fields in this payload are arrays of non-empty strings when provided (values are trimmed before validation/storage); blank-value validation failures include deterministic `field` and `invalidIndexes` details.
 2. `requiredSections`, `excludedSections`, and `pinnedSections` must use allowed section keys (`hero`, `value_props`, `about`, `process`, `timeline`, `portfolio`, `team`, `testimonials`, `stats`, `faq`, `cta`, `contact`, `legal`); unknown values return `400 invalid_override_payload` with lexicographically sorted `unknownSections` details plus lexicographically sorted `allowedSectionKeys` metadata.
 3. Override arrays must not contain duplicate values; duplicate-value validation failures return lexicographically sorted `duplicateValues` details.
 4. At least one override array must be present with at least one value (no-op override payloads are rejected with `400 invalid_override_payload` and lexicographically sorted `fields` details, plus deterministic cardinality metadata `minimumNonEmptyOverrideArrays` and `receivedNonEmptyOverrideArrays`).

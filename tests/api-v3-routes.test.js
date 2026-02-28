@@ -2735,6 +2735,8 @@ test('overrides rejects empty string values and trims values before duplicate ch
     const emptyValueBody = await emptyValueRes.json();
     assert.equal(emptyValueBody.code, 'invalid_override_payload');
     assert.equal(emptyValueBody.message, 'Invalid override payload: keywords must not contain empty values');
+    assert.equal(emptyValueBody.details.field, 'keywords');
+    assert.deepEqual(emptyValueBody.details.invalidIndexes, [1]);
 
     const normalizedDuplicateRes = await fetch(
       `${baseUrl}/api/v1/sites/site-override-string-normalization/overrides`,

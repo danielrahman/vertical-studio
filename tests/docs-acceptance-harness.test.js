@@ -1714,6 +1714,8 @@ test('WS-D contract: override string arrays reject blanks and persist trimmed va
     assert.equal(blankValueRes.status, 400);
     const blankValuePayload = await blankValueRes.json();
     assert.equal(blankValuePayload.code, 'invalid_override_payload');
+    assert.equal(blankValuePayload.details.field, 'keywords');
+    assert.deepEqual(blankValuePayload.details.invalidIndexes, [1]);
 
     const storedOverrideRes = await fetch(
       `${baseUrl}/api/v1/sites/site-wsd-overrides-string-normalization/overrides`,
