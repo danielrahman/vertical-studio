@@ -385,7 +385,7 @@ Rules:
 7. `selections` is required and must be an array; missing or non-array values return `400 validation_error` with deterministic `invalidField` details.
 8. `selections` must contain at least one item.
 9. If `selectedBy` is provided, it must match the authenticated actor role; server-side actor identity remains source of truth.
-10. Unknown top-level payload fields and unknown per-selection object fields are rejected with `400 validation_error`; top-level unknown-field errors include deterministic `invalidField: payload` details.
+10. Unknown top-level payload fields and unknown per-selection object fields are rejected with `400 validation_error`; top-level unknown-field errors include deterministic `invalidField: payload` and `allowedTopLevelFields` details.
 11. Selection-level validation failures for `selections` (empty array, tuple mismatch, duplicate tuple, selectedBy actor mismatch) return deterministic `invalidField` details.
 12. Per-item `selections` validation failures (item type, unknown fields, missing/invalid `slotId|locale|candidateId`, invalid `selectedBy`) return deterministic `invalidField` details using index-aware paths (for example `selections[0].locale`); invalid locale values include deterministic `allowedLocales` details, and invalid `selectedBy` values include deterministic `allowedSelectedByRoles` details.
 

@@ -127,6 +127,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 106. Copy-select locale allow-list detail output implemented (`VS3-IMP-099`): `POST /sites/:siteId/copy/select` invalid per-item locale values now include deterministic `allowedLocales` details alongside `invalidField` for operator triage.
 107. Copy-select selectedBy allow-list detail output implemented (`VS3-IMP-100`): `POST /sites/:siteId/copy/select` invalid per-item `selectedBy` values now include deterministic `allowedSelectedByRoles` details alongside `invalidField`.
 108. Copy-select unknown top-level payload invalid-field details implemented (`VS3-IMP-101`): `POST /sites/:siteId/copy/select` unknown top-level payload field validation errors now include deterministic `invalidField: payload` metadata alongside `unknownFields`.
+109. Copy-select unknown top-level payload allow-list details implemented (`VS3-IMP-102`): `POST /sites/:siteId/copy/select` unknown top-level payload field validation errors now include deterministic `allowedTopLevelFields` details alongside `invalidField` and `unknownFields`.
 
 ## In Progress
 
@@ -134,9 +135,9 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Complete `VS3-IMP-102` by adding deterministic `allowedTopLevelFields` details for copy-select unknown top-level payload field errors.
-2. Complete `VS3-IMP-103` by adding deterministic `allowedSelectionFields` details for copy-select per-item unknown field errors.
-3. Complete `VS3-IMP-104` by sorting copy-select unknown-field detail arrays deterministically.
+1. Complete `VS3-IMP-103` by adding deterministic `allowedSelectionFields` details for copy-select per-item unknown field errors.
+2. Complete `VS3-IMP-104` by sorting copy-select unknown-field detail arrays deterministically.
+3. Complete `VS3-IMP-105` by adding candidate tuple comparison details for copy-select slot/locale mismatch validation errors.
 
 ## Known Constraints
 

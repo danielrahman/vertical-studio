@@ -2140,6 +2140,11 @@ test('WS-D contract: copy selection rejects unknown payload fields', async () =>
     assert.equal(unknownTopLevelPayload.code, 'validation_error');
     assert.equal(unknownTopLevelPayload.details.invalidField, 'payload');
     assert.deepEqual(unknownTopLevelPayload.details.unknownFields, ['unknown']);
+    assert.deepEqual(unknownTopLevelPayload.details.allowedTopLevelFields, [
+      'draftId',
+      'selections',
+      'actorRole'
+    ]);
 
     const unknownSelectionFieldRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
       method: 'POST',

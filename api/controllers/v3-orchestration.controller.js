@@ -1680,7 +1680,8 @@ function postCopySelect(req, res, next) {
     if (unknownTopLevelFields.length > 0) {
       throw createError('copy select payload contains unknown top-level fields', 400, 'validation_error', {
         invalidField: 'payload',
-        unknownFields: unknownTopLevelFields
+        unknownFields: unknownTopLevelFields,
+        allowedTopLevelFields: Array.from(COPY_SELECT_ALLOWED_TOP_LEVEL_FIELDS)
       });
     }
 
