@@ -1035,18 +1035,51 @@ function loadRuntimeSnapshotByStorageKey(req, storageKey) {
   };
 }
 
+function toSnapshotGeneratedAtTimestamp(value) {
+  if (typeof value !== 'string') {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  const timestamp = Date.parse(value);
+  if (Number.isNaN(timestamp)) {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  return timestamp;
+}
+
+function compareRuntimeSnapshotCandidates(left, right) {
+  const leftGeneratedAt = toSnapshotGeneratedAtTimestamp(left.snapshot?.generatedAt);
+  const rightGeneratedAt = toSnapshotGeneratedAtTimestamp(right.snapshot?.generatedAt);
+  if (leftGeneratedAt !== rightGeneratedAt) {
+    return rightGeneratedAt - leftGeneratedAt;
+  }
+
+  return left.storageKey.localeCompare(right.storageKey);
+}
+
 function loadRuntimeSnapshotBySiteVersion(req, siteId, versionId) {
   const state = getState(req);
+  const candidates = [];
   for (const [storageKey, snapshot] of state.runtimeSnapshotsByStorageKey.entries()) {
     if (snapshot?.siteId === siteId && snapshot?.versionId === versionId) {
-      return {
-        siteId: snapshot.siteId,
-        versionId: snapshot.versionId,
+      candidates.push({
         storageKey,
-        immutable: true,
         snapshot
-      };
+      });
     }
+  }
+
+  if (candidates.length > 0) {
+    candidates.sort(compareRuntimeSnapshotCandidates);
+    const selected = candidates[0];
+    return {
+      siteId: selected.snapshot.siteId,
+      versionId: selected.snapshot.versionId,
+      storageKey: selected.storageKey,
+      immutable: true,
+      snapshot: selected.snapshot
+    };
   }
 
   throw createError('Runtime snapshot not found', 404, 'runtime_snapshot_not_found');

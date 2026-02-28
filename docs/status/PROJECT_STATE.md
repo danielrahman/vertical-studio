@@ -277,6 +277,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 256. Runtime-client storage-key not-found compatibility retry implemented (`VS3-IMP-250`): public-web runtime rendering now retries compatibility snapshot fetch by `siteId+versionId` when storage-key snapshot fetch fails with `runtime_snapshot_not_found` and resolve payload includes compatibility identifiers, with runtime-client coverage and runtime contract/readme text alignment.
 257. Runtime retry contract text lock implemented in docs completion assertions (`VS3-IMP-251`): docs acceptance now explicitly requires runtime API contract wording that mandates compatibility retry via `siteId+versionId` when by-storage-key fetch returns `runtime_snapshot_not_found`.
 258. Public-web runtime retry flow text lock implemented in docs completion assertions (`VS3-IMP-252`): docs acceptance now explicitly requires `apps/public-web/README.md` runtime flow wording for compatibility retry when by-storage-key fetch returns `runtime_snapshot_not_found`.
+259. Runtime compatibility duplicate-mapping deterministic selection implemented (`VS3-IMP-253`): compatibility snapshot fallback now deterministically selects the newest valid immutable snapshot by `snapshot.generatedAt` and resolves timestamp ties by lexicographically smallest `storageKey`, with API + WS-E acceptance coverage and runtime API contract text alignment.
 
 ## In Progress
 
@@ -285,7 +286,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after runtime retry wording locks (candidate: add API + WS-E acceptance coverage for compatibility snapshot fallback when runtime snapshot storage mapping has multiple historical entries for the same `siteId+versionId` and ensure deterministic selection).
+1. Select and start the next smallest non-hardening implementation slice after deterministic duplicate-mapping selection (candidate: add API + WS-E acceptance coverage for compatibility fallback when duplicate snapshots have missing/invalid `snapshot.generatedAt` values to lock deterministic valid-timestamp preference and storageKey tie-break behavior).
 
 ## Known Constraints
 

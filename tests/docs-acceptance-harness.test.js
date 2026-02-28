@@ -175,6 +175,10 @@ test('docs completion Test 2: locked decisions are represented in concrete contr
   );
   mustContain(apiContract, 'renderer should retry via compatibility `siteId+versionId` fetch.');
   mustContain(
+    apiContract,
+    'When compatibility lookup finds multiple immutable snapshots for the same `siteId+versionId`, selection is deterministic: newest valid `snapshot.generatedAt` wins, and ties are resolved by lexicographically smallest `storageKey`.'
+  );
+  mustContain(
     publicWebReadme,
     'If by-storage-key fetch returns `runtime_snapshot_not_found` and resolve response also includes `siteId+versionId`, retry via compatibility fetch `GET /api/v1/public/runtime/snapshot`.'
   );
@@ -3799,6 +3803,66 @@ test('WS-E contract: compatibility snapshot lookup succeeds when version storage
     assert.equal(compatibilitySnapshotBody.siteId, siteId);
     assert.equal(compatibilitySnapshotBody.versionId, publishBody.versionId);
     assert.equal(compatibilitySnapshotBody.storageKey, publishBody.storageKey);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('WS-E contract: compatibility snapshot fallback deterministically selects latest snapshot when duplicate site/version mappings exist', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-wse-compat-deterministic-duplicates';
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wse-compat-deterministic-duplicates',
+        proposalId: 'proposal-wse-compat-deterministic-duplicates',
+        host: 'wse-compat-deterministic-duplicates.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const staleStorageKey = `site-versions/${siteId}/stale-active-pointer.json`;
+    const deterministicTimestamp = '2030-01-01T00:00:00.000Z';
+    const historicalStorageKeyOlder = `site-versions/${siteId}/historical-older.json`;
+    const historicalStorageKeyZ = `site-versions/${siteId}/historical-z.json`;
+    const historicalStorageKeyA = `site-versions/${siteId}/historical-a.json`;
+    const state = app.locals.v3State;
+    const versions = state.siteVersions.get(siteId) || [];
+    const activeVersion = versions.find((item) => item.active);
+    assert.ok(activeVersion);
+    activeVersion.storageKey = staleStorageKey;
+
+    const publishedSnapshot = state.runtimeSnapshotsByStorageKey.get(publishBody.storageKey);
+    assert.ok(publishedSnapshot);
+
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyOlder, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-wse-compat-deterministic-older',
+      generatedAt: '2020-01-01T00:00:00.000Z'
+    });
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyZ, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-wse-compat-deterministic-z',
+      generatedAt: deterministicTimestamp
+    });
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyA, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-wse-compat-deterministic-a',
+      generatedAt: deterministicTimestamp
+    });
+
+    const compatibilitySnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=${encodeURIComponent(siteId)}&versionId=${encodeURIComponent(publishBody.versionId)}`
+    );
+    assert.equal(compatibilitySnapshotRes.status, 200);
+    const compatibilitySnapshotBody = await compatibilitySnapshotRes.json();
+    assert.equal(compatibilitySnapshotBody.storageKey, historicalStorageKeyA);
+    assert.equal(compatibilitySnapshotBody.snapshot.proposalId, 'proposal-wse-compat-deterministic-a');
+    assert.equal(compatibilitySnapshotBody.snapshot.generatedAt, deterministicTimestamp);
   } finally {
     await stopServer(server);
   }
