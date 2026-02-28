@@ -1169,6 +1169,7 @@ test('WS-F contract: publish rejects unknown top-level payload fields', async ()
     assert.equal(publishRes.status, 400);
     const payload = await publishRes.json();
     assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaDryRun', 'zetaDryRun']);
   } finally {
     await stopServer(server);
