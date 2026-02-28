@@ -140,15 +140,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 119. Copy-select mismatch selection-index details implemented (`VS3-IMP-112`): `POST /sites/:siteId/copy/select` tuple-mismatch validation errors now include deterministic `selectionIndex` for the failing selection tuple alongside existing mismatch comparison details.
 120. Copy-select duplicate tuple index details implemented (`VS3-IMP-113`): `POST /sites/:siteId/copy/select` duplicate tuple validation errors now include deterministic `firstSelectionIndex` and `duplicateSelectionIndex` details for the conflicting tuple.
 121. Copy-select selectedBy actor-mismatch selection-index details implemented (`VS3-IMP-114`): `POST /sites/:siteId/copy/select` selectedBy actor-mismatch validation errors now include deterministic `selectionIndex` for the failing selection tuple.
+122. Copy-select selection-level index metadata contract alignment implemented (`VS3-IMP-115`): `docs/plan/30-api.md` and WS-D acceptance coverage now explicitly require deterministic index metadata across applicable selection-level error families.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. `VS3-IMP-115` is in progress to align copy-select selection-level index-detail documentation and WS-D assertions.
+2. No task is currently marked `in_progress`; the next deterministic copy-select contract-hardening slice needs prioritization.
 
 ## Next
 
-1. Complete `VS3-IMP-115` and then define the next deterministic copy-select hardening slice.
+1. Define and prioritize the next deterministic copy-select hardening slice after `VS3-IMP-115`.
 
 ## Known Constraints
 

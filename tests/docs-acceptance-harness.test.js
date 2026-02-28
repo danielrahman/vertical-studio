@@ -1897,7 +1897,7 @@ test('WS-D contract: copy generation rejects unknown top-level payload fields', 
   }
 });
 
-test('WS-D contract: copy selection missing-candidate errors expose deterministic tuple details', async () => {
+test('WS-D contract: copy selection missing-candidate errors expose deterministic tuple and selection-index details', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -1925,7 +1925,7 @@ test('WS-D contract: copy selection missing-candidate errors expose deterministi
   }
 });
 
-test('WS-D contract: copy selection mismatch errors expose deterministic candidate tuple comparison details', async () => {
+test('WS-D contract: copy selection mismatch errors expose deterministic candidate tuple comparison and selection-index details', async () => {
   const { app, server, baseUrl } = await startServer();
 
   try {
@@ -1971,7 +1971,7 @@ test('WS-D contract: copy selection mismatch errors expose deterministic candida
   }
 });
 
-test('WS-D contract: copy selection enforces unique slot-locale tuples per request', async () => {
+test('WS-D contract: copy selection enforces unique slot-locale tuples and duplicate-index details', async () => {
   const { app, server, baseUrl } = await startServer();
 
   try {
@@ -2113,7 +2113,7 @@ test('WS-D contract: copy selection requires draftId with invalidField details',
   }
 });
 
-test('WS-D contract: copy selection selectedBy must match authenticated actor', async () => {
+test('WS-D contract: copy selection selectedBy mismatch exposes deterministic selection-index details', async () => {
   const { app, server, baseUrl } = await startServer();
 
   try {

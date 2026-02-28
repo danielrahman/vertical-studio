@@ -1542,7 +1542,7 @@ test('copy generate rejects unknown top-level payload fields', async () => {
   }
 });
 
-test('copy select returns deterministic tuple details when candidate is missing', async () => {
+test('copy select returns deterministic tuple and selection-index details when candidate is missing', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -1570,7 +1570,7 @@ test('copy select returns deterministic tuple details when candidate is missing'
   }
 });
 
-test('copy select rejects slotId/locale mismatch for an existing candidate', async () => {
+test('copy select rejects slotId/locale mismatch with deterministic selection-index details', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -1613,7 +1613,7 @@ test('copy select rejects slotId/locale mismatch for an existing candidate', asy
   }
 });
 
-test('copy select rejects duplicate slotId/locale selections in one request', async () => {
+test('copy select rejects duplicate slotId/locale selections with deterministic duplicate-index details', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -1751,7 +1751,7 @@ test('copy select requires draftId and reports invalidField details', async () =
   }
 });
 
-test('copy select selectedBy must match authenticated actor role', async () => {
+test('copy select selectedBy mismatch includes deterministic selection-index details', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
