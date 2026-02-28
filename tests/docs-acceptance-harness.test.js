@@ -473,7 +473,24 @@ test('WS-G contract: secret refs segment mismatch errors use invalidField metada
     assert.equal(nonStringTenantSlugPayload.details.expectedType, 'string');
     assert.equal(nonStringTenantSlugPayload.details.receivedType, 'array');
 
-    const response = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+    const providerMismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-segment',
+        ref: 'tenant.tenant-wsg-secret-segment.openai.api',
+        provider: 'anthropic',
+        key: 'api'
+      })
+    });
+    assert.equal(providerMismatchRes.status, 400);
+    const providerMismatchPayload = await providerMismatchRes.json();
+    assert.equal(providerMismatchPayload.code, 'validation_error');
+    assert.equal(providerMismatchPayload.details.invalidField, 'provider');
+    assert.equal(providerMismatchPayload.details.expectedSegment, 'openai');
+    assert.equal(providerMismatchPayload.details.receivedSegment, 'anthropic');
+
+    const keyMismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
@@ -484,10 +501,30 @@ test('WS-G contract: secret refs segment mismatch errors use invalidField metada
         key: 'other'
       })
     });
-    assert.equal(response.status, 400);
-    const payload = await response.json();
-    assert.equal(payload.code, 'validation_error');
-    assert.equal(payload.details.invalidField, 'key');
+    assert.equal(keyMismatchRes.status, 400);
+    const keyMismatchPayload = await keyMismatchRes.json();
+    assert.equal(keyMismatchPayload.code, 'validation_error');
+    assert.equal(keyMismatchPayload.details.invalidField, 'key');
+    assert.equal(keyMismatchPayload.details.expectedSegment, 'api');
+    assert.equal(keyMismatchPayload.details.receivedSegment, 'other');
+
+    const tenantSlugMismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-segment',
+        tenantSlug: 'other-tenant',
+        ref: 'tenant.tenant-wsg-secret-segment.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+    assert.equal(tenantSlugMismatchRes.status, 400);
+    const tenantSlugMismatchPayload = await tenantSlugMismatchRes.json();
+    assert.equal(tenantSlugMismatchPayload.code, 'validation_error');
+    assert.equal(tenantSlugMismatchPayload.details.invalidField, 'tenantSlug');
+    assert.equal(tenantSlugMismatchPayload.details.expectedSegment, 'tenant-wsg-secret-segment');
+    assert.equal(tenantSlugMismatchPayload.details.receivedSegment, 'other-tenant');
   } finally {
     await stopServer(server);
   }

@@ -2704,13 +2704,17 @@ function postSecretRef(req, res, next) {
 
     if (provider !== refParts.provider) {
       throw createError('provider must match ref segment', 400, 'validation_error', {
-        invalidField: 'provider'
+        invalidField: 'provider',
+        expectedSegment: refParts.provider,
+        receivedSegment: provider
       });
     }
 
     if (key !== refParts.key) {
       throw createError('key must match ref segment', 400, 'validation_error', {
-        invalidField: 'key'
+        invalidField: 'key',
+        expectedSegment: refParts.key,
+        receivedSegment: key
       });
     }
 
@@ -2719,7 +2723,9 @@ function postSecretRef(req, res, next) {
       const tenantSlug = assertSegment(payload.tenantSlug, 'tenantSlug');
       if (tenantSlug !== refParts.tenantSlug) {
         throw createError('tenantSlug must match ref segment', 400, 'validation_error', {
-          invalidField: 'tenantSlug'
+          invalidField: 'tenantSlug',
+          expectedSegment: refParts.tenantSlug,
+          receivedSegment: tenantSlug
         });
       }
     }

@@ -224,6 +224,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 203. Secret-ref required-field metadata contract alignment implemented (`VS3-IMP-196`): `POST /api/v1/secrets/refs` required `ref` and `tenantId` validation now has deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-G tests and API contract text.
 204. Secret-ref segment-field metadata contract alignment implemented (`VS3-IMP-197`): `POST /api/v1/secrets/refs` segment validation for `provider` and `key` now has deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-G tests and API contract text.
 205. Secret-ref optional-tenantSlug segment validation hardening implemented (`VS3-IMP-198`): `POST /api/v1/secrets/refs` now validates provided `tenantSlug` through segment rules with deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-G tests and API contract text.
+206. Secret-ref segment-mismatch metadata hardening implemented (`VS3-IMP-199`): `POST /api/v1/secrets/refs` `provider`/`key`/`tenantSlug` mismatch errors now include deterministic `expectedSegment` and `receivedSegment` metadata with API/WS-G contract coverage and plan text alignment.
 
 ## In Progress
 

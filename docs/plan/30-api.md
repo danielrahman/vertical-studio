@@ -533,8 +533,9 @@ Contract:
 2. Never store or return plaintext secret values.
 3. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
 4. Secret-ref required-field `validation_error` responses (`ref`, `tenantId`) include deterministic metadata (`invalidField`, `expectedType`, `receivedType`); segment checks (`provider`, `key`, and `tenantSlug` when provided) include deterministic `invalidField` and deterministic type metadata (`expectedType`, `receivedType`).
-5. Reassigning an existing secret ref to a different `tenantId` is rejected with `409 secret_ref_conflict` and deterministic `invalidField: tenantId` metadata.
-6. Plaintext secret payload-key rejection (`value`, `secret`, `secretValue`, `plaintext`, `token`, `apiKey`, `privateKey`) uses deterministic `invalidField` metadata for the offending key.
+5. Secret-ref segment mismatch responses (`provider`, `key`, `tenantSlug`) include deterministic mismatch metadata (`expectedSegment`, `receivedSegment`) alongside `invalidField`.
+6. Reassigning an existing secret ref to a different `tenantId` is rejected with `409 secret_ref_conflict` and deterministic `invalidField: tenantId` metadata.
+7. Plaintext secret payload-key rejection (`value`, `secret`, `secretValue`, `plaintext`, `token`, `apiKey`, `privateKey`) uses deterministic `invalidField` metadata for the offending key.
 
 ## 5. Error Codes
 Required additional codes:

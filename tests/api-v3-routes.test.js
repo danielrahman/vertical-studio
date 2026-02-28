@@ -4126,7 +4126,25 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     assert.equal(plaintextBody.code, 'validation_error');
     assert.equal(plaintextBody.details.invalidField, 'value');
 
-    const mismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+    const providerMismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'anthropic',
+        key: 'api'
+      })
+    });
+
+    assert.equal(providerMismatchRes.status, 400);
+    const providerMismatchBody = await providerMismatchRes.json();
+    assert.equal(providerMismatchBody.code, 'validation_error');
+    assert.equal(providerMismatchBody.details.invalidField, 'provider');
+    assert.equal(providerMismatchBody.details.expectedSegment, 'openai');
+    assert.equal(providerMismatchBody.details.receivedSegment, 'anthropic');
+
+    const keyMismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
@@ -4138,10 +4156,31 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
       })
     });
 
-    assert.equal(mismatchRes.status, 400);
-    const mismatchBody = await mismatchRes.json();
-    assert.equal(mismatchBody.code, 'validation_error');
-    assert.equal(mismatchBody.details.invalidField, 'key');
+    assert.equal(keyMismatchRes.status, 400);
+    const keyMismatchBody = await keyMismatchRes.json();
+    assert.equal(keyMismatchBody.code, 'validation_error');
+    assert.equal(keyMismatchBody.details.invalidField, 'key');
+    assert.equal(keyMismatchBody.details.expectedSegment, 'api');
+    assert.equal(keyMismatchBody.details.receivedSegment, 'other');
+
+    const tenantSlugMismatchRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-1',
+        tenantSlug: 'tenant-2',
+        ref: 'tenant.tenant-1.openai.api',
+        provider: 'openai',
+        key: 'api'
+      })
+    });
+
+    assert.equal(tenantSlugMismatchRes.status, 400);
+    const tenantSlugMismatchBody = await tenantSlugMismatchRes.json();
+    assert.equal(tenantSlugMismatchBody.code, 'validation_error');
+    assert.equal(tenantSlugMismatchBody.details.invalidField, 'tenantSlug');
+    assert.equal(tenantSlugMismatchBody.details.expectedSegment, 'tenant-1');
+    assert.equal(tenantSlugMismatchBody.details.receivedSegment, 'tenant-2');
 
     const validRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
