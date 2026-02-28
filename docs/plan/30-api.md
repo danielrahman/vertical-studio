@@ -384,6 +384,7 @@ Rules:
 6. If `selectedBy` is provided, it must match the authenticated actor role; server-side actor identity remains source of truth.
 7. Unknown top-level payload fields and unknown per-selection object fields are rejected with `400 validation_error`.
 8. Selection-level validation failures for `selections` (empty array, tuple mismatch, duplicate tuple, selectedBy actor mismatch) return deterministic `invalidField` details.
+9. Per-item `selections` validation failures (item type, unknown fields, missing/invalid `slotId|locale|candidateId`, invalid `selectedBy`) return deterministic `invalidField` details using index-aware paths (for example `selections[0].locale`).
 
 ### 4.6 Manual Override Lifecycle
 

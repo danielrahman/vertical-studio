@@ -1734,8 +1734,56 @@ test('copy select rejects unknown payload fields', async () => {
     const unknownSelectionFieldBody = await unknownSelectionFieldRes.json();
     assert.equal(unknownSelectionFieldBody.code, 'validation_error');
     assert.equal(unknownSelectionFieldBody.message, 'selection item contains unknown fields');
-    assert.equal(unknownSelectionFieldBody.details.field, 'selections[0]');
+    assert.equal(unknownSelectionFieldBody.details.invalidField, 'selections[0]');
     assert.deepEqual(unknownSelectionFieldBody.details.unknownFields, ['notes']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('copy select per-item validation failures report invalidField details', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-copy-select-item-errors';
+    const draftId = 'draft-copy-select-item-errors';
+    const assertInvalidSelectionField = async (selections, message, invalidField) => {
+      const response = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId,
+          selections
+        })
+      });
+      assert.equal(response.status, 400);
+      const payload = await response.json();
+      assert.equal(payload.code, 'validation_error');
+      assert.equal(payload.message, message);
+      assert.equal(payload.details.invalidField, invalidField);
+    };
+
+    await assertInvalidSelectionField([null], 'selection item must be an object', 'selections[0]');
+    await assertInvalidSelectionField(
+      [{ slotId: '', locale: 'cs-CZ', candidateId: 'candidate-1' }],
+      'selection slotId is required',
+      'selections[0].slotId'
+    );
+    await assertInvalidSelectionField(
+      [{ slotId: 'hero.h1', locale: 'de-DE', candidateId: 'candidate-1' }],
+      'selection locale must be one of cs-CZ or en-US',
+      'selections[0].locale'
+    );
+    await assertInvalidSelectionField(
+      [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: '' }],
+      'selection candidateId is required',
+      'selections[0].candidateId'
+    );
+    await assertInvalidSelectionField(
+      [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-1', selectedBy: 'editor' }],
+      'selection selectedBy must be one of internal_admin or owner',
+      'selections[0].selectedBy'
+    );
   } finally {
     await stopServer(server);
   }

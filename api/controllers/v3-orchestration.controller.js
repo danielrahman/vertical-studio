@@ -315,7 +315,7 @@ function assertCopySelectActorRole(req, state, siteId) {
 function assertCopySelectionShape(selection, index) {
   if (!selection || typeof selection !== 'object' || Array.isArray(selection)) {
     throw createError('selection item must be an object', 400, 'validation_error', {
-      field: `selections[${index}]`
+      invalidField: `selections[${index}]`
     });
   }
 
@@ -324,32 +324,32 @@ function assertCopySelectionShape(selection, index) {
   });
   if (unknownSelectionFields.length > 0) {
     throw createError('selection item contains unknown fields', 400, 'validation_error', {
-      field: `selections[${index}]`,
+      invalidField: `selections[${index}]`,
       unknownFields: unknownSelectionFields
     });
   }
 
   if (typeof selection.slotId !== 'string' || !selection.slotId.trim()) {
     throw createError('selection slotId is required', 400, 'validation_error', {
-      field: `selections[${index}].slotId`
+      invalidField: `selections[${index}].slotId`
     });
   }
 
   if (!COPY_LOCALES.has(selection.locale)) {
     throw createError('selection locale must be one of cs-CZ or en-US', 400, 'validation_error', {
-      field: `selections[${index}].locale`
+      invalidField: `selections[${index}].locale`
     });
   }
 
   if (typeof selection.candidateId !== 'string' || !selection.candidateId.trim()) {
     throw createError('selection candidateId is required', 400, 'validation_error', {
-      field: `selections[${index}].candidateId`
+      invalidField: `selections[${index}].candidateId`
     });
   }
 
   if (typeof selection.selectedBy !== 'undefined' && !COPY_SELECT_ACTOR_ROLES.has(selection.selectedBy)) {
     throw createError('selection selectedBy must be one of internal_admin or owner', 400, 'validation_error', {
-      field: `selections[${index}].selectedBy`
+      invalidField: `selections[${index}].selectedBy`
     });
   }
 }

@@ -120,6 +120,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 99. Copy-generate unsupported-locale field-key standardization implemented (`VS3-IMP-092`): `POST /sites/:siteId/copy/generate` now reports deterministic `validation_error` details using `invalidField` (instead of `field`) for unsupported locale validation failures.
 100. Copy-generate missing-version field-details implemented (`VS3-IMP-093`): `POST /sites/:siteId/copy/generate` now reports deterministic `validation_error` details (`invalidField`) when `verticalStandardVersion` is missing.
 101. Copy-select top-level selection field-key standardization implemented (`VS3-IMP-094`): `POST /sites/:siteId/copy/select` now reports deterministic `validation_error` details using `invalidField` (instead of `field`) for empty selections, tuple mismatch, duplicate tuple, and selectedBy actor mismatch errors.
+102. Copy-select per-item field-key standardization implemented (`VS3-IMP-095`): `POST /sites/:siteId/copy/select` now reports deterministic `validation_error` details using `invalidField` (instead of `field`) for per-item shape validation failures, including index-aware paths like `selections[0].locale`.
 
 ## In Progress
 
@@ -127,9 +128,9 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Complete `VS3-IMP-095` by standardizing deterministic `invalidField` details for copy-select per-item validation errors.
-2. Complete `VS3-IMP-096` by adding deterministic `invalidField` details for missing/non-array `selections` in copy-select requests.
-3. Define and prioritize the next copy-select validation contract hardening slice once `VS3-IMP-095` and `VS3-IMP-096` are complete.
+1. Complete `VS3-IMP-096` by adding deterministic `invalidField` details for missing/non-array `selections` in copy-select requests.
+2. Extend WS-D/API coverage to explicitly assert copy-select `selections` missing and non-array request-shape error details.
+3. Define and prioritize the next copy-select validation contract hardening slice once `VS3-IMP-096` is complete.
 
 ## Known Constraints
 
