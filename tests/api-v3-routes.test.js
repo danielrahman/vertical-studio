@@ -3269,6 +3269,82 @@ test('public runtime resolves active site version by host and serves immutable s
   }
 });
 
+test('published runtime snapshot prefers selected copy recommendations for mapped runtime slots', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-runtime-selected-copy';
+    const draftId = 'draft-runtime-selected-copy';
+    const proposalId = 'proposal-runtime-selected-copy';
+
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(generateRes.status, 200);
+
+    const selectRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [
+          {
+            slotId: 'hero.h1',
+            locale: 'cs-CZ',
+            candidateId: stableId(`${draftId}|hero.h1|cs-CZ|B`)
+          },
+          {
+            slotId: 'hero.subhead',
+            locale: 'cs-CZ',
+            candidateId: stableId(`${draftId}|hero.subhead|cs-CZ|B`)
+          },
+          {
+            slotId: 'contact.primary_cta_label',
+            locale: 'cs-CZ',
+            candidateId: stableId(`${draftId}|contact.primary_cta_label|cs-CZ|B`)
+          }
+        ]
+      })
+    });
+    assert.equal(selectRes.status, 200);
+
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        proposalId,
+        host: 'selected-copy-runtime.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const snapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(publishBody.storageKey)}`
+    );
+    assert.equal(snapshotRes.status, 200);
+    const snapshotBody = await snapshotRes.json();
+
+    const heroSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'hero');
+    assert.ok(heroSection);
+    assert.equal(heroSection.slots.h1, 'hero_h1_cs_B');
+    assert.equal(heroSection.slots.subhead, 'hero_subhead_cs_B');
+
+    const contactSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'contact');
+    assert.ok(contactSection);
+    assert.equal(contactSection.slots.primaryCtaLabel, 'contact_primary_cta_label_cs');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('rollback repoints active runtime version to exact prior immutable version', async () => {
   const { server, baseUrl } = await startServer();
 

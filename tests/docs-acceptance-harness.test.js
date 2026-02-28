@@ -3501,6 +3501,96 @@ test('WS-E invariant: post-publish draft edits do not alter live immutable runti
   }
 });
 
+test('WS-E contract: published runtime snapshot applies selected copy recommendations for mapped slots', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-wse-selected-copy';
+    const draftId = 'draft-wse-selected-copy';
+
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(generateRes.status, 200);
+
+    const candidates = app.locals.v3State.copyCandidatesByDraft.get(draftId) || [];
+    const heroH1Candidate = candidates.find(
+      (candidate) => candidate.slotId === 'hero.h1' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
+    );
+    assert.ok(heroH1Candidate);
+    const heroSubheadCandidate = candidates.find(
+      (candidate) => candidate.slotId === 'hero.subhead' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
+    );
+    assert.ok(heroSubheadCandidate);
+    const contactPrimaryCtaCandidate = candidates.find(
+      (candidate) =>
+        candidate.slotId === 'contact.primary_cta_label' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
+    );
+    assert.ok(contactPrimaryCtaCandidate);
+
+    const selectRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [
+          {
+            slotId: 'hero.h1',
+            locale: 'cs-CZ',
+            candidateId: heroH1Candidate.candidateId
+          },
+          {
+            slotId: 'hero.subhead',
+            locale: 'cs-CZ',
+            candidateId: heroSubheadCandidate.candidateId
+          },
+          {
+            slotId: 'contact.primary_cta_label',
+            locale: 'cs-CZ',
+            candidateId: contactPrimaryCtaCandidate.candidateId
+          }
+        ]
+      })
+    });
+    assert.equal(selectRes.status, 200);
+
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        proposalId: 'proposal-wse-selected-copy-v1',
+        host: 'wse-selected-copy.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const snapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(publishBody.storageKey)}`
+    );
+    assert.equal(snapshotRes.status, 200);
+    const snapshotBody = await snapshotRes.json();
+
+    const heroSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'hero');
+    assert.ok(heroSection);
+    assert.equal(heroSection.slots.h1, heroH1Candidate.text);
+    assert.equal(heroSection.slots.subhead, heroSubheadCandidate.text);
+
+    const contactSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'contact');
+    assert.ok(contactSection);
+    assert.equal(contactSection.slots.primaryCtaLabel, contactPrimaryCtaCandidate.text);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-E contract: runtime resolve requires host and reports deterministic type metadata', async () => {
   const { server, baseUrl } = await startServer();
 

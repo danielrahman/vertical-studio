@@ -70,6 +70,11 @@ const COPY_GENERATE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
 ]);
 const COPY_SELECT_ALLOWED_TOP_LEVEL_FIELDS = new Set(['draftId', 'selections', 'actorRole']);
 const COPY_SELECT_ALLOWED_SELECTION_FIELDS = new Set(['slotId', 'locale', 'candidateId', 'selectedBy']);
+const RUNTIME_SNAPSHOT_COPY_SLOT_MAPPINGS = [
+  { slotId: 'hero.h1', sectionId: 'hero', slotKey: 'h1' },
+  { slotId: 'hero.subhead', sectionId: 'hero', slotKey: 'subhead' },
+  { slotId: 'contact.primary_cta_label', sectionId: 'contact', slotKey: 'primaryCtaLabel' }
+];
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
 const OVERRIDE_ARRAY_KEYS = [
   'tone',
@@ -885,8 +890,50 @@ function countRequiredExtractionTodosForDraft(state, draftId) {
   return extractedFields.filter((field) => field.required && field.todo).length;
 }
 
-function buildRuntimeSnapshot({ siteId, versionId, draftId, proposalId }) {
-  return {
+function getRuntimeLocalePriority(locale) {
+  const localeIndex = COPY_REQUIRED_LOCALES.indexOf(locale);
+  return localeIndex === -1 ? Number.MAX_SAFE_INTEGER : localeIndex;
+}
+
+function resolveSelectedCopyTextBySlotId(state, draftId) {
+  const selections = state.copySelectionsByDraft.get(draftId) || [];
+  const candidates = state.copyCandidatesByDraft.get(draftId) || [];
+  const candidateById = new Map(candidates.map((candidate) => [candidate.candidateId, candidate]));
+  const selectedCandidateBySlotId = new Map();
+
+  selections.forEach((selection, selectionIndex) => {
+    const candidate = candidateById.get(selection.candidateId);
+    if (!candidate || candidate.slotId !== selection.slotId || candidate.locale !== selection.locale) {
+      return;
+    }
+    if (typeof candidate.text !== 'string' || !candidate.text.trim()) {
+      return;
+    }
+
+    const localePriority = getRuntimeLocalePriority(candidate.locale);
+    const existing = selectedCandidateBySlotId.get(candidate.slotId);
+    if (
+      !existing ||
+      localePriority < existing.localePriority ||
+      (localePriority === existing.localePriority && selectionIndex < existing.selectionIndex)
+    ) {
+      selectedCandidateBySlotId.set(candidate.slotId, {
+        text: candidate.text,
+        localePriority,
+        selectionIndex
+      });
+    }
+  });
+
+  const selectedTextBySlotId = new Map();
+  selectedCandidateBySlotId.forEach((selectedCandidate, slotId) => {
+    selectedTextBySlotId.set(slotId, selectedCandidate.text);
+  });
+  return selectedTextBySlotId;
+}
+
+function buildRuntimeSnapshot({ state, siteId, versionId, draftId, proposalId }) {
+  const snapshot = {
     siteId,
     versionId,
     draftId,
@@ -913,6 +960,23 @@ function buildRuntimeSnapshot({ siteId, versionId, draftId, proposalId }) {
       }
     ]
   };
+
+  const selectedTextBySlotId = resolveSelectedCopyTextBySlotId(state, draftId);
+  for (const mapping of RUNTIME_SNAPSHOT_COPY_SLOT_MAPPINGS) {
+    const selectedText = selectedTextBySlotId.get(mapping.slotId);
+    if (!selectedText) {
+      continue;
+    }
+
+    const section = snapshot.sections.find((item) => item.sectionId === mapping.sectionId);
+    if (!section || !section.slots || typeof section.slots !== 'object') {
+      continue;
+    }
+
+    section.slots[mapping.slotKey] = selectedText;
+  }
+
+  return snapshot;
 }
 
 function loadRuntimeSnapshotByStorageKey(req, storageKey) {
@@ -2325,6 +2389,7 @@ function postPublishSite(req, res, next) {
     state.runtimeSnapshotsByStorageKey.set(
       storageKey,
       buildRuntimeSnapshot({
+        state,
         siteId: req.params.siteId,
         versionId,
         draftId: req.body.draftId,

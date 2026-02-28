@@ -255,15 +255,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 234. CMS webhook unknown-payload received-allowed-field-count metadata hardening implemented (`VS3-IMP-227`): `POST /api/v1/cms/webhooks/publish` unknown top-level payload validation errors now include deterministic `receivedAllowedTopLevelFieldCount` metadata (count of allowed fields present in sorted `receivedTopLevelFields`) alongside deterministic unknown/received/allowed field metadata, with API/WS-C contract coverage and plan text alignment.
 235. CMS webhook unknown-payload received-allowed-field-list metadata hardening implemented (`VS3-IMP-228`): `POST /api/v1/cms/webhooks/publish` unknown top-level payload validation errors now include deterministic sorted `receivedAllowedTopLevelFields` metadata (allowed fields present in sorted `receivedTopLevelFields`) alongside deterministic unknown/received/allowed field metadata, with API/WS-C contract coverage and plan text alignment.
 236. CMS webhook unknown-payload received-allowed-field-index metadata hardening implemented (`VS3-IMP-229`): `POST /api/v1/cms/webhooks/publish` unknown top-level payload validation errors now include deterministic sorted `receivedAllowedTopLevelFieldIndexes` metadata (indexes into sorted `allowedTopLevelFields`) alongside deterministic unknown/received/allowed field metadata, with API/WS-C contract coverage and plan text alignment.
+237. Published runtime snapshot selected-copy mapping implemented (`VS3-IMP-230`): publish-time immutable snapshot generation now prefers selected copy candidate text for mapped runtime slots (`hero.h1`,`hero.subhead`,`contact.primary_cta_label`) with deterministic locale-priority fallback and API/WS-E contract coverage.
 
 ## In Progress
 
-1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. Define the next smallest unblocked deterministic hardening slice.
+1. No active implementation item is currently in progress.
+2. Hardening backlog is paused by request; next work should continue in a non-hardening category.
 
 ## Next
 
-1. Add and start the next highest-priority deterministic hardening backlog item.
+1. Select and start the next smallest unblocked non-hardening backlog item.
 
 ## Known Constraints
 
