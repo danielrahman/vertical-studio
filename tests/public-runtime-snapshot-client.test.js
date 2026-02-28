@@ -146,6 +146,51 @@ test('renderSiteFromRuntime falls back to site/version snapshot endpoint when st
   assert.equal(result.html.includes('Compatibility fetch path'), true);
 });
 
+test('renderSiteFromRuntime fallback path surfaces API error metadata', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'legacy-missing.example.test',
+        siteId: 'site-legacy-missing',
+        versionId: 'version-missing'
+      }),
+      jsonResponse(404, {
+        code: 'runtime_version_not_found',
+        message: 'Runtime version not found',
+        details: {
+          siteId: 'site-legacy-missing',
+          versionId: 'version-missing'
+        }
+      })
+    ],
+    calls
+  );
+
+  await assert.rejects(
+    renderSiteFromRuntime({
+      apiBaseUrl: 'http://localhost:3000',
+      host: 'legacy-missing.example.test',
+      fetchImpl
+    }),
+    (error) => {
+      assert.equal(error.code, 'runtime_version_not_found');
+      assert.equal(error.statusCode, 404);
+      assert.deepEqual(error.details, {
+        siteId: 'site-legacy-missing',
+        versionId: 'version-missing'
+      });
+      return true;
+    }
+  );
+
+  assert.equal(calls.length, 2);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot?siteId=site-legacy-missing&versionId=version-missing'
+  );
+});
+
 test('renderSiteFromRuntime throws deterministic error when resolve payload lacks storageKey and site/version pair', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(

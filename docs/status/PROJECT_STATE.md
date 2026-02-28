@@ -267,6 +267,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 246. Runtime client incomplete-resolve deterministic error handling implemented (`VS3-IMP-240`): `renderSiteFromRuntime` now throws `runtime_resolve_incomplete` when resolve payload lacks both `storageKey` and complete `siteId+versionId`, preventing ambiguous fallback assertion failures and adding explicit unit coverage.
 247. Runtime fallback contract text lock implemented in docs acceptance (`VS3-IMP-241`): docs completion assertions now enforce API contract wording for storage-key-first runtime fetch with compatibility `siteId+versionId` fallback.
 248. Runtime compatibility snapshot not-found coverage implemented (`VS3-IMP-242`): API and WS-E acceptance suites now assert compatibility `GET /api/v1/public/runtime/snapshot` returns `404 runtime_version_not_found` for unknown `siteId/versionId` combinations.
+249. Runtime-client compatibility error-propagation coverage implemented (`VS3-IMP-243`): public-web runtime client tests now assert compatibility fallback (`siteId+versionId`) surfaces API error metadata (`code`, `statusCode`, `details`) unchanged when snapshot fetch fails.
 
 ## In Progress
 
@@ -275,7 +276,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after runtime compatibility coverage expansion (candidate: public-web runtime client contract coverage for compatibility not-found/error propagation).
+1. Select and start the next smallest non-hardening implementation slice after runtime-client compatibility error propagation coverage (candidate: public-web runtime client trims/normalizes resolve payload edge cases in fallback mode).
 
 ## Known Constraints
 
