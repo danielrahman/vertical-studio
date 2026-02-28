@@ -1647,6 +1647,8 @@ test('copy select rejects duplicate slotId/locale selections in one request', as
     assert.equal(duplicateBody.code, 'validation_error');
     assert.equal(duplicateBody.message, 'selection tuple must be unique per slotId and locale');
     assert.equal(duplicateBody.details.invalidField, 'selections');
+    assert.equal(duplicateBody.details.firstSelectionIndex, 0);
+    assert.equal(duplicateBody.details.duplicateSelectionIndex, 1);
     assert.equal(duplicateBody.details.slotId, 'hero.h1');
     assert.equal(duplicateBody.details.locale, 'cs-CZ');
   } finally {

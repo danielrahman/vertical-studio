@@ -2012,6 +2012,8 @@ test('WS-D contract: copy selection enforces unique slot-locale tuples per reque
     assert.equal(duplicatePayload.code, 'validation_error');
     assert.equal(duplicatePayload.message, 'selection tuple must be unique per slotId and locale');
     assert.equal(duplicatePayload.details.invalidField, 'selections');
+    assert.equal(duplicatePayload.details.firstSelectionIndex, 0);
+    assert.equal(duplicatePayload.details.duplicateSelectionIndex, 1);
     assert.equal(duplicatePayload.details.slotId, 'hero.h1');
     assert.equal(duplicatePayload.details.locale, 'cs-CZ');
   } finally {

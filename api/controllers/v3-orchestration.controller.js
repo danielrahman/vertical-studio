@@ -1745,19 +1745,24 @@ function postCopySelect(req, res, next) {
       });
     }
 
-    const seenSelectionTuples = new Set();
-    const duplicateSelectionTuple = req.body.selections.find((selection) => {
+    const firstSelectionIndexByTuple = new Map();
+    const duplicateSelectionIndex = req.body.selections.findIndex((selection, selectionIndex) => {
       const tupleKey = `${selection.slotId}|${selection.locale}`;
-      if (seenSelectionTuples.has(tupleKey)) {
+      if (firstSelectionIndexByTuple.has(tupleKey)) {
         return true;
       }
-      seenSelectionTuples.add(tupleKey);
+      firstSelectionIndexByTuple.set(tupleKey, selectionIndex);
       return false;
     });
 
-    if (duplicateSelectionTuple) {
+    if (duplicateSelectionIndex !== -1) {
+      const duplicateSelectionTuple = req.body.selections[duplicateSelectionIndex];
+      const tupleKey = `${duplicateSelectionTuple.slotId}|${duplicateSelectionTuple.locale}`;
+      const firstSelectionIndex = firstSelectionIndexByTuple.get(tupleKey);
       throw createError('selection tuple must be unique per slotId and locale', 400, 'validation_error', {
         invalidField: 'selections',
+        firstSelectionIndex,
+        duplicateSelectionIndex,
         slotId: duplicateSelectionTuple.slotId,
         locale: duplicateSelectionTuple.locale
       });

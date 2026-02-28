@@ -138,15 +138,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 117. Copy-select missing-candidate requested tuple-alias details implemented (`VS3-IMP-110`): `POST /sites/:siteId/copy/select` `copy_candidate_not_found` errors now include deterministic `requestedSlotId` and `requestedLocale` aliases alongside existing tuple details.
 118. Copy-select missing-candidate selection-index details implemented (`VS3-IMP-111`): `POST /sites/:siteId/copy/select` `copy_candidate_not_found` errors now include deterministic `selectionIndex` for the failing selection tuple alongside existing tuple details.
 119. Copy-select mismatch selection-index details implemented (`VS3-IMP-112`): `POST /sites/:siteId/copy/select` tuple-mismatch validation errors now include deterministic `selectionIndex` for the failing selection tuple alongside existing mismatch comparison details.
+120. Copy-select duplicate tuple index details implemented (`VS3-IMP-113`): `POST /sites/:siteId/copy/select` duplicate tuple validation errors now include deterministic `firstSelectionIndex` and `duplicateSelectionIndex` details for the conflicting tuple.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. `VS3-IMP-113` is in progress to add deterministic first/duplicate tuple index details to copy-select duplicate tuple errors.
+2. `VS3-IMP-114` is in progress to add deterministic `selectionIndex` details to copy-select `selectedBy` actor-mismatch errors.
 
 ## Next
 
-1. Complete deterministic index-detail hardening for `VS3-IMP-113` through `VS3-IMP-115`.
+1. Complete deterministic index-detail hardening for `VS3-IMP-114` and `VS3-IMP-115`.
 
 ## Known Constraints
 
