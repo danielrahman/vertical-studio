@@ -294,6 +294,55 @@ test('renderSiteFromRuntime uses compatibility response selected by lexicographi
   assert.equal(result.html.includes('No valid generatedAt tie-break winner'), true);
 });
 
+test('renderSiteFromRuntime trims fallback siteId/versionId in storage-key not-found retry path', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'runtime-retry-trim.example.test',
+        siteId: '  site-retry-trim  ',
+        versionId: '  version-retry-trim  ',
+        storageKey: 'site-versions/site-retry-trim/stale-pointer.json'
+      }),
+      jsonResponse(404, {
+        code: 'runtime_snapshot_not_found',
+        message: 'Runtime snapshot not found',
+        details: {
+          storageKey: 'site-versions/site-retry-trim/stale-pointer.json'
+        }
+      }),
+      jsonResponse(200, {
+        siteId: 'site-retry-trim',
+        versionId: 'version-retry-trim',
+        storageKey: 'site-versions/site-retry-trim/version-retry-trim.json',
+        immutable: true,
+        snapshot: {
+          sections: []
+        }
+      })
+    ],
+    calls
+  );
+
+  const result = await renderSiteFromRuntime({
+    apiBaseUrl: 'http://localhost:3000',
+    host: 'runtime-retry-trim.example.test',
+    fetchImpl
+  });
+
+  assert.equal(calls.length, 3);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-retry-trim%2Fstale-pointer.json'
+  );
+  assert.equal(
+    calls[2],
+    'http://localhost:3000/api/v1/public/runtime/snapshot?siteId=site-retry-trim&versionId=version-retry-trim'
+  );
+  assert.equal(result.snapshot.storageKey, 'site-versions/site-retry-trim/version-retry-trim.json');
+  assert.equal(result.snapshot.immutable, true);
+});
+
 test('renderSiteFromRuntime falls back to site/version snapshot endpoint when storageKey is missing', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(
