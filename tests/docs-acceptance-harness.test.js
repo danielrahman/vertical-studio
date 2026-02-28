@@ -176,7 +176,7 @@ test('docs completion Test 2: locked decisions are represented in concrete contr
   mustContain(apiContract, 'renderer should retry via compatibility `siteId+versionId` fetch.');
   mustContain(
     apiContract,
-    'When compatibility lookup finds multiple immutable snapshots for the same `siteId+versionId`, selection is deterministic: newest valid `snapshot.generatedAt` wins, and ties are resolved by lexicographically smallest `storageKey`.'
+    'When compatibility lookup finds multiple immutable snapshots for the same `siteId+versionId`, selection is deterministic: newest valid `snapshot.generatedAt` wins, entries with missing/invalid `snapshot.generatedAt` are lowest priority, and ties are resolved by lexicographically smallest `storageKey`.'
   );
   mustContain(
     publicWebReadme,
@@ -3863,6 +3863,65 @@ test('WS-E contract: compatibility snapshot fallback deterministically selects l
     assert.equal(compatibilitySnapshotBody.storageKey, historicalStorageKeyA);
     assert.equal(compatibilitySnapshotBody.snapshot.proposalId, 'proposal-wse-compat-deterministic-a');
     assert.equal(compatibilitySnapshotBody.snapshot.generatedAt, deterministicTimestamp);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('WS-E contract: compatibility snapshot fallback prefers valid generatedAt entries over invalid or missing duplicate mappings', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-wse-compat-valid-generatedat-preferred';
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wse-compat-valid-generatedat-preferred',
+        proposalId: 'proposal-wse-compat-valid-generatedat-preferred',
+        host: 'wse-compat-valid-generatedat-preferred.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const staleStorageKey = `site-versions/${siteId}/stale-active-pointer.json`;
+    const historicalStorageKeyInvalid = `site-versions/${siteId}/historical-invalid.json`;
+    const historicalStorageKeyMissing = `site-versions/${siteId}/historical-missing.json`;
+    const historicalStorageKeyValid = `site-versions/${siteId}/historical-valid.json`;
+    const state = app.locals.v3State;
+    const versions = state.siteVersions.get(siteId) || [];
+    const activeVersion = versions.find((item) => item.active);
+    assert.ok(activeVersion);
+    activeVersion.storageKey = staleStorageKey;
+
+    const publishedSnapshot = state.runtimeSnapshotsByStorageKey.get(publishBody.storageKey);
+    assert.ok(publishedSnapshot);
+
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyInvalid, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-wse-compat-historical-invalid',
+      generatedAt: 'not-a-date'
+    });
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyMissing, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-wse-compat-historical-missing',
+      generatedAt: null
+    });
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyValid, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-wse-compat-historical-valid',
+      generatedAt: '2031-01-01T00:00:00.000Z'
+    });
+
+    const compatibilitySnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=${encodeURIComponent(siteId)}&versionId=${encodeURIComponent(publishBody.versionId)}`
+    );
+    assert.equal(compatibilitySnapshotRes.status, 200);
+    const compatibilitySnapshotBody = await compatibilitySnapshotRes.json();
+    assert.equal(compatibilitySnapshotBody.storageKey, historicalStorageKeyValid);
+    assert.equal(compatibilitySnapshotBody.snapshot.proposalId, 'proposal-wse-compat-historical-valid');
+    assert.equal(compatibilitySnapshotBody.snapshot.generatedAt, '2031-01-01T00:00:00.000Z');
   } finally {
     await stopServer(server);
   }

@@ -278,6 +278,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 257. Runtime retry contract text lock implemented in docs completion assertions (`VS3-IMP-251`): docs acceptance now explicitly requires runtime API contract wording that mandates compatibility retry via `siteId+versionId` when by-storage-key fetch returns `runtime_snapshot_not_found`.
 258. Public-web runtime retry flow text lock implemented in docs completion assertions (`VS3-IMP-252`): docs acceptance now explicitly requires `apps/public-web/README.md` runtime flow wording for compatibility retry when by-storage-key fetch returns `runtime_snapshot_not_found`.
 259. Runtime compatibility duplicate-mapping deterministic selection implemented (`VS3-IMP-253`): compatibility snapshot fallback now deterministically selects the newest valid immutable snapshot by `snapshot.generatedAt` and resolves timestamp ties by lexicographically smallest `storageKey`, with API + WS-E acceptance coverage and runtime API contract text alignment.
+260. Runtime compatibility invalid/missing timestamp priority coverage implemented (`VS3-IMP-254`): compatibility snapshot fallback contract now explicitly defines missing/invalid `snapshot.generatedAt` entries as lowest priority, and API + WS-E acceptance suites now verify valid timestamp entries are deterministically preferred across duplicate `siteId+versionId` mappings.
 
 ## In Progress
 
@@ -286,7 +287,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after deterministic duplicate-mapping selection (candidate: add API + WS-E acceptance coverage for compatibility fallback when duplicate snapshots have missing/invalid `snapshot.generatedAt` values to lock deterministic valid-timestamp preference and storageKey tie-break behavior).
+1. Select and start the next smallest non-hardening implementation slice after invalid/missing timestamp-priority coverage (candidate: add API + WS-E acceptance coverage for compatibility fallback when all duplicate `siteId+versionId` entries have missing/invalid `snapshot.generatedAt`, locking deterministic lexicographic `storageKey` tie-break behavior under no-valid-timestamp conditions).
 
 ## Known Constraints
 
