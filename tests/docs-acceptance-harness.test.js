@@ -1812,7 +1812,7 @@ test('WS-D contract: copy generation accepts only supported locales and rejects 
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-wsd-locales-1',
-        locales: ['cs-CZ', 'en-US', 'de-DE'],
+        locales: ['cs-CZ', 'en-US', 'zz-ZZ', 'de-DE'],
         verticalStandardVersion: '2026.02'
       })
     });
@@ -1820,7 +1820,8 @@ test('WS-D contract: copy generation accepts only supported locales and rejects 
     const invalidLocalePayload = await invalidLocaleRes.json();
     assert.equal(invalidLocalePayload.code, 'validation_error');
     assert.equal(invalidLocalePayload.details.invalidField, 'locales');
-    assert.deepEqual(invalidLocalePayload.details.unsupportedLocales, ['de-DE']);
+    assert.deepEqual(invalidLocalePayload.details.unsupportedLocales, ['de-DE', 'zz-ZZ']);
+    assert.deepEqual(invalidLocalePayload.details.allowedLocales, ['cs-CZ', 'en-US']);
 
     const missingLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-locales/copy/generate`, {
       method: 'POST',
@@ -1843,7 +1844,7 @@ test('WS-D contract: copy generation accepts only supported locales and rejects 
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId: 'draft-wsd-locales-1',
-        locales: ['cs-CZ', 'en-US', 'cs-CZ'],
+        locales: ['en-US', 'cs-CZ', 'en-US', 'cs-CZ'],
         verticalStandardVersion: '2026.02'
       })
     });
@@ -1852,7 +1853,7 @@ test('WS-D contract: copy generation accepts only supported locales and rejects 
     assert.equal(duplicateLocalePayload.code, 'validation_error');
     assert.equal(duplicateLocalePayload.message, 'locales must not contain duplicate values');
     assert.equal(duplicateLocalePayload.details.invalidField, 'locales');
-    assert.deepEqual(duplicateLocalePayload.details.duplicateLocales, ['cs-CZ']);
+    assert.deepEqual(duplicateLocalePayload.details.duplicateLocales, ['cs-CZ', 'en-US']);
   } finally {
     await stopServer(server);
   }

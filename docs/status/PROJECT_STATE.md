@@ -163,6 +163,8 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 142. Copy-generate unknown top-level invalid-field metadata hardening implemented (`VS3-IMP-135`): `POST /sites/:siteId/copy/generate` unknown top-level payload validation errors now include deterministic `invalidField` metadata (`payload`) alongside `unknownFields`, with API/WS-D contract coverage and plan text alignment.
 143. Copy-generate unknown top-level allowed-field metadata hardening implemented (`VS3-IMP-136`): `POST /sites/:siteId/copy/generate` unknown top-level payload validation errors now include deterministic `allowedTopLevelFields` metadata alongside `invalidField` and `unknownFields`, with API/WS-D contract coverage and plan text alignment.
 144. Copy-generate unknown-field sorting hardening implemented (`VS3-IMP-137`): `POST /sites/:siteId/copy/generate` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details alongside sorted `allowedTopLevelFields`, with API/WS-D contract coverage and plan text alignment.
+145. Copy-generate unsupported-locale detail sorting hardening implemented (`VS3-IMP-138`): `POST /sites/:siteId/copy/generate` unsupported locale validation errors now emit lexicographically sorted `unsupportedLocales` and `allowedLocales` details, with API/WS-D contract coverage and plan text alignment.
+146. Copy-generate duplicate-locale detail sorting hardening implemented (`VS3-IMP-139`): `POST /sites/:siteId/copy/generate` duplicate locale validation errors now emit lexicographically sorted `duplicateLocales` details, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 

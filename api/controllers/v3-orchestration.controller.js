@@ -1612,7 +1612,9 @@ function postCopyGenerate(req, res, next) {
         receivedItemTypes: invalidLocaleItemIndexes.map((index) => getValueType(requestedLocales[index]))
       });
     }
-    const duplicateLocales = Array.from(new Set(requestedLocales.filter((locale, index) => requestedLocales.indexOf(locale) !== index)));
+    const duplicateLocales = Array.from(
+      new Set(requestedLocales.filter((locale, index) => requestedLocales.indexOf(locale) !== index))
+    ).sort();
     if (duplicateLocales.length > 0) {
       throw createError('locales must not contain duplicate values', 400, 'validation_error', {
         invalidField: 'locales',
@@ -1620,12 +1622,12 @@ function postCopyGenerate(req, res, next) {
       });
     }
     const locales = requestedLocales;
-    const unsupportedLocales = locales.filter((locale) => !COPY_LOCALES.has(locale));
+    const unsupportedLocales = locales.filter((locale) => !COPY_LOCALES.has(locale)).sort();
     if (unsupportedLocales.length > 0) {
       throw createError('locales must contain only supported locales', 400, 'validation_error', {
         invalidField: 'locales',
         unsupportedLocales,
-        allowedLocales: Array.from(COPY_LOCALES)
+        allowedLocales: Array.from(COPY_LOCALES).sort()
       });
     }
     const missingLocales = COPY_REQUIRED_LOCALES.filter((locale) => !locales.includes(locale));
