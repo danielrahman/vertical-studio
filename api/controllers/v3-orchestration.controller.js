@@ -336,20 +336,23 @@ function assertCopySelectionShape(selection, index) {
 
   if (typeof selection.slotId !== 'string' || !selection.slotId.trim()) {
     throw createError('selection slotId is required', 400, 'validation_error', {
-      invalidField: `selections[${index}].slotId`
+      invalidField: `selections[${index}].slotId`,
+      selectionIndex: index
     });
   }
 
   if (!COPY_LOCALES.has(selection.locale)) {
     throw createError('selection locale must be one of cs-CZ or en-US', 400, 'validation_error', {
       invalidField: `selections[${index}].locale`,
+      selectionIndex: index,
       allowedLocales: Array.from(COPY_LOCALES).sort()
     });
   }
 
   if (typeof selection.candidateId !== 'string' || !selection.candidateId.trim()) {
     throw createError('selection candidateId is required', 400, 'validation_error', {
-      invalidField: `selections[${index}].candidateId`
+      invalidField: `selections[${index}].candidateId`,
+      selectionIndex: index
     });
   }
 

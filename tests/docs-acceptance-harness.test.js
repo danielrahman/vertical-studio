@@ -2266,13 +2266,15 @@ test('WS-D contract: copy selection per-item validation failures report invalidF
     await assertInvalidSelectionField(
       [{ slotId: '', locale: 'cs-CZ', candidateId: 'candidate-1' }],
       'selection slotId is required',
-      'selections[0].slotId'
+      'selections[0].slotId',
+      (details) => details.selectionIndex === 0
     );
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'de-DE', candidateId: 'candidate-1' }],
       'selection locale must be one of cs-CZ or en-US',
       'selections[0].locale',
       (details) =>
+        details.selectionIndex === 0 &&
         Array.isArray(details.allowedLocales) &&
         details.allowedLocales.length === 2 &&
         details.allowedLocales[0] === 'cs-CZ' &&
@@ -2281,7 +2283,8 @@ test('WS-D contract: copy selection per-item validation failures report invalidF
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: '' }],
       'selection candidateId is required',
-      'selections[0].candidateId'
+      'selections[0].candidateId',
+      (details) => details.selectionIndex === 0
     );
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-1', selectedBy: 'editor' }],
