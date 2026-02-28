@@ -74,6 +74,7 @@ const RUNTIME_SNAPSHOT_COPY_SLOT_MAPPINGS = [
   { slotId: 'hero.h1', sectionId: 'hero', slotKey: 'h1' },
   { slotId: 'hero.subhead', sectionId: 'hero', slotKey: 'subhead' },
   { slotId: 'hero.primary_cta_label', sectionId: 'hero', slotKey: 'primaryCtaLabel' },
+  { slotId: 'value_props.intro', sectionId: 'value_props', slotKey: 'intro' },
   { slotId: 'contact.primary_cta_label', sectionId: 'contact', slotKey: 'primaryCtaLabel' }
 ];
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
@@ -958,6 +959,14 @@ function buildRuntimeSnapshot({ state, siteId, versionId, draftId, proposalId })
         slots: {
           headline: 'Contact our team',
           primaryCtaLabel: 'Book consultation'
+        }
+      },
+      {
+        sectionId: 'value_props',
+        componentId: 'cards-3up',
+        variant: 'icon-top',
+        slots: {
+          intro: 'Selected value propositions tailored to your project goals.'
         }
       }
     ]
