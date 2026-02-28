@@ -352,6 +352,7 @@ test('WS-B contract: tenant create rejects unknown top-level payload fields', as
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.details.invalidField, 'payload');
     assert.deepEqual(payload.details.unknownFields, ['alphaMode', 'zetaMode']);
   } finally {
     await stopServer(server);
