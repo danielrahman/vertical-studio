@@ -3491,6 +3491,66 @@ test('public runtime compatibility snapshot fallback prefers valid generatedAt e
   }
 });
 
+test('public runtime compatibility snapshot fallback selects lexicographically smallest storageKey when duplicate mappings have no valid generatedAt', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-runtime-compat-no-valid-generatedat';
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-runtime-compat-no-valid-generatedat',
+        proposalId: 'proposal-runtime-compat-no-valid-generatedat',
+        host: 'compat-no-valid-generatedat.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const staleStorageKey = `site-versions/${siteId}/stale-active-pointer.json`;
+    const historicalStorageKeyC = `site-versions/${siteId}/historical-c.json`;
+    const historicalStorageKeyA = `site-versions/${siteId}/historical-a.json`;
+    const historicalStorageKeyB = `site-versions/${siteId}/historical-b.json`;
+    const state = app.locals.v3State;
+    const versions = state.siteVersions.get(siteId) || [];
+    const activeVersion = versions.find((item) => item.active);
+    assert.ok(activeVersion);
+    activeVersion.storageKey = staleStorageKey;
+
+    const publishedSnapshot = state.runtimeSnapshotsByStorageKey.get(publishBody.storageKey);
+    assert.ok(publishedSnapshot);
+    state.runtimeSnapshotsByStorageKey.delete(publishBody.storageKey);
+
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyC, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-runtime-compat-historical-c',
+      generatedAt: null
+    });
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyA, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-runtime-compat-historical-a',
+      generatedAt: 'not-a-date'
+    });
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyB, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-runtime-compat-historical-b',
+      generatedAt: undefined
+    });
+
+    const compatibilitySnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=${encodeURIComponent(siteId)}&versionId=${encodeURIComponent(publishBody.versionId)}`
+    );
+    assert.equal(compatibilitySnapshotRes.status, 200);
+    const compatibilitySnapshotBody = await compatibilitySnapshotRes.json();
+    assert.equal(compatibilitySnapshotBody.storageKey, historicalStorageKeyA);
+    assert.equal(compatibilitySnapshotBody.snapshot.proposalId, 'proposal-runtime-compat-historical-a');
+    assert.equal(compatibilitySnapshotBody.snapshot.generatedAt, 'not-a-date');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('published runtime snapshot prefers selected copy recommendations for mapped runtime slots', async () => {
   const { server, baseUrl } = await startServer();
 

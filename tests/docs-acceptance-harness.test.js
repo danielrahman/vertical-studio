@@ -176,7 +176,7 @@ test('docs completion Test 2: locked decisions are represented in concrete contr
   mustContain(apiContract, 'renderer should retry via compatibility `siteId+versionId` fetch.');
   mustContain(
     apiContract,
-    'When compatibility lookup finds multiple immutable snapshots for the same `siteId+versionId`, selection is deterministic: newest valid `snapshot.generatedAt` wins, entries with missing/invalid `snapshot.generatedAt` are lowest priority, and ties are resolved by lexicographically smallest `storageKey`.'
+    'When compatibility lookup finds multiple immutable snapshots for the same `siteId+versionId`, selection is deterministic: newest valid `snapshot.generatedAt` wins, entries with missing/invalid `snapshot.generatedAt` are lowest priority, and ties are resolved by lexicographically smallest `storageKey` (if no valid timestamps exist, lexicographically smallest `storageKey` is selected).'
   );
   mustContain(
     publicWebReadme,
@@ -3922,6 +3922,66 @@ test('WS-E contract: compatibility snapshot fallback prefers valid generatedAt e
     assert.equal(compatibilitySnapshotBody.storageKey, historicalStorageKeyValid);
     assert.equal(compatibilitySnapshotBody.snapshot.proposalId, 'proposal-wse-compat-historical-valid');
     assert.equal(compatibilitySnapshotBody.snapshot.generatedAt, '2031-01-01T00:00:00.000Z');
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('WS-E contract: compatibility snapshot fallback selects lexicographically smallest storageKey when duplicate mappings have no valid generatedAt', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-wse-compat-no-valid-generatedat';
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wse-compat-no-valid-generatedat',
+        proposalId: 'proposal-wse-compat-no-valid-generatedat',
+        host: 'wse-compat-no-valid-generatedat.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const staleStorageKey = `site-versions/${siteId}/stale-active-pointer.json`;
+    const historicalStorageKeyC = `site-versions/${siteId}/historical-c.json`;
+    const historicalStorageKeyA = `site-versions/${siteId}/historical-a.json`;
+    const historicalStorageKeyB = `site-versions/${siteId}/historical-b.json`;
+    const state = app.locals.v3State;
+    const versions = state.siteVersions.get(siteId) || [];
+    const activeVersion = versions.find((item) => item.active);
+    assert.ok(activeVersion);
+    activeVersion.storageKey = staleStorageKey;
+
+    const publishedSnapshot = state.runtimeSnapshotsByStorageKey.get(publishBody.storageKey);
+    assert.ok(publishedSnapshot);
+    state.runtimeSnapshotsByStorageKey.delete(publishBody.storageKey);
+
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyC, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-wse-compat-historical-c',
+      generatedAt: null
+    });
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyA, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-wse-compat-historical-a',
+      generatedAt: 'not-a-date'
+    });
+    state.runtimeSnapshotsByStorageKey.set(historicalStorageKeyB, {
+      ...publishedSnapshot,
+      proposalId: 'proposal-wse-compat-historical-b',
+      generatedAt: undefined
+    });
+
+    const compatibilitySnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=${encodeURIComponent(siteId)}&versionId=${encodeURIComponent(publishBody.versionId)}`
+    );
+    assert.equal(compatibilitySnapshotRes.status, 200);
+    const compatibilitySnapshotBody = await compatibilitySnapshotRes.json();
+    assert.equal(compatibilitySnapshotBody.storageKey, historicalStorageKeyA);
+    assert.equal(compatibilitySnapshotBody.snapshot.proposalId, 'proposal-wse-compat-historical-a');
+    assert.equal(compatibilitySnapshotBody.snapshot.generatedAt, 'not-a-date');
   } finally {
     await stopServer(server);
   }
