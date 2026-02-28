@@ -77,6 +77,7 @@ const RUNTIME_SNAPSHOT_COPY_SLOT_MAPPINGS = [
   { slotId: 'value_props.intro', sectionId: 'value_props', slotKey: 'intro' },
   { slotId: 'about.intro', sectionId: 'about', slotKey: 'intro' },
   { slotId: 'process.step_1_title', sectionId: 'process', slotKey: 'step1Title' },
+  { slotId: 'faq.q1', sectionId: 'faq', slotKey: 'question1' },
   { slotId: 'contact.primary_cta_label', sectionId: 'contact', slotKey: 'primaryCtaLabel' }
 ];
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
@@ -985,6 +986,14 @@ function buildRuntimeSnapshot({ state, siteId, versionId, draftId, proposalId })
         variant: 'numbered-steps',
         slots: {
           step1Title: 'Process step title placeholder for immutable runtime payload.'
+        }
+      },
+      {
+        sectionId: 'faq',
+        componentId: 'accordion',
+        variant: 'single-column',
+        slots: {
+          question1: 'FAQ question placeholder for immutable runtime payload.'
         }
       }
     ]
