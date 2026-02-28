@@ -671,6 +671,36 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(invalidExtractedFieldSourceUrlPayload.details.invalidField, 'extractedFields.sourceUrl');
     assert.deepEqual(invalidExtractedFieldSourceUrlPayload.details.invalidItemIndexes, [0]);
 
+    const invalidExtractedFieldMethodResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          extractedFields: [
+            {
+              fieldPath: 'brand.tagline',
+              value: 'Premium development team',
+              sourceUrl: 'https://example.test/about',
+              method: 'api',
+              confidence: 0.91
+            }
+          ]
+        })
+      }
+    );
+    assert.equal(invalidExtractedFieldMethodResponse.status, 400);
+    const invalidExtractedFieldMethodPayload = await invalidExtractedFieldMethodResponse.json();
+    assert.equal(invalidExtractedFieldMethodPayload.code, 'validation_error');
+    assert.equal(
+      invalidExtractedFieldMethodPayload.message,
+      'extractedFields.method must be one of dom, ocr, inference, manual when provided'
+    );
+    assert.equal(invalidExtractedFieldMethodPayload.details.invalidField, 'extractedFields.method');
+    assert.deepEqual(invalidExtractedFieldMethodPayload.details.invalidItemIndexes, [0]);
+    assert.deepEqual(invalidExtractedFieldMethodPayload.details.allowedMethods, ['dom', 'inference', 'manual', 'ocr']);
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

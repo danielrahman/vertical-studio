@@ -991,6 +991,28 @@ function postBootstrapFromExtraction(req, res, next) {
         invalidItemIndexes: invalidExtractedFieldSourceUrlItemIndexes
       });
     }
+    const invalidExtractedFieldMethodItemIndexes = rawExtractedFields.reduce((indexes, field, index) => {
+      if (!Object.prototype.hasOwnProperty.call(field, 'method')) {
+        return indexes;
+      }
+      const method = typeof field.method === 'string' ? field.method.trim() : '';
+      if (!EXTRACTION_METHODS.has(method)) {
+        indexes.push(index);
+      }
+      return indexes;
+    }, []);
+    if (invalidExtractedFieldMethodItemIndexes.length > 0) {
+      throw createError(
+        'extractedFields.method must be one of dom, ocr, inference, manual when provided',
+        400,
+        'validation_error',
+        {
+          invalidField: 'extractedFields.method',
+          invalidItemIndexes: invalidExtractedFieldMethodItemIndexes,
+          allowedMethods: Array.from(EXTRACTION_METHODS).sort()
+        }
+      );
+    }
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
     const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;
     const lowConfidenceProvided = Object.prototype.hasOwnProperty.call(req.body || {}, 'lowConfidence');

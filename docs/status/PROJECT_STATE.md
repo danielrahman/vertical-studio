@@ -1,6 +1,6 @@
 # Project State
 
-Last updated: 2026-02-27
+Last updated: 2026-02-28
 
 ## Current Goal
 
@@ -106,6 +106,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 85. Bootstrap `extractedFields` nested-shape enforcement implemented (`VS3-IMP-078`): bootstrap-from-extraction now rejects unknown keys inside `extractedFields` items with deterministic `validation_error` details (`invalidField`, `invalidItemFields`) when provided.
 86. Bootstrap `extractedFields[].fieldPath` type enforcement implemented (`VS3-IMP-079`): bootstrap-from-extraction now rejects non-string or blank `fieldPath` values when explicitly provided in extracted-field items, returning deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
 87. Bootstrap `extractedFields[].sourceUrl` type enforcement implemented (`VS3-IMP-080`): bootstrap-from-extraction now rejects invalid provided `sourceUrl` values (must be non-empty string or null) with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
+88. Bootstrap `extractedFields[].method` allow-list enforcement implemented (`VS3-IMP-081`): bootstrap-from-extraction now rejects invalid provided `method` values when explicitly present in extracted-field items and returns deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`, `allowedMethods`).
 
 ## In Progress
 

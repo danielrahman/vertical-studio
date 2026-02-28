@@ -585,6 +585,38 @@ test('WS-B contract: bootstrap-from-extraction enforces sourceUrl type when prov
   }
 });
 
+test('WS-B contract: bootstrap-from-extraction enforces method allow-list when provided', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap-shape/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-shape-9',
+        extractedFields: [
+          {
+            fieldPath: 'brand.tagline',
+            value: 'Premium development team',
+            sourceUrl: 'https://example.test/about',
+            method: 'api',
+            confidence: 0.91
+          }
+        ]
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'extractedFields.method must be one of dom, ocr, inference, manual when provided');
+    assert.equal(payload.details.invalidField, 'extractedFields.method');
+    assert.deepEqual(payload.details.invalidItemIndexes, [0]);
+    assert.deepEqual(payload.details.allowedMethods, ['dom', 'inference', 'manual', 'ocr']);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: vertical research build rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 
