@@ -160,6 +160,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 139. Copy-generate `locales` array type metadata hardening implemented (`VS3-IMP-132`): `POST /sites/:siteId/copy/generate` non-array `locales` validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField`, with API/WS-D contract coverage and plan text alignment.
 140. Copy-generate `locales` item type metadata hardening implemented (`VS3-IMP-133`): `POST /sites/:siteId/copy/generate` non-string `locales` item validation errors now include deterministic item type metadata (`expectedItemType`, `receivedItemTypes`) alongside `invalidField` and `invalidItemIndexes`, with API/WS-D contract coverage and plan text alignment.
 141. Copy-generate `highImpactOnlyThreeVariants` type metadata hardening implemented (`VS3-IMP-134`): `POST /sites/:siteId/copy/generate` invalid `highImpactOnlyThreeVariants` validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField` and `allowedValue`, with API/WS-D contract coverage and plan text alignment.
+142. Copy-generate unknown top-level invalid-field metadata hardening implemented (`VS3-IMP-135`): `POST /sites/:siteId/copy/generate` unknown top-level payload validation errors now include deterministic `invalidField` metadata (`payload`) alongside `unknownFields`, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 

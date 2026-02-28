@@ -344,7 +344,7 @@ Rules:
 8. `locales` may contain only `cs-CZ` and `en-US`; unsupported locales return `400 validation_error` with deterministic `invalidField` details.
 9. `locales` must include both required locales (`cs-CZ`, `en-US`); missing values return `400 validation_error` with deterministic `missingLocales` details.
 10. `verticalStandardVersion` is required for versioned prompt/audit reproducibility; missing or non-string values return `400 validation_error` with deterministic `invalidField` details and deterministic type metadata (`expectedType`, `receivedType`).
-11. Unknown top-level payload fields are rejected with `400 validation_error`.
+11. Unknown top-level payload fields are rejected with `400 validation_error` and deterministic `invalidField` metadata (`payload`).
 
 #### `GET /api/v1/sites/:siteId/copy/slots?draftId=:id`
 Read bounded slot definitions and generation status.

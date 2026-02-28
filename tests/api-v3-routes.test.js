@@ -1544,6 +1544,7 @@ test('copy generate rejects unknown top-level payload fields', async () => {
     const unknownFieldBody = await unknownFieldRes.json();
     assert.equal(unknownFieldBody.code, 'validation_error');
     assert.equal(unknownFieldBody.message, 'copy generate payload contains unknown top-level fields');
+    assert.equal(unknownFieldBody.details.invalidField, 'payload');
     assert.deepEqual(unknownFieldBody.details.unknownFields, ['promptMode']);
   } finally {
     await stopServer(server);
