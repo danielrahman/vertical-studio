@@ -3528,6 +3528,11 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
       (candidate) => candidate.slotId === 'hero.subhead' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
     );
     assert.ok(heroSubheadCandidate);
+    const heroPrimaryCtaCandidate = candidates.find(
+      (candidate) =>
+        candidate.slotId === 'hero.primary_cta_label' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
+    );
+    assert.ok(heroPrimaryCtaCandidate);
     const contactPrimaryCtaCandidate = candidates.find(
       (candidate) =>
         candidate.slotId === 'contact.primary_cta_label' && candidate.locale === 'cs-CZ' && candidate.variantKey === 'B'
@@ -3549,6 +3554,11 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
             slotId: 'hero.subhead',
             locale: 'cs-CZ',
             candidateId: heroSubheadCandidate.candidateId
+          },
+          {
+            slotId: 'hero.primary_cta_label',
+            locale: 'cs-CZ',
+            candidateId: heroPrimaryCtaCandidate.candidateId
           },
           {
             slotId: 'contact.primary_cta_label',
@@ -3582,6 +3592,7 @@ test('WS-E contract: published runtime snapshot applies selected copy recommenda
     assert.ok(heroSection);
     assert.equal(heroSection.slots.h1, heroH1Candidate.text);
     assert.equal(heroSection.slots.subhead, heroSubheadCandidate.text);
+    assert.equal(heroSection.slots.primaryCtaLabel, heroPrimaryCtaCandidate.text);
 
     const contactSection = snapshotBody.snapshot.sections.find((section) => section.sectionId === 'contact');
     assert.ok(contactSection);

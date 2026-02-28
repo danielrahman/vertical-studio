@@ -73,6 +73,7 @@ const COPY_SELECT_ALLOWED_SELECTION_FIELDS = new Set(['slotId', 'locale', 'candi
 const RUNTIME_SNAPSHOT_COPY_SLOT_MAPPINGS = [
   { slotId: 'hero.h1', sectionId: 'hero', slotKey: 'h1' },
   { slotId: 'hero.subhead', sectionId: 'hero', slotKey: 'subhead' },
+  { slotId: 'hero.primary_cta_label', sectionId: 'hero', slotKey: 'primaryCtaLabel' },
   { slotId: 'contact.primary_cta_label', sectionId: 'contact', slotKey: 'primaryCtaLabel' }
 ];
 const LOW_CONFIDENCE_THRESHOLD = 0.5;
@@ -946,7 +947,8 @@ function buildRuntimeSnapshot({ state, siteId, versionId, draftId, proposalId })
         variant: 'split-media',
         slots: {
           h1: 'Runtime snapshot placeholder headline',
-          subhead: 'Immutable runtime payload served by storage key'
+          subhead: 'Immutable runtime payload served by storage key',
+          primaryCtaLabel: 'Book consultation'
         }
       },
       {
