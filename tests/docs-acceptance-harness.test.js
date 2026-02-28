@@ -380,6 +380,23 @@ test('WS-G contract: secret refs required fields return deterministic invalidFie
     assert.equal(nonStringRefPayload.details.expectedType, 'string');
     assert.equal(nonStringRefPayload.details.receivedType, 'array');
 
+    const malformedRefRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        tenantId: 'tenant-wsg-secret-required',
+        ref: 'captcha.2captcha',
+        provider: '2captcha',
+        key: 'api'
+      })
+    });
+    assert.equal(malformedRefRes.status, 400);
+    const malformedRefPayload = await malformedRefRes.json();
+    assert.equal(malformedRefPayload.code, 'validation_error');
+    assert.equal(malformedRefPayload.details.invalidField, 'ref');
+    assert.equal(malformedRefPayload.details.expectedFormat, 'tenant.<slug>.<provider>.<key>');
+    assert.equal(malformedRefPayload.details.receivedRef, 'captcha.2captcha');
+
     const missingTenantIdRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

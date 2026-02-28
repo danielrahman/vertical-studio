@@ -277,7 +277,11 @@ function assertSegment(value, fieldName) {
 function parseSecretRef(ref) {
   const match = SECRET_REF_PATTERN.exec(ref);
   if (!match) {
-    throw createError('ref must match tenant.<slug>.<provider>.<key>', 400, 'validation_error', { invalidField: 'ref' });
+    throw createError('ref must match tenant.<slug>.<provider>.<key>', 400, 'validation_error', {
+      invalidField: 'ref',
+      expectedFormat: 'tenant.<slug>.<provider>.<key>',
+      receivedRef: ref
+    });
   }
 
   return {

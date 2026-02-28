@@ -3990,6 +3990,8 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     const invalidBody = await invalidRes.json();
     assert.equal(invalidBody.code, 'validation_error');
     assert.equal(invalidBody.details.invalidField, 'ref');
+    assert.equal(invalidBody.details.expectedFormat, 'tenant.<slug>.<provider>.<key>');
+    assert.equal(invalidBody.details.receivedRef, 'captcha.2captcha');
 
     const missingRefRes = await fetch(`${baseUrl}/api/v1/secrets/refs`, {
       method: 'POST',
