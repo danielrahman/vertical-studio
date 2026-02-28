@@ -75,9 +75,12 @@ function renderRuntimeHtml(snapshotEnvelope) {
 
 async function renderSiteFromRuntime({ apiBaseUrl, host, fetchImpl = fetch }) {
   const resolved = await resolveRuntimeVersion({ apiBaseUrl, host, fetchImpl });
+  const storageKey = typeof resolved?.storageKey === 'string' ? resolved.storageKey.trim() : '';
   const snapshot = await fetchRuntimeSnapshot({
     apiBaseUrl,
-    storageKey: resolved.storageKey,
+    storageKey: storageKey || undefined,
+    siteId: storageKey ? undefined : resolved?.siteId,
+    versionId: storageKey ? undefined : resolved?.versionId,
     fetchImpl
   });
 

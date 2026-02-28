@@ -3656,6 +3656,44 @@ test('public runtime snapshot by storage key returns immutable payload and 404 f
   }
 });
 
+test('public runtime snapshot compatibility endpoint returns immutable payload for siteId and versionId', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-compat/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-runtime-compat-v1',
+        proposalId: 'proposal-runtime-compat-v1',
+        host: 'runtime-compat.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const byStorageKeyRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(publishBody.storageKey)}`
+    );
+    assert.equal(byStorageKeyRes.status, 200);
+    const byStorageKeyBody = await byStorageKeyRes.json();
+
+    const compatibilityRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=${encodeURIComponent(publishBody.siteId)}&versionId=${encodeURIComponent(publishBody.versionId)}`
+    );
+    assert.equal(compatibilityRes.status, 200);
+    const compatibilityBody = await compatibilityRes.json();
+
+    assert.deepEqual(compatibilityBody, byStorageKeyBody);
+    assert.equal(compatibilityBody.immutable, true);
+    assert.equal(compatibilityBody.siteId, publishBody.siteId);
+    assert.equal(compatibilityBody.versionId, publishBody.versionId);
+    assert.equal(compatibilityBody.storageKey, publishBody.storageKey);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('public runtime snapshot by storage key requires storageKey query with deterministic invalidField type metadata', async () => {
   const { server, baseUrl } = await startServer();
 

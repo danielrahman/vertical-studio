@@ -3765,6 +3765,44 @@ test('WS-E baseline: local runtime resolve+snapshot latency remains within harne
   }
 });
 
+test('WS-E contract: runtime snapshot compatibility endpoint returns immutable payload for siteId and versionId', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-wse-runtime-compat/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wse-runtime-compat-v1',
+        proposalId: 'proposal-wse-runtime-compat-v1',
+        host: 'wse-runtime-compat.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const byStorageKeyRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(publishBody.storageKey)}`
+    );
+    assert.equal(byStorageKeyRes.status, 200);
+    const byStorageKeyPayload = await byStorageKeyRes.json();
+
+    const compatibilityRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=${encodeURIComponent(publishBody.siteId)}&versionId=${encodeURIComponent(publishBody.versionId)}`
+    );
+    assert.equal(compatibilityRes.status, 200);
+    const compatibilityPayload = await compatibilityRes.json();
+
+    assert.deepEqual(compatibilityPayload, byStorageKeyPayload);
+    assert.equal(compatibilityPayload.immutable, true);
+    assert.equal(compatibilityPayload.siteId, publishBody.siteId);
+    assert.equal(compatibilityPayload.versionId, publishBody.versionId);
+    assert.equal(compatibilityPayload.storageKey, publishBody.storageKey);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-E contract: runtime snapshot by storage key requires storageKey query with deterministic invalidField type metadata', async () => {
   const { server, baseUrl } = await startServer();
 

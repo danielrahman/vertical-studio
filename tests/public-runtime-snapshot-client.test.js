@@ -101,6 +101,51 @@ test('renderSiteFromRuntime resolves active version, fetches immutable snapshot,
   assert.equal(result.html.includes('Rendered from immutable snapshot'), true);
 });
 
+test('renderSiteFromRuntime falls back to site/version snapshot endpoint when storageKey is missing', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'legacy-runtime.example.test',
+        siteId: 'site-legacy',
+        versionId: 'version-7'
+      }),
+      jsonResponse(200, {
+        siteId: 'site-legacy',
+        versionId: 'version-7',
+        storageKey: 'site-versions/site-legacy/version-7.json',
+        immutable: true,
+        snapshot: {
+          sections: [
+            {
+              sectionId: 'hero',
+              slots: {
+                h1: 'Compatibility fetch path'
+              }
+            }
+          ]
+        }
+      })
+    ],
+    calls
+  );
+
+  const result = await renderSiteFromRuntime({
+    apiBaseUrl: 'http://localhost:3000',
+    host: 'legacy-runtime.example.test',
+    fetchImpl
+  });
+
+  assert.equal(calls.length, 2);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot?siteId=site-legacy&versionId=version-7'
+  );
+  assert.equal(result.resolved.versionId, 'version-7');
+  assert.equal(result.snapshot.immutable, true);
+  assert.equal(result.html.includes('Compatibility fetch path'), true);
+});
+
 test('fetchRuntimeSnapshot surfaces API error metadata', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(

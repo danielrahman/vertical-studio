@@ -262,15 +262,17 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 241. Process step-title selected-copy mapping implemented (`VS3-IMP-234`): publish-time immutable snapshot generation now prefers selected `process.step_1_title` candidate text for `process.slots.step1Title`, with deterministic fallback behavior and API/WS-E contract coverage.
 242. FAQ question selected-copy mapping implemented (`VS3-IMP-235`): publish-time immutable snapshot generation now prefers selected `faq.q1` candidate text for `faq.slots.question1`, with deterministic fallback behavior and API/WS-E contract coverage.
 243. FAQ answer selected-copy mapping implemented (`VS3-IMP-236`): publish-time immutable snapshot generation now prefers selected `faq.a1` candidate text for `faq.slots.answer1`, with deterministic fallback behavior and API/WS-E contract coverage.
+244. Public runtime client compatibility fallback implemented (`VS3-IMP-238`): `apps/public-web` runtime rendering now prefers immutable snapshot fetch by `storageKey` and falls back to compatibility fetch by `siteId+versionId` when resolve payload omits `storageKey`, with runtime-client tests and runtime contract text aligned.
+245. WS-E runtime compatibility snapshot success-path coverage implemented (`VS3-IMP-239`): API and docs-acceptance suites now assert that compatibility `GET /api/v1/public/runtime/snapshot?siteId=&versionId=` returns immutable payload fully equivalent to storage-key snapshot fetch.
 
 ## In Progress
 
 1. No active implementation item is currently in progress.
-2. Hardening backlog is paused by request; next work should continue in a non-hardening category.
+2. Hardening backlog remains paused by request; continue in non-hardening categories.
 
 ## Next
 
-1. Blocked on prioritization input: select the next non-hardening implementation category now that runtime selected-copy mapping coverage is complete for all currently generated slots.
+1. Define and start the next smallest non-hardening implementation slice after WS-E runtime compatibility coverage (candidate: strengthen public runtime client and WS-E contract alignment around compatibility fetch behavior).
 
 ## Known Constraints
 
