@@ -1922,6 +1922,51 @@ test('WS-D contract: copy selection missing-candidate errors expose deterministi
   }
 });
 
+test('WS-D contract: copy selection mismatch errors expose deterministic candidate tuple comparison details', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const draftId = 'draft-wsd-select-mismatch-1';
+    const generateRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-mismatch/copy/generate`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        locales: ['cs-CZ', 'en-US'],
+        verticalStandardVersion: '2026.02'
+      })
+    });
+    assert.equal(generateRes.status, 200);
+    const candidate = app.locals.v3State.copyCandidatesByDraft
+      .get(draftId)
+      .find((entry) => entry.slotId === 'hero.h1' && entry.locale === 'cs-CZ' && entry.variantKey === 'B');
+    assert.equal(Boolean(candidate), true);
+
+    const mismatchRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-mismatch/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId,
+        selections: [{ slotId: 'about.intro', locale: 'en-US', candidateId: candidate.candidateId }]
+      })
+    });
+    assert.equal(mismatchRes.status, 400);
+    const mismatchPayload = await mismatchRes.json();
+    assert.equal(mismatchPayload.code, 'validation_error');
+    assert.equal(mismatchPayload.message, 'selection must match candidate slotId and locale');
+    assert.equal(mismatchPayload.details.invalidField, 'selections');
+    assert.equal(mismatchPayload.details.candidateId, candidate.candidateId);
+    assert.equal(mismatchPayload.details.candidateSlotId, 'hero.h1');
+    assert.equal(mismatchPayload.details.candidateLocale, 'cs-CZ');
+    assert.equal(mismatchPayload.details.requestedSlotId, 'about.intro');
+    assert.equal(mismatchPayload.details.requestedLocale, 'en-US');
+    assert.equal(mismatchPayload.details.slotId, 'about.intro');
+    assert.equal(mismatchPayload.details.locale, 'en-US');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy selection enforces unique slot-locale tuples per request', async () => {
   const { app, server, baseUrl } = await startServer();
 

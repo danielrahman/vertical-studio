@@ -1726,9 +1726,14 @@ function postCopySelect(req, res, next) {
     });
 
     if (mismatchedSelection) {
+      const candidateTuple = candidateById.get(mismatchedSelection.candidateId);
       throw createError('selection must match candidate slotId and locale', 400, 'validation_error', {
         invalidField: 'selections',
         candidateId: mismatchedSelection.candidateId,
+        candidateSlotId: candidateTuple.slotId,
+        candidateLocale: candidateTuple.locale,
+        requestedSlotId: mismatchedSelection.slotId,
+        requestedLocale: mismatchedSelection.locale,
         slotId: mismatchedSelection.slotId,
         locale: mismatchedSelection.locale
       });

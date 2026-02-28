@@ -1598,6 +1598,12 @@ test('copy select rejects slotId/locale mismatch for an existing candidate', asy
     assert.equal(mismatchBody.message, 'selection must match candidate slotId and locale');
     assert.equal(mismatchBody.details.invalidField, 'selections');
     assert.equal(mismatchBody.details.candidateId, candidateId);
+    assert.equal(mismatchBody.details.candidateSlotId, 'hero.h1');
+    assert.equal(mismatchBody.details.candidateLocale, 'cs-CZ');
+    assert.equal(mismatchBody.details.requestedSlotId, 'about.intro');
+    assert.equal(mismatchBody.details.requestedLocale, 'en-US');
+    assert.equal(mismatchBody.details.slotId, 'about.intro');
+    assert.equal(mismatchBody.details.locale, 'en-US');
   } finally {
     await stopServer(server);
   }
