@@ -1958,6 +1958,7 @@ test('WS-D contract: copy selection mismatch errors expose deterministic candida
     assert.equal(mismatchPayload.code, 'validation_error');
     assert.equal(mismatchPayload.message, 'selection must match candidate slotId and locale');
     assert.equal(mismatchPayload.details.invalidField, 'selections');
+    assert.equal(mismatchPayload.details.selectionIndex, 0);
     assert.equal(mismatchPayload.details.candidateId, candidate.candidateId);
     assert.equal(mismatchPayload.details.candidateSlotId, 'hero.h1');
     assert.equal(mismatchPayload.details.candidateLocale, 'cs-CZ');

@@ -1724,15 +1724,17 @@ function postCopySelect(req, res, next) {
       });
     }
 
-    const mismatchedSelection = req.body.selections.find((selection) => {
+    const mismatchedSelectionIndex = req.body.selections.findIndex((selection) => {
       const candidate = candidateById.get(selection.candidateId);
       return candidate.slotId !== selection.slotId || candidate.locale !== selection.locale;
     });
 
-    if (mismatchedSelection) {
+    if (mismatchedSelectionIndex !== -1) {
+      const mismatchedSelection = req.body.selections[mismatchedSelectionIndex];
       const candidateTuple = candidateById.get(mismatchedSelection.candidateId);
       throw createError('selection must match candidate slotId and locale', 400, 'validation_error', {
         invalidField: 'selections',
+        selectionIndex: mismatchedSelectionIndex,
         candidateId: mismatchedSelection.candidateId,
         candidateSlotId: candidateTuple.slotId,
         candidateLocale: candidateTuple.locale,
