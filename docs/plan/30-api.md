@@ -380,11 +380,12 @@ Rules:
 2. `candidateId` must resolve to a generated candidate for the draft.
 3. Selected candidate `slotId` and `locale` must match the request tuple.
 4. A request must not contain duplicate `slotId`+`locale` tuples.
-5. `selections` must contain at least one item.
-6. If `selectedBy` is provided, it must match the authenticated actor role; server-side actor identity remains source of truth.
-7. Unknown top-level payload fields and unknown per-selection object fields are rejected with `400 validation_error`.
-8. Selection-level validation failures for `selections` (empty array, tuple mismatch, duplicate tuple, selectedBy actor mismatch) return deterministic `invalidField` details.
-9. Per-item `selections` validation failures (item type, unknown fields, missing/invalid `slotId|locale|candidateId`, invalid `selectedBy`) return deterministic `invalidField` details using index-aware paths (for example `selections[0].locale`).
+5. `selections` is required and must be an array; missing or non-array values return `400 validation_error` with deterministic `invalidField` details.
+6. `selections` must contain at least one item.
+7. If `selectedBy` is provided, it must match the authenticated actor role; server-side actor identity remains source of truth.
+8. Unknown top-level payload fields and unknown per-selection object fields are rejected with `400 validation_error`.
+9. Selection-level validation failures for `selections` (empty array, tuple mismatch, duplicate tuple, selectedBy actor mismatch) return deterministic `invalidField` details.
+10. Per-item `selections` validation failures (item type, unknown fields, missing/invalid `slotId|locale|candidateId`, invalid `selectedBy`) return deterministic `invalidField` details using index-aware paths (for example `selections[0].locale`).
 
 ### 4.6 Manual Override Lifecycle
 

@@ -1680,7 +1680,9 @@ function postCopySelect(req, res, next) {
     const selectedByRole = assertCopySelectActorRole(req, state, req.params.siteId);
 
     if (!Array.isArray(req.body?.selections)) {
-      throw createError('selections array is required', 400, 'validation_error');
+      throw createError('selections array is required', 400, 'validation_error', {
+        invalidField: 'selections'
+      });
     }
     if (req.body.selections.length === 0) {
       throw createError('selections array must contain at least one item', 400, 'validation_error', {

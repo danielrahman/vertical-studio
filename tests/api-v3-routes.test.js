@@ -1641,6 +1641,44 @@ test('copy select rejects empty selections array for internal_admin requests', a
   }
 });
 
+test('copy select requires selections array and reports invalidField details', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingSelectionsRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-select-required/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-copy-select-required'
+      })
+    });
+    assert.equal(missingSelectionsRes.status, 400);
+    const missingSelectionsBody = await missingSelectionsRes.json();
+    assert.equal(missingSelectionsBody.code, 'validation_error');
+    assert.equal(missingSelectionsBody.message, 'selections array is required');
+    assert.equal(missingSelectionsBody.details.invalidField, 'selections');
+
+    const nonArraySelectionsRes = await fetch(
+      `${baseUrl}/api/v1/sites/site-copy-select-required/copy/select`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-copy-select-required',
+          selections: 'hero.h1'
+        })
+      }
+    );
+    assert.equal(nonArraySelectionsRes.status, 400);
+    const nonArraySelectionsBody = await nonArraySelectionsRes.json();
+    assert.equal(nonArraySelectionsBody.code, 'validation_error');
+    assert.equal(nonArraySelectionsBody.message, 'selections array is required');
+    assert.equal(nonArraySelectionsBody.details.invalidField, 'selections');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('copy select selectedBy must match authenticated actor role', async () => {
   const { server, baseUrl } = await startServer();
 

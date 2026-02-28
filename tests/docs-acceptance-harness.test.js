@@ -1967,6 +1967,41 @@ test('WS-D contract: copy selection rejects empty selection arrays', async () =>
   }
 });
 
+test('WS-D contract: copy selection requires selections array with invalidField details', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingSelectionsRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-required/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-select-required-1'
+      })
+    });
+    assert.equal(missingSelectionsRes.status, 400);
+    const missingSelectionsPayload = await missingSelectionsRes.json();
+    assert.equal(missingSelectionsPayload.code, 'validation_error');
+    assert.equal(missingSelectionsPayload.message, 'selections array is required');
+    assert.equal(missingSelectionsPayload.details.invalidField, 'selections');
+
+    const nonArraySelectionsRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-select-required/copy/select`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-select-required-1',
+        selections: 'hero.h1'
+      })
+    });
+    assert.equal(nonArraySelectionsRes.status, 400);
+    const nonArraySelectionsPayload = await nonArraySelectionsRes.json();
+    assert.equal(nonArraySelectionsPayload.code, 'validation_error');
+    assert.equal(nonArraySelectionsPayload.message, 'selections array is required');
+    assert.equal(nonArraySelectionsPayload.details.invalidField, 'selections');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: copy selection selectedBy must match authenticated actor', async () => {
   const { app, server, baseUrl } = await startServer();
 
