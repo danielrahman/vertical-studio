@@ -3561,14 +3561,15 @@ test('secret refs endpoint rejects unknown top-level payload fields', async () =
         ref: 'tenant.tenant-secret-unknown.openai.api',
         provider: 'openai',
         key: 'api',
-        rotationWindowDays: 30
+        zetaRotationWindowDays: 30,
+        alphaRotationPolicy: 'monthly'
       })
     });
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'secret ref payload contains unknown top-level fields');
-    assert.deepEqual(payload.details.unknownFields, ['rotationWindowDays']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaRotationPolicy', 'zetaRotationWindowDays']);
   } finally {
     await stopServer(server);
   }

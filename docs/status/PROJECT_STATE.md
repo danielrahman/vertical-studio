@@ -174,6 +174,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 153. Publish unknown-field sorting hardening implemented (`VS3-IMP-146`): `POST /sites/:siteId/publish` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-F contract coverage and plan text alignment.
 154. Rollback unknown-field sorting hardening implemented (`VS3-IMP-147`): `POST /sites/:siteId/rollback/:versionId` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-E contract coverage and plan text alignment.
 155. CMS publish-webhook unknown-field sorting hardening implemented (`VS3-IMP-148`): `POST /cms/webhooks/publish` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-C contract coverage and plan text alignment.
+156. Secret-ref unknown-field sorting hardening implemented (`VS3-IMP-149`): `POST /secrets/refs` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-G contract coverage and plan text alignment.
 
 ## In Progress
 
