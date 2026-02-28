@@ -273,6 +273,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 252. Runtime-client non-string resolve-identifier edge coverage implemented (`VS3-IMP-246`): public-web runtime client tests now assert non-string fallback `siteId`/`versionId` values in resolve payload are treated as missing identifiers and deterministically trigger `runtime_resolve_incomplete`.
 253. Runtime-client trimmed-empty-`storageKey` edge coverage implemented (`VS3-IMP-247`): public-web runtime client tests now assert whitespace `storageKey` is treated as missing and combined invalid fallback identifiers deterministically trigger `runtime_resolve_incomplete`.
 254. Runtime-resolve fallback payload-shape API coverage and compatibility snapshot fallback implemented (`VS3-IMP-248`): API + WS-E acceptance suites now assert resolve responses preserve non-empty compatibility identifiers (`siteId`,`versionId`) when `storageKey` is unavailable, and compatibility snapshot reads now fall back to `siteId+versionId` lookup when stored version `storageKey` metadata is missing or stale.
+255. Runtime stale non-empty `storageKey` compatibility fallback coverage implemented (`VS3-IMP-249`): API + WS-E acceptance suites now assert that stale non-empty resolve/storage metadata still allows successful compatibility snapshot lookup by `siteId+versionId`, while direct by-storage-key lookup deterministically returns `runtime_snapshot_not_found`.
 
 ## In Progress
 
@@ -281,7 +282,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after runtime-resolve fallback payload-shape coverage (candidate: add explicit WS-E API + acceptance assertions that compatibility snapshot lookup succeeds when version metadata contains stale-but-non-empty `storageKey`).
+1. Select and start the next smallest non-hardening implementation slice after stale-`storageKey` compatibility coverage (candidate: add public-web runtime-client fallback from storage-key snapshot fetch failure (`runtime_snapshot_not_found`) to compatibility `siteId+versionId` fetch when resolve payload includes both identifiers).
 
 ## Known Constraints
 

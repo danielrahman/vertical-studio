@@ -3321,6 +3321,57 @@ test('public runtime resolve preserves fallback identifiers when storageKey is u
   }
 });
 
+test('public runtime compatibility snapshot lookup succeeds with stale non-empty version storageKey metadata', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-runtime-stale-storagekey';
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-runtime-stale-storagekey',
+        proposalId: 'proposal-runtime-stale-storagekey',
+        host: 'stale-storagekey.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const staleStorageKey = `site-versions/${siteId}/stale-version-key.json`;
+    const state = app.locals.v3State;
+    const versions = state.siteVersions.get(siteId) || [];
+    const activeVersion = versions.find((item) => item.active);
+    assert.ok(activeVersion);
+    activeVersion.storageKey = staleStorageKey;
+
+    const resolveRes = await fetch(`${baseUrl}/api/v1/public/runtime/resolve?host=stale-storagekey.example.test`);
+    assert.equal(resolveRes.status, 200);
+    const resolveBody = await resolveRes.json();
+    assert.equal(resolveBody.storageKey, staleStorageKey);
+    assert.equal(resolveBody.siteId, siteId);
+    assert.equal(resolveBody.versionId, publishBody.versionId);
+
+    const byStaleStorageKeyRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(staleStorageKey)}`
+    );
+    assert.equal(byStaleStorageKeyRes.status, 404);
+    const byStaleStorageKeyBody = await byStaleStorageKeyRes.json();
+    assert.equal(byStaleStorageKeyBody.code, 'runtime_snapshot_not_found');
+
+    const fallbackSnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=${encodeURIComponent(resolveBody.siteId)}&versionId=${encodeURIComponent(resolveBody.versionId)}`
+    );
+    assert.equal(fallbackSnapshotRes.status, 200);
+    const fallbackSnapshotBody = await fallbackSnapshotRes.json();
+    assert.equal(fallbackSnapshotBody.siteId, siteId);
+    assert.equal(fallbackSnapshotBody.versionId, publishBody.versionId);
+    assert.equal(fallbackSnapshotBody.storageKey, publishBody.storageKey);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('published runtime snapshot prefers selected copy recommendations for mapped runtime slots', async () => {
   const { server, baseUrl } = await startServer();
 

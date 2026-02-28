@@ -3747,6 +3747,57 @@ test('WS-E contract: runtime resolve preserves compatibility fallback identifier
   }
 });
 
+test('WS-E contract: compatibility snapshot lookup succeeds when version storageKey metadata is stale but non-empty', async () => {
+  const { app, server, baseUrl } = await startServer();
+
+  try {
+    const siteId = 'site-wse-runtime-stale-storagekey';
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wse-runtime-stale-storagekey',
+        proposalId: 'proposal-wse-runtime-stale-storagekey',
+        host: 'wse-stale-storagekey.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const staleStorageKey = `site-versions/${siteId}/stale-version-key.json`;
+    const state = app.locals.v3State;
+    const versions = state.siteVersions.get(siteId) || [];
+    const activeVersion = versions.find((item) => item.active);
+    assert.ok(activeVersion);
+    activeVersion.storageKey = staleStorageKey;
+
+    const resolveRes = await fetch(`${baseUrl}/api/v1/public/runtime/resolve?host=wse-stale-storagekey.example.test`);
+    assert.equal(resolveRes.status, 200);
+    const resolveBody = await resolveRes.json();
+    assert.equal(resolveBody.storageKey, staleStorageKey);
+    assert.equal(resolveBody.siteId, siteId);
+    assert.equal(resolveBody.versionId, publishBody.versionId);
+
+    const staleSnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot/by-storage-key?storageKey=${encodeURIComponent(staleStorageKey)}`
+    );
+    assert.equal(staleSnapshotRes.status, 404);
+    const staleSnapshotBody = await staleSnapshotRes.json();
+    assert.equal(staleSnapshotBody.code, 'runtime_snapshot_not_found');
+
+    const compatibilitySnapshotRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=${encodeURIComponent(resolveBody.siteId)}&versionId=${encodeURIComponent(resolveBody.versionId)}`
+    );
+    assert.equal(compatibilitySnapshotRes.status, 200);
+    const compatibilitySnapshotBody = await compatibilitySnapshotRes.json();
+    assert.equal(compatibilitySnapshotBody.siteId, siteId);
+    assert.equal(compatibilitySnapshotBody.versionId, publishBody.versionId);
+    assert.equal(compatibilitySnapshotBody.storageKey, publishBody.storageKey);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-E contract: rollback rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 
