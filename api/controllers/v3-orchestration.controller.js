@@ -1720,7 +1720,9 @@ function postCopySelect(req, res, next) {
     }
     if (req.body.selections.length === 0) {
       throw createError('selections array must contain at least one item', 400, 'validation_error', {
-        invalidField: 'selections'
+        invalidField: 'selections',
+        minimumSelections: 1,
+        receivedSelections: req.body.selections.length
       });
     }
     req.body.selections.forEach((selection, index) => assertCopySelectionShape(selection, index));

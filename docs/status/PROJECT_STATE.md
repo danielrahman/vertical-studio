@@ -148,15 +148,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 127. Copy-select per-item selection-index contract-doc alignment implemented (`VS3-IMP-120`): `docs/plan/30-api.md` Rule 12 and WS-D/API test labels now explicitly require deterministic per-item `selectionIndex` metadata for item-level validation failures.
 128. Copy-select `draftId` type metadata hardening implemented (`VS3-IMP-121`): `POST /sites/:siteId/copy/select` `draftId` validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField`.
 129. Copy-select `selections` type metadata hardening implemented (`VS3-IMP-122`): `POST /sites/:siteId/copy/select` `selections` required/type validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField`.
+130. Copy-select empty-selections cardinality metadata hardening implemented (`VS3-IMP-123`): `POST /sites/:siteId/copy/select` empty-array validation errors now include deterministic `minimumSelections` and `receivedSelections` details alongside `invalidField`.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. `VS3-IMP-123` is in progress to add deterministic cardinality metadata for empty `selections` copy-select validation errors.
+2. `VS3-IMP-124` is in progress to add deterministic expected-role metadata for copy-select `selectedBy` actor-mismatch validation errors.
 
 ## Next
 
-1. Complete `VS3-IMP-123` and continue through `VS3-IMP-124..125` deterministic copy-select top-level validation metadata hardening.
+1. Complete `VS3-IMP-124` and then align top-level validation metadata docs/acceptance coverage in `VS3-IMP-125`.
 
 ## Known Constraints
 

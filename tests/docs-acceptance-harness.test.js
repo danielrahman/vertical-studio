@@ -2038,6 +2038,8 @@ test('WS-D contract: copy selection rejects empty selection arrays', async () =>
     assert.equal(emptySelectPayload.code, 'validation_error');
     assert.equal(emptySelectPayload.message, 'selections array must contain at least one item');
     assert.equal(emptySelectPayload.details.invalidField, 'selections');
+    assert.equal(emptySelectPayload.details.minimumSelections, 1);
+    assert.equal(emptySelectPayload.details.receivedSelections, 0);
   } finally {
     await stopServer(server);
   }

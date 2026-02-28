@@ -1673,6 +1673,8 @@ test('copy select rejects empty selections array for internal_admin requests', a
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'selections array must contain at least one item');
     assert.equal(payload.details.invalidField, 'selections');
+    assert.equal(payload.details.minimumSelections, 1);
+    assert.equal(payload.details.receivedSelections, 0);
   } finally {
     await stopServer(server);
   }
