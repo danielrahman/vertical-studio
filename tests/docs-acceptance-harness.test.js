@@ -164,6 +164,7 @@ test('docs completion Test 2: locked decisions are represented in concrete contr
   const dataModel = readRepoFile('docs/plan/20-data-model.md');
   const apiContract = readRepoFile('docs/plan/30-api.md');
   const copySystem = readRepoFile('docs/plan/60-copy-system.md');
+  const publicWebReadme = readRepoFile('apps/public-web/README.md');
 
   mustContain(summary, 'Composition engine outputs exactly 3 curated variants.');
   mustContain(apiContract, 'Exactly three variants must always be returned.');
@@ -173,6 +174,10 @@ test('docs completion Test 2: locked decisions are represented in concrete contr
     'may use compatibility `siteId+versionId` snapshot fetch when resolve payload omits `storageKey`.'
   );
   mustContain(apiContract, 'renderer should retry via compatibility `siteId+versionId` fetch.');
+  mustContain(
+    publicWebReadme,
+    'If by-storage-key fetch returns `runtime_snapshot_not_found` and resolve response also includes `siteId+versionId`, retry via compatibility fetch `GET /api/v1/public/runtime/snapshot`.'
+  );
   mustContain(copySystem, 'Exactly three candidates (`A/B/C`) per high-impact slot and locale.');
   mustContain(dataModel, 'competitorCount: number; // minimum 15');
 });
