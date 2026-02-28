@@ -112,6 +112,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 91. Bootstrap `extractedFields[].confidence` range enforcement implemented (`VS3-IMP-084`): bootstrap-from-extraction now rejects provided `confidence` values outside `[0,1]` in extracted-field items and returns deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`, `allowedRange`) instead of silently clamping.
 92. Bootstrap `extractedFields[].extractedAt` non-empty-string enforcement implemented (`VS3-IMP-085`): bootstrap-from-extraction now rejects non-string or blank provided `extractedAt` values in extracted-field items with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
 93. Bootstrap `extractedFields[].extractedAt` ISO-8601 enforcement implemented (`VS3-IMP-086`): bootstrap-from-extraction now rejects non-ISO-8601 provided `extractedAt` datetime strings in extracted-field items with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
+94. Copy-generate `locales` array-type enforcement implemented (`VS3-IMP-087`): `POST /sites/:siteId/copy/generate` now rejects non-array provided `locales` payload values with deterministic `validation_error` details (`invalidField`) instead of coercing to empty arrays.
 
 ## In Progress
 
