@@ -2214,10 +2214,10 @@ test('WS-D contract: copy selection rejects unknown payload fields', async () =>
     assert.equal(unknownSelectionFieldPayload.details.invalidField, 'selections[0]');
     assert.deepEqual(unknownSelectionFieldPayload.details.unknownFields, ['alphaNote', 'zetaNote']);
     assert.deepEqual(unknownSelectionFieldPayload.details.allowedSelectionFields, [
-      'slotId',
-      'locale',
       'candidateId',
-      'selectedBy'
+      'locale',
+      'selectedBy',
+      'slotId'
     ]);
   } finally {
     await stopServer(server);

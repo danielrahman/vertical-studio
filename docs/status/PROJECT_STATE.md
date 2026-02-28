@@ -132,15 +132,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 111. Copy-select unknown-field array sorting implemented (`VS3-IMP-104`): `POST /sites/:siteId/copy/select` now emits lexicographically sorted `unknownFields` detail arrays for both top-level and per-item unknown-field validation errors.
 112. Copy-select mismatch tuple-comparison details implemented (`VS3-IMP-105`): `POST /sites/:siteId/copy/select` tuple-mismatch validation errors now include deterministic candidate-vs-request comparison details (`candidateSlotId`, `candidateLocale`, `requestedSlotId`, `requestedLocale`) alongside existing tuple fields.
 113. Copy-select unknown top-level allowed-fields sorting implemented (`VS3-IMP-106`): `POST /sites/:siteId/copy/select` unknown top-level payload validation errors now emit lexicographically sorted `allowedTopLevelFields` values for deterministic operator output.
+114. Copy-select unknown per-item allowed-fields sorting implemented (`VS3-IMP-107`): `POST /sites/:siteId/copy/select` unknown per-item selection-field validation errors now emit lexicographically sorted `allowedSelectionFields` values for deterministic operator output.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. Copy-select error-detail hardening is continuing with `VS3-IMP-107` (`allowedSelectionFields` sorting) now in progress.
+2. Copy-select error-detail hardening is continuing with `VS3-IMP-108` (`allowedLocales` sorting) now in progress.
 
 ## Next
 
-1. Complete remaining copy-select deterministic error-detail hardening tasks `VS3-IMP-107` through `VS3-IMP-110`.
+1. Complete remaining copy-select deterministic error-detail hardening tasks `VS3-IMP-108` through `VS3-IMP-110`.
 
 ## Known Constraints
 
