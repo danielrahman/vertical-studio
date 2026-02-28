@@ -21,6 +21,15 @@ const COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS = new Set([
 ]);
 const TENANT_CREATE_ALLOWED_TOP_LEVEL_FIELDS = new Set(['tenantId', 'name', 'slug']);
 const BOOTSTRAP_ALLOWED_TOP_LEVEL_FIELDS = new Set(['draftId', 'extractedFields', 'lowConfidence', 'sitePolicy']);
+const BOOTSTRAP_EXTRACTED_FIELD_ALLOWED_FIELDS = new Set([
+  'fieldPath',
+  'value',
+  'sourceUrl',
+  'method',
+  'confidence',
+  'extractedAt',
+  'required'
+]);
 const BOOTSTRAP_SITE_POLICY_ALLOWED_FIELDS = new Set(['allowOwnerDraftCopyEdits']);
 const VERTICAL_RESEARCH_BUILD_ALLOWED_TOP_LEVEL_FIELDS = new Set([
   'targetCompetitorCount',
@@ -932,6 +941,22 @@ function postBootstrapFromExtraction(req, res, next) {
       throw createError('extractedFields must contain only object items', 400, 'validation_error', {
         invalidField: 'extractedFields',
         invalidItemIndexes: invalidExtractedFieldItemIndexes
+      });
+    }
+    const invalidExtractedFieldItemFields = rawExtractedFields.reduce((items, field, index) => {
+      const unknownFields = Object.keys(field).filter((key) => !BOOTSTRAP_EXTRACTED_FIELD_ALLOWED_FIELDS.has(key));
+      if (unknownFields.length > 0) {
+        items.push({
+          index,
+          unknownFields
+        });
+      }
+      return items;
+    }, []);
+    if (invalidExtractedFieldItemFields.length > 0) {
+      throw createError('extractedFields items contain unknown fields', 400, 'validation_error', {
+        invalidField: 'extractedFields',
+        invalidItemFields: invalidExtractedFieldItemFields
       });
     }
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));

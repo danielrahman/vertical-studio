@@ -165,10 +165,11 @@ Contract:
 3. Set `site_drafts.low_confidence=true` when any required field is TODO.
 4. If `extractedFields` is provided, it must be an array.
 5. `extractedFields` may contain only object items.
-6. If `lowConfidence` is provided, it must be a boolean.
-7. If `sitePolicy` is provided, it must be an object.
-8. `sitePolicy` may contain only `allowOwnerDraftCopyEdits`.
-9. Unknown top-level payload fields are rejected with `400 validation_error`.
+6. `extractedFields` items may contain only `fieldPath`, `value`, `sourceUrl`, `method`, `confidence`, `extractedAt`, and `required`.
+7. If `lowConfidence` is provided, it must be a boolean.
+8. If `sitePolicy` is provided, it must be an object.
+9. `sitePolicy` may contain only `allowOwnerDraftCopyEdits`.
+10. Unknown top-level payload fields are rejected with `400 validation_error`.
 
 ### 4.2 Vertical Intelligence Lifecycle
 

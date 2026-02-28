@@ -491,6 +491,38 @@ test('WS-B contract: bootstrap-from-extraction requires object items inside extr
   }
 });
 
+test('WS-B contract: bootstrap-from-extraction rejects unknown nested extractedFields item keys', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap-shape/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-shape-6',
+        extractedFields: [
+          {
+            fieldPath: 'brand.tagline',
+            value: 'Premium development team',
+            sourceUrl: 'https://example.test/about',
+            method: 'dom',
+            confidence: 0.91,
+            legacyConfidence: 91
+          }
+        ]
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'extractedFields items contain unknown fields');
+    assert.equal(payload.details.invalidField, 'extractedFields');
+    assert.deepEqual(payload.details.invalidItemFields, [{ index: 0, unknownFields: ['legacyConfidence'] }]);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: vertical research build rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 

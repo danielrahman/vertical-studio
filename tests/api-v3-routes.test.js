@@ -584,6 +584,35 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(nonObjectExtractedFieldItemPayload.details.invalidField, 'extractedFields');
     assert.deepEqual(nonObjectExtractedFieldItemPayload.details.invalidItemIndexes, [0, 1]);
 
+    const unknownExtractedFieldItemFieldResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          extractedFields: [
+            {
+              fieldPath: 'brand.tagline',
+              value: 'Premium development team',
+              sourceUrl: 'https://example.test/about',
+              method: 'dom',
+              confidence: 0.91,
+              legacyConfidence: 91
+            }
+          ]
+        })
+      }
+    );
+    assert.equal(unknownExtractedFieldItemFieldResponse.status, 400);
+    const unknownExtractedFieldItemFieldPayload = await unknownExtractedFieldItemFieldResponse.json();
+    assert.equal(unknownExtractedFieldItemFieldPayload.code, 'validation_error');
+    assert.equal(unknownExtractedFieldItemFieldPayload.message, 'extractedFields items contain unknown fields');
+    assert.equal(unknownExtractedFieldItemFieldPayload.details.invalidField, 'extractedFields');
+    assert.deepEqual(unknownExtractedFieldItemFieldPayload.details.invalidItemFields, [
+      { index: 0, unknownFields: ['legacyConfidence'] }
+    ]);
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,
