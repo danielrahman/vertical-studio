@@ -2674,18 +2674,20 @@ function postSecretRef(req, res, next) {
   try {
     assertInternalAdmin(req);
     assertNoPlaintextSecretPayload(req.body);
-    const unknownTopLevelFields = Object.keys(req.body || {})
-      .filter((field) => {
+    const receivedTopLevelFields = Object.keys(req.body || {}).sort();
+    const unknownTopLevelFields = receivedTopLevelFields.filter((field) => {
         return !SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS.has(field);
-      })
-      .sort();
+      });
     if (unknownTopLevelFields.length > 0) {
       throw createError('secret ref payload contains unknown top-level fields', 400, 'validation_error', {
         invalidField: 'payload',
         unknownFields: unknownTopLevelFields,
         unknownTopLevelFieldCount: unknownTopLevelFields.length,
-        receivedTopLevelFieldCount: Object.keys(req.body || {}).length,
-        receivedTopLevelFields: Object.keys(req.body || {}).sort(),
+        unknownTopLevelFieldIndexes: unknownTopLevelFields.map((field) => {
+          return receivedTopLevelFields.indexOf(field);
+        }),
+        receivedTopLevelFieldCount: receivedTopLevelFields.length,
+        receivedTopLevelFields,
         allowedTopLevelFieldCount: SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS.size,
         allowedTopLevelFields: Array.from(SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS).sort()
       });

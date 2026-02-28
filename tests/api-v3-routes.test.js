@@ -4333,6 +4333,7 @@ test('secret refs endpoint rejects unknown top-level payload fields', async () =
     assert.equal(payload.message, 'secret ref payload contains unknown top-level fields');
     assert.equal(payload.details.invalidField, 'payload');
     assert.equal(payload.details.unknownTopLevelFieldCount, 2);
+    assert.deepEqual(payload.details.unknownTopLevelFieldIndexes, [0, 6]);
     assert.equal(payload.details.receivedTopLevelFieldCount, 7);
     assert.deepEqual(payload.details.receivedTopLevelFields, [
       'alphaRotationPolicy',
