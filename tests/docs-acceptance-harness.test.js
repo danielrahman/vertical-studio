@@ -1559,6 +1559,49 @@ test('WS-D contract: review transition rejects unknown top-level payload fields'
   }
 });
 
+test('WS-D contract: review transition required fields return deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-review-required/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        fromState: 'draft',
+        toState: 'proposal_generated',
+        event: 'PROPOSALS_READY'
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdPayload = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdPayload.code, 'validation_error');
+    assert.equal(missingDraftIdPayload.message, 'draftId is required');
+    assert.equal(missingDraftIdPayload.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdPayload.details.expectedType, 'string');
+    assert.equal(missingDraftIdPayload.details.receivedType, 'undefined');
+
+    const nonStringEventRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-review-required/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsd-review-required-1',
+        fromState: 'draft',
+        toState: 'proposal_generated',
+        event: 123
+      })
+    });
+    assert.equal(nonStringEventRes.status, 400);
+    const nonStringEventPayload = await nonStringEventRes.json();
+    assert.equal(nonStringEventPayload.code, 'validation_error');
+    assert.equal(nonStringEventPayload.message, 'event is required');
+    assert.equal(nonStringEventPayload.details.invalidField, 'event');
+    assert.equal(nonStringEventPayload.details.expectedType, 'string');
+    assert.equal(nonStringEventPayload.details.receivedType, 'number');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: overrides requiredComponents must reference loaded component contracts', async () => {
   const { server, baseUrl } = await startServer();
 

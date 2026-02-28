@@ -2369,6 +2369,49 @@ test('review transition validates allowed state movement and returns invalid_tra
   }
 });
 
+test('review transition required fields return deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-review-required/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        fromState: 'draft',
+        toState: 'proposal_generated',
+        event: 'PROPOSALS_READY'
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdBody = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdBody.code, 'validation_error');
+    assert.equal(missingDraftIdBody.message, 'draftId is required');
+    assert.equal(missingDraftIdBody.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdBody.details.expectedType, 'string');
+    assert.equal(missingDraftIdBody.details.receivedType, 'undefined');
+
+    const nonStringEventRes = await fetch(`${baseUrl}/api/v1/sites/site-review-required/review/transition`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-review-required-1',
+        fromState: 'draft',
+        toState: 'proposal_generated',
+        event: 123
+      })
+    });
+    assert.equal(nonStringEventRes.status, 400);
+    const nonStringEventBody = await nonStringEventRes.json();
+    assert.equal(nonStringEventBody.code, 'validation_error');
+    assert.equal(nonStringEventBody.message, 'event is required');
+    assert.equal(nonStringEventBody.details.invalidField, 'event');
+    assert.equal(nonStringEventBody.details.expectedType, 'string');
+    assert.equal(nonStringEventBody.details.receivedType, 'number');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('review transition rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 

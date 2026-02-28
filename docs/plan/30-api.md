@@ -436,9 +436,10 @@ Auth:
 1. `internal_admin`
 
 Validation:
-1. Only allowed transitions from architecture state machine are accepted.
-2. Invalid transitions return `409 invalid_transition`.
-3. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
+1. Required request fields `draftId`, `fromState`, `toState`, and `event` must be non-empty strings; missing or non-string values return `400 validation_error` with deterministic metadata (`invalidField`, `expectedType`, `receivedType`).
+2. Only allowed transitions from architecture state machine are accepted.
+3. Invalid transitions return `409 invalid_transition`.
+4. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
 
 ### 4.8 Publish Lifecycle
 
