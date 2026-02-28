@@ -761,6 +761,37 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(invalidExtractedFieldConfidencePayload.details.invalidField, 'extractedFields.confidence');
     assert.deepEqual(invalidExtractedFieldConfidencePayload.details.invalidItemIndexes, [0]);
 
+    const outOfRangeExtractedFieldConfidenceResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          extractedFields: [
+            {
+              fieldPath: 'brand.tagline',
+              value: 'Premium development team',
+              sourceUrl: 'https://example.test/about',
+              method: 'dom',
+              confidence: 1.2,
+              required: true
+            }
+          ]
+        })
+      }
+    );
+    assert.equal(outOfRangeExtractedFieldConfidenceResponse.status, 400);
+    const outOfRangeExtractedFieldConfidencePayload = await outOfRangeExtractedFieldConfidenceResponse.json();
+    assert.equal(outOfRangeExtractedFieldConfidencePayload.code, 'validation_error');
+    assert.equal(
+      outOfRangeExtractedFieldConfidencePayload.message,
+      'extractedFields.confidence must be between 0 and 1 when provided'
+    );
+    assert.equal(outOfRangeExtractedFieldConfidencePayload.details.invalidField, 'extractedFields.confidence');
+    assert.deepEqual(outOfRangeExtractedFieldConfidencePayload.details.invalidItemIndexes, [0]);
+    assert.deepEqual(outOfRangeExtractedFieldConfidencePayload.details.allowedRange, [0, 1]);
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

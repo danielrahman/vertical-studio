@@ -170,7 +170,7 @@ Contract:
 8. If `sourceUrl` is provided in an `extractedFields` item, it must be a non-empty string or `null`.
 9. If `method` is provided in an `extractedFields` item, it must be one of `dom`, `ocr`, `inference`, or `manual`.
 10. If `required` is provided in an `extractedFields` item, it must be a boolean.
-11. If `confidence` is provided in an `extractedFields` item, it must be a number.
+11. If `confidence` is provided in an `extractedFields` item, it must be a number in range `[0,1]`.
 12. If `lowConfidence` is provided, it must be a boolean.
 13. If `sitePolicy` is provided, it must be an object.
 14. `sitePolicy` may contain only `allowOwnerDraftCopyEdits`.

@@ -681,6 +681,39 @@ test('WS-B contract: bootstrap-from-extraction enforces confidence numeric type 
   }
 });
 
+test('WS-B contract: bootstrap-from-extraction enforces confidence range when provided', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap-shape/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-shape-12',
+        extractedFields: [
+          {
+            fieldPath: 'brand.tagline',
+            value: 'Premium development team',
+            sourceUrl: 'https://example.test/about',
+            method: 'dom',
+            confidence: 1.2,
+            required: true
+          }
+        ]
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'extractedFields.confidence must be between 0 and 1 when provided');
+    assert.equal(payload.details.invalidField, 'extractedFields.confidence');
+    assert.deepEqual(payload.details.invalidItemIndexes, [0]);
+    assert.deepEqual(payload.details.allowedRange, [0, 1]);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: vertical research build rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 
