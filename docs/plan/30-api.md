@@ -419,7 +419,7 @@ Rules:
 5. `requiredSections` must not overlap with `excludedSections`.
 6. `pinnedSections` must not overlap with `excludedSections`.
 7. `requiredComponents` must reference loaded component contract IDs; unknown IDs return `400 invalid_override_payload`.
-8. Unknown top-level payload fields (outside `draftId` and override arrays) are rejected with `400 invalid_override_payload`.
+8. Unknown top-level payload fields (outside `draftId` and override arrays) are rejected with `400 invalid_override_payload` and lexicographically sorted `unknownFields` details.
 
 ### 4.7 Review State Lifecycle
 

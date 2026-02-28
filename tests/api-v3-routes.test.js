@@ -2751,14 +2751,15 @@ test('overrides rejects unknown top-level payload fields', async () => {
       body: JSON.stringify({
         draftId,
         tone: ['credible'],
-        unsupportedDirective: ['unexpected']
+        zetaUnsupportedDirective: ['unexpected'],
+        alphaUnsupportedDirective: ['unexpected']
       })
     });
     assert.equal(invalidOverrideRes.status, 400);
     const invalidOverrideBody = await invalidOverrideRes.json();
     assert.equal(invalidOverrideBody.code, 'invalid_override_payload');
     assert.equal(invalidOverrideBody.message, 'Invalid override payload: contains unknown top-level fields');
-    assert.deepEqual(invalidOverrideBody.details.unknownFields, ['unsupportedDirective']);
+    assert.deepEqual(invalidOverrideBody.details.unknownFields, ['alphaUnsupportedDirective', 'zetaUnsupportedDirective']);
   } finally {
     await stopServer(server);
   }

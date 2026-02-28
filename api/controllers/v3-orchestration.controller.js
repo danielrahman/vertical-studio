@@ -1875,9 +1875,11 @@ function postOverrides(req, res, next) {
     assertInternalAdmin(req);
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
-    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
-      return !OVERRIDE_ALLOWED_TOP_LEVEL_FIELDS.has(field);
-    });
+    const unknownTopLevelFields = Object.keys(req.body)
+      .filter((field) => {
+        return !OVERRIDE_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+      })
+      .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('Invalid override payload: contains unknown top-level fields', 400, 'invalid_override_payload', {
         unknownFields: unknownTopLevelFields
