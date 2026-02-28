@@ -1861,6 +1861,7 @@ test('copy select rejects unknown payload fields', async () => {
     assert.equal(unknownSelectionFieldBody.code, 'validation_error');
     assert.equal(unknownSelectionFieldBody.message, 'selection item contains unknown fields');
     assert.equal(unknownSelectionFieldBody.details.invalidField, 'selections[0]');
+    assert.equal(unknownSelectionFieldBody.details.selectionIndex, 0);
     assert.deepEqual(unknownSelectionFieldBody.details.unknownFields, ['alphaNote', 'zetaNote']);
     assert.deepEqual(unknownSelectionFieldBody.details.allowedSelectionFields, [
       'candidateId',

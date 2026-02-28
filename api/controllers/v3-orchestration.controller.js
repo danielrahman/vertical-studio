@@ -328,6 +328,7 @@ function assertCopySelectionShape(selection, index) {
   if (unknownSelectionFields.length > 0) {
     throw createError('selection item contains unknown fields', 400, 'validation_error', {
       invalidField: `selections[${index}]`,
+      selectionIndex: index,
       unknownFields: unknownSelectionFields,
       allowedSelectionFields: Array.from(COPY_SELECT_ALLOWED_SELECTION_FIELDS).sort()
     });
