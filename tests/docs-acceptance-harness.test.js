@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { request } = require('node:http');
 const { createHmac } = require('crypto');
 const fs = require('fs');
 const os = require('os');
@@ -107,6 +108,45 @@ async function stopServer(server) {
       }
       resolve();
     });
+  });
+}
+
+async function getJsonWithoutHostHeader(baseUrl, pathWithQuery) {
+  const target = new URL(pathWithQuery, baseUrl);
+
+  return new Promise((resolve, reject) => {
+    const req = request(
+      {
+        host: target.hostname,
+        port: target.port,
+        path: `${target.pathname}${target.search}`,
+        method: 'GET',
+        setHost: false,
+        headers: {
+          host: ''
+        }
+      },
+      (res) => {
+        let rawBody = '';
+        res.setEncoding('utf8');
+        res.on('data', (chunk) => {
+          rawBody += chunk;
+        });
+        res.on('end', () => {
+          try {
+            resolve({
+              status: res.statusCode,
+              body: rawBody ? JSON.parse(rawBody) : null
+            });
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+    );
+
+    req.on('error', reject);
+    req.end();
   });
 }
 
@@ -1531,7 +1571,7 @@ test('WS-D contract: override section arrays must use allowed section keys', asy
     assert.equal(invalidOverrideRes.status, 400);
     const invalidOverridePayload = await invalidOverrideRes.json();
     assert.equal(invalidOverridePayload.code, 'invalid_override_payload');
-    assert.equal(invalidOverridePayload.details.field, 'excludedSections');
+    assert.equal(invalidOverridePayload.details.invalidField, 'excludedSections');
     assert.deepEqual(invalidOverridePayload.details.unknownSections, ['alpha-section', 'zeta-section']);
     assert.deepEqual(invalidOverridePayload.details.allowedSectionKeys, [
       'about',
@@ -1609,6 +1649,7 @@ test('WS-D contract: override section directives cannot conflict across arrays',
     assert.equal(requiredExcludedConflictRes.status, 400);
     const requiredExcludedConflictPayload = await requiredExcludedConflictRes.json();
     assert.equal(requiredExcludedConflictPayload.code, 'invalid_override_payload');
+    assert.equal(requiredExcludedConflictPayload.details.invalidField, 'requiredSections');
     assert.deepEqual(requiredExcludedConflictPayload.details.conflictingSections, ['contact', 'hero']);
 
     const pinnedExcludedConflictRes = await fetch(
@@ -1626,6 +1667,7 @@ test('WS-D contract: override section directives cannot conflict across arrays',
     assert.equal(pinnedExcludedConflictRes.status, 400);
     const pinnedExcludedConflictPayload = await pinnedExcludedConflictRes.json();
     assert.equal(pinnedExcludedConflictPayload.code, 'invalid_override_payload');
+    assert.equal(pinnedExcludedConflictPayload.details.invalidField, 'pinnedSections');
     assert.deepEqual(pinnedExcludedConflictPayload.details.conflictingSections, ['hero', 'timeline']);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-section-conflicts/overrides`, {
@@ -1684,7 +1726,7 @@ test('WS-D contract: override arrays must not contain duplicate values', async (
     assert.equal(duplicateOverrideRes.status, 400);
     const duplicateOverridePayload = await duplicateOverrideRes.json();
     assert.equal(duplicateOverridePayload.code, 'invalid_override_payload');
-    assert.equal(duplicateOverridePayload.details.field, 'requiredComponents');
+    assert.equal(duplicateOverridePayload.details.invalidField, 'requiredComponents');
     assert.deepEqual(duplicateOverridePayload.details.duplicateValues, ['cards-3up', 'hero']);
     assert.deepEqual(duplicateOverridePayload.details.duplicateIndexes, [0, 1, 2, 3]);
 
@@ -1901,7 +1943,7 @@ test('WS-D contract: override string arrays reject blanks and persist trimmed va
     assert.equal(blankValueRes.status, 400);
     const blankValuePayload = await blankValueRes.json();
     assert.equal(blankValuePayload.code, 'invalid_override_payload');
-    assert.equal(blankValuePayload.details.field, 'keywords');
+    assert.equal(blankValuePayload.details.invalidField, 'keywords');
     assert.deepEqual(blankValuePayload.details.invalidIndexes, [1]);
 
     const storedOverrideRes = await fetch(
@@ -2924,6 +2966,20 @@ test('WS-E invariant: post-publish draft edits do not alter live immutable runti
     assert.equal(postEditSnapshotRes.status, 200);
     const postEditSnapshot = await postEditSnapshotRes.json();
     assert.equal(postEditSnapshot.snapshot.proposalId, 'proposal-wse-v1');
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('WS-E contract: runtime resolve requires host and reports invalidField metadata when missing', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await getJsonWithoutHostHeader(baseUrl, '/api/v1/public/runtime/resolve');
+    assert.equal(response.status, 400);
+    assert.equal(response.body.code, 'validation_error');
+    assert.equal(response.body.message, 'host is required');
+    assert.equal(response.body.details.invalidField, 'host');
   } finally {
     await stopServer(server);
   }

@@ -209,6 +209,9 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 188. Secret-ref tenant-reassignment conflict metadata hardening implemented (`VS3-IMP-181`): `secret_ref_conflict` responses now use deterministic `invalidField: tenantId` metadata for tenant reassignment attempts, with API/WS-G contract coverage and plan text alignment.
 189. Secret-ref plaintext-key rejection metadata hardening implemented (`VS3-IMP-182`): plaintext secret payload-key rejection now uses deterministic `invalidField` metadata for the offending key, with API/WS-G contract coverage and plan text alignment.
 190. Bootstrap `sitePolicy.allowOwnerDraftCopyEdits` invalid-field metadata hardening implemented (`VS3-IMP-183`): bootstrap nested site-policy boolean validation errors now use deterministic `invalidField: sitePolicy.allowOwnerDraftCopyEdits` metadata, with API/WS-B contract coverage and plan text alignment.
+191. Runtime resolve missing-host invalid-field metadata hardening implemented (`VS3-IMP-184`): public runtime resolve host validation errors now use deterministic `invalidField: host` metadata, with API/WS-E contract coverage and plan text alignment.
+192. Override field-level invalid-field metadata hardening implemented (`VS3-IMP-185`): override payload field-level validation errors (blank/duplicate/section/conflict/component checks) now use deterministic `invalidField` metadata, with API/WS-D contract coverage and plan text alignment.
+193. Rollback unknown-payload contract text alignment implemented (`VS3-IMP-186`): rollback API contract documentation now explicitly requires deterministic `invalidField: payload` metadata on unknown top-level payload validation errors, aligned with implemented API/WS-E behavior.
 
 ## In Progress
 

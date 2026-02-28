@@ -1946,7 +1946,7 @@ function postOverrides(req, res, next) {
           .filter((index) => index !== null);
         if (invalidIndexes.length > 0) {
           throw createError(`Invalid override payload: ${key} must not contain empty values`, 400, 'invalid_override_payload', {
-            field: key,
+            invalidField: key,
             invalidIndexes
           });
         }
@@ -1954,7 +1954,7 @@ function postOverrides(req, res, next) {
         const duplicateValues = listDuplicateValues(normalizedValues);
         if (duplicateValues.length > 0) {
           throw createError(`Invalid override payload: ${key} must not contain duplicate values`, 400, 'invalid_override_payload', {
-            field: key,
+            invalidField: key,
             duplicateValues,
             duplicateIndexes: listDuplicateIndexes(normalizedValues)
           });
@@ -1978,7 +1978,7 @@ function postOverrides(req, res, next) {
 
       if (unknownSections.length > 0) {
         throw createError(`Invalid override payload: ${field} contains unknown section values`, 400, 'invalid_override_payload', {
-          field,
+          invalidField: field,
           unknownSections,
           allowedSectionKeys: Array.from(ALLOWED_OVERRIDE_SECTION_KEYS).sort()
         });
@@ -2004,7 +2004,7 @@ function postOverrides(req, res, next) {
         400,
         'invalid_override_payload',
         {
-          field: 'requiredSections',
+          invalidField: 'requiredSections',
           conflictingSections: conflictingRequiredExcludedSections
         }
       );
@@ -2019,7 +2019,7 @@ function postOverrides(req, res, next) {
         400,
         'invalid_override_payload',
         {
-          field: 'pinnedSections',
+          invalidField: 'pinnedSections',
           conflictingSections: conflictingPinnedExcludedSections
         }
       );
@@ -2037,7 +2037,7 @@ function postOverrides(req, res, next) {
           400,
           'invalid_override_payload',
           {
-            field: 'requiredComponents',
+            invalidField: 'requiredComponents',
             unknownComponentIds: unknownRequiredComponents,
             allowedComponentIds
           }
@@ -2536,7 +2536,7 @@ function getPublicRuntimeResolve(req, res, next) {
     const host = normalizeHost(req.query.host) || normalizeHost(req.headers.host);
     if (!host) {
       throw createError('host is required', 400, 'validation_error', {
-        field: 'host'
+        invalidField: 'host'
       });
     }
 

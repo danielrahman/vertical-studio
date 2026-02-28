@@ -413,13 +413,13 @@ Request:
 ```
 
 Rules:
-1. Override fields in this payload are arrays of non-empty strings when provided (values are trimmed before validation/storage); non-array values return `400 invalid_override_payload` with deterministic type metadata (`invalidField`, `expectedType`, `receivedType`), non-string item values return deterministic item-type metadata (`invalidField`, `invalidItemIndexes`, `expectedItemType`, `receivedItemTypes`), and blank-value validation failures include deterministic `field` and `invalidIndexes` details.
-2. `requiredSections`, `excludedSections`, and `pinnedSections` must use allowed section keys (`hero`, `value_props`, `about`, `process`, `timeline`, `portfolio`, `team`, `testimonials`, `stats`, `faq`, `cta`, `contact`, `legal`); unknown values return `400 invalid_override_payload` with lexicographically sorted `unknownSections` details plus lexicographically sorted `allowedSectionKeys` metadata.
-3. Override arrays must not contain duplicate values; duplicate-value validation failures return lexicographically sorted `duplicateValues` details plus deterministic `duplicateIndexes` metadata.
+1. Override fields in this payload are arrays of non-empty strings when provided (values are trimmed before validation/storage); non-array values return `400 invalid_override_payload` with deterministic type metadata (`invalidField`, `expectedType`, `receivedType`), non-string item values return deterministic item-type metadata (`invalidField`, `invalidItemIndexes`, `expectedItemType`, `receivedItemTypes`), and blank-value validation failures include deterministic `invalidField` and `invalidIndexes` details.
+2. `requiredSections`, `excludedSections`, and `pinnedSections` must use allowed section keys (`hero`, `value_props`, `about`, `process`, `timeline`, `portfolio`, `team`, `testimonials`, `stats`, `faq`, `cta`, `contact`, `legal`); unknown values return `400 invalid_override_payload` with deterministic `invalidField`, lexicographically sorted `unknownSections` details, and lexicographically sorted `allowedSectionKeys` metadata.
+3. Override arrays must not contain duplicate values; duplicate-value validation failures return deterministic `invalidField`, lexicographically sorted `duplicateValues` details, and deterministic `duplicateIndexes` metadata.
 4. At least one override array must be present with at least one value (no-op override payloads are rejected with `400 invalid_override_payload` and lexicographically sorted `fields` details, plus deterministic cardinality metadata `minimumNonEmptyOverrideArrays` and `receivedNonEmptyOverrideArrays`).
-5. `requiredSections` must not overlap with `excludedSections`; overlap validation failures return lexicographically sorted `conflictingSections` details.
-6. `pinnedSections` must not overlap with `excludedSections`; overlap validation failures return lexicographically sorted `conflictingSections` details.
-7. `requiredComponents` must reference loaded component contract IDs; unknown IDs return `400 invalid_override_payload` with lexicographically sorted `unknownComponentIds` details plus lexicographically sorted `allowedComponentIds` metadata.
+5. `requiredSections` must not overlap with `excludedSections`; overlap validation failures return deterministic `invalidField: requiredSections` plus lexicographically sorted `conflictingSections` details.
+6. `pinnedSections` must not overlap with `excludedSections`; overlap validation failures return deterministic `invalidField: pinnedSections` plus lexicographically sorted `conflictingSections` details.
+7. `requiredComponents` must reference loaded component contract IDs; unknown IDs return `400 invalid_override_payload` with deterministic `invalidField: requiredComponents`, lexicographically sorted `unknownComponentIds` details, and lexicographically sorted `allowedComponentIds` metadata.
 8. Unknown top-level payload fields (outside `draftId` and override arrays) are rejected with `400 invalid_override_payload`, deterministic `invalidField: payload`, lexicographically sorted `unknownFields` details, and lexicographically sorted `allowedTopLevelFields` metadata.
 
 ### 4.7 Review State Lifecycle
@@ -486,7 +486,7 @@ Auth:
 1. `internal_admin`
 
 Validation:
-1. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
+1. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
 
 #### `GET /api/v1/sites/:siteId/versions`
 List version history and active version pointer.
@@ -544,6 +544,7 @@ Required additional codes:
 1. Public renderer resolves host/subdomain to active `site_version`.
 2. Renderer fetches immutable snapshot by storage key only.
 3. Renderer must never read mutable draft data.
+4. `GET /api/v1/public/runtime/resolve` requires a non-empty `host` (query or host header fallback); missing host returns `400 validation_error` with deterministic `invalidField: host`.
 
 ## 7. LLM Prompt Contract Surfaces (Documented API Inputs)
 1. Compose and copy jobs must pass structured prompt payloads, not free text blobs.

@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { request } = require('node:http');
 const { createHash, createHmac } = require('crypto');
 const fs = require('fs');
 const os = require('os');
@@ -64,6 +65,45 @@ async function stopServer(server) {
       }
       resolve();
     });
+  });
+}
+
+async function getJsonWithoutHostHeader(baseUrl, pathWithQuery) {
+  const target = new URL(pathWithQuery, baseUrl);
+
+  return new Promise((resolve, reject) => {
+    const req = request(
+      {
+        host: target.hostname,
+        port: target.port,
+        path: `${target.pathname}${target.search}`,
+        method: 'GET',
+        setHost: false,
+        headers: {
+          host: ''
+        }
+      },
+      (res) => {
+        let rawBody = '';
+        res.setEncoding('utf8');
+        res.on('data', (chunk) => {
+          rawBody += chunk;
+        });
+        res.on('end', () => {
+          try {
+            resolve({
+              status: res.statusCode,
+              body: rawBody ? JSON.parse(rawBody) : null
+            });
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+    );
+
+    req.on('error', reject);
+    req.end();
   });
 }
 
@@ -2388,6 +2428,7 @@ test('overrides rejects unknown requiredComponents values', async () => {
       invalidOverrideBody.message,
       'Invalid override payload: requiredComponents contains unknown componentId values'
     );
+    assert.equal(invalidOverrideBody.details.invalidField, 'requiredComponents');
     assert.deepEqual(invalidOverrideBody.details.unknownComponentIds, ['alpha-component', 'zeta-component']);
     assert.deepEqual(invalidOverrideBody.details.allowedComponentIds, ['cards-3up', 'cta-form', 'hero']);
 
@@ -2449,6 +2490,7 @@ test('overrides rejects unknown section values in section arrays', async () => {
       invalidOverrideBody.message,
       'Invalid override payload: requiredSections contains unknown section values'
     );
+    assert.equal(invalidOverrideBody.details.invalidField, 'requiredSections');
     assert.deepEqual(invalidOverrideBody.details.unknownSections, ['alpha-section', 'zeta-section']);
     assert.deepEqual(invalidOverrideBody.details.allowedSectionKeys, [
       'about',
@@ -2530,6 +2572,7 @@ test('overrides rejects conflicting section directives across arrays', async () 
       requiredExcludedConflictBody.message,
       'Invalid override payload: requiredSections and excludedSections must not overlap'
     );
+    assert.equal(requiredExcludedConflictBody.details.invalidField, 'requiredSections');
     assert.deepEqual(requiredExcludedConflictBody.details.conflictingSections, ['contact', 'hero']);
 
     const pinnedExcludedConflictRes = await fetch(`${baseUrl}/api/v1/sites/site-override-section-conflicts/overrides`, {
@@ -2548,6 +2591,7 @@ test('overrides rejects conflicting section directives across arrays', async () 
       pinnedExcludedConflictBody.message,
       'Invalid override payload: pinnedSections and excludedSections must not overlap'
     );
+    assert.equal(pinnedExcludedConflictBody.details.invalidField, 'pinnedSections');
     assert.deepEqual(pinnedExcludedConflictBody.details.conflictingSections, ['hero', 'timeline']);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-section-conflicts/overrides`, {
@@ -2610,6 +2654,7 @@ test('overrides rejects duplicate values inside override arrays', async () => {
       duplicateOverrideBody.message,
       'Invalid override payload: keywords must not contain duplicate values'
     );
+    assert.equal(duplicateOverrideBody.details.invalidField, 'keywords');
     assert.deepEqual(duplicateOverrideBody.details.duplicateValues, ['alpha', 'zeta']);
     assert.deepEqual(duplicateOverrideBody.details.duplicateIndexes, [0, 1, 2, 3]);
 
@@ -2834,7 +2879,7 @@ test('overrides rejects empty string values and trims values before duplicate ch
     const emptyValueBody = await emptyValueRes.json();
     assert.equal(emptyValueBody.code, 'invalid_override_payload');
     assert.equal(emptyValueBody.message, 'Invalid override payload: keywords must not contain empty values');
-    assert.equal(emptyValueBody.details.field, 'keywords');
+    assert.equal(emptyValueBody.details.invalidField, 'keywords');
     assert.deepEqual(emptyValueBody.details.invalidIndexes, [1]);
 
     const normalizedDuplicateRes = await fetch(
@@ -2851,6 +2896,7 @@ test('overrides rejects empty string values and trims values before duplicate ch
     assert.equal(normalizedDuplicateRes.status, 400);
     const normalizedDuplicateBody = await normalizedDuplicateRes.json();
     assert.equal(normalizedDuplicateBody.code, 'invalid_override_payload');
+    assert.equal(normalizedDuplicateBody.details.invalidField, 'keywords');
     assert.deepEqual(normalizedDuplicateBody.details.duplicateValues, ['trust']);
     assert.deepEqual(normalizedDuplicateBody.details.duplicateIndexes, [0, 1]);
   } finally {
@@ -2914,6 +2960,20 @@ test('overrides rejects unknown top-level payload fields', async () => {
       'requiredSections',
       'tone'
     ]);
+  } finally {
+    await stopServer(server);
+  }
+});
+
+test('public runtime resolve requires host and returns invalidField metadata when missing', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await getJsonWithoutHostHeader(baseUrl, '/api/v1/public/runtime/resolve');
+    assert.equal(response.status, 400);
+    assert.equal(response.body.code, 'validation_error');
+    assert.equal(response.body.message, 'host is required');
+    assert.equal(response.body.details.invalidField, 'host');
   } finally {
     await stopServer(server);
   }
