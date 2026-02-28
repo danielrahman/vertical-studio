@@ -287,6 +287,70 @@ test('renderSiteFromRuntime does not trigger compatibility fallback for not-foun
   }
 });
 
+test('renderSiteFromRuntime does not trigger compatibility fallback for not-found storageKey errors when fallback identifiers are non-string', async () => {
+  const cases = [
+    {
+      name: 'non-string siteId',
+      resolvedPayload: {
+        host: 'runtime-non-string-fallback-site.example.test',
+        siteId: 123,
+        versionId: 'version-non-string-fallback',
+        storageKey: 'site-versions/site-non-string-fallback/version-non-string-fallback.json'
+      }
+    },
+    {
+      name: 'non-string versionId',
+      resolvedPayload: {
+        host: 'runtime-non-string-fallback-version.example.test',
+        siteId: 'site-non-string-fallback',
+        versionId: { value: 'version-non-string-fallback' },
+        storageKey: 'site-versions/site-non-string-fallback/version-non-string-fallback.json'
+      }
+    }
+  ];
+
+  for (const scenario of cases) {
+    const calls = [];
+    const fetchImpl = createMockFetch(
+      [
+        jsonResponse(200, scenario.resolvedPayload),
+        jsonResponse(404, {
+          code: 'runtime_snapshot_not_found',
+          message: 'Runtime snapshot not found',
+          details: {
+            storageKey: 'site-versions/site-non-string-fallback/version-non-string-fallback.json'
+          }
+        })
+      ],
+      calls
+    );
+
+    await assert.rejects(
+      renderSiteFromRuntime({
+        apiBaseUrl: 'http://localhost:3000',
+        host: scenario.resolvedPayload.host,
+        fetchImpl
+      }),
+      (error) => {
+        assert.equal(error.code, 'runtime_snapshot_not_found');
+        assert.equal(error.statusCode, 404);
+        assert.deepEqual(error.details, {
+          storageKey: 'site-versions/site-non-string-fallback/version-non-string-fallback.json'
+        });
+        return true;
+      },
+      scenario.name
+    );
+
+    assert.equal(calls.length, 2, scenario.name);
+    assert.equal(
+      calls[1],
+      'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-non-string-fallback%2Fversion-non-string-fallback.json',
+      scenario.name
+    );
+  }
+});
+
 test('renderSiteFromRuntime falls back to compatibility snapshot when storage-key fetch returns runtime_snapshot_not_found', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(
