@@ -2644,7 +2644,8 @@ function postCmsPublishWebhook(req, res, next) {
     if (unknownTopLevelFields.length > 0) {
       throw createError('cms publish webhook payload contains unknown top-level fields', 400, 'validation_error', {
         invalidField: 'payload',
-        unknownFields: unknownTopLevelFields
+        unknownFields: unknownTopLevelFields,
+        allowedTopLevelFields: Array.from(CMS_WEBHOOK_PUBLISH_ALLOWED_TOP_LEVEL_FIELDS).sort()
       });
     }
     const state = getState(req);
