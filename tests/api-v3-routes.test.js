@@ -2650,6 +2650,8 @@ test('overrides requires at least one non-empty override directive array', async
       'requiredSections',
       'tone'
     ]);
+    assert.equal(emptyOverrideBody.details.minimumNonEmptyOverrideArrays, 1);
+    assert.equal(emptyOverrideBody.details.receivedNonEmptyOverrideArrays, 0);
 
     const emptyArraysRes = await fetch(`${baseUrl}/api/v1/sites/site-override-non-empty/overrides`, {
       method: 'POST',
@@ -2672,6 +2674,8 @@ test('overrides requires at least one non-empty override directive array', async
       'requiredSections',
       'tone'
     ]);
+    assert.equal(emptyArraysBody.details.minimumNonEmptyOverrideArrays, 1);
+    assert.equal(emptyArraysBody.details.receivedNonEmptyOverrideArrays, 0);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-non-empty/overrides`, {
       method: 'POST',

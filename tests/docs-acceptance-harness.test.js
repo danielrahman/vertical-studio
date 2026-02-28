@@ -1631,6 +1631,8 @@ test('WS-D contract: overrides require at least one non-empty directive array', 
       'requiredSections',
       'tone'
     ]);
+    assert.equal(emptyOverridePayload.details.minimumNonEmptyOverrideArrays, 1);
+    assert.equal(emptyOverridePayload.details.receivedNonEmptyOverrideArrays, 0);
 
     const emptyArraysRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-non-empty/overrides`, {
       method: 'POST',
@@ -1652,6 +1654,8 @@ test('WS-D contract: overrides require at least one non-empty directive array', 
       'requiredSections',
       'tone'
     ]);
+    assert.equal(emptyArraysPayload.details.minimumNonEmptyOverrideArrays, 1);
+    assert.equal(emptyArraysPayload.details.receivedNonEmptyOverrideArrays, 0);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-overrides-non-empty/overrides`, {
       method: 'POST',

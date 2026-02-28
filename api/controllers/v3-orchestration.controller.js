@@ -2004,16 +2004,19 @@ function postOverrides(req, res, next) {
       }
     }
 
-    const hasNonEmptyOverrideDirective = OVERRIDE_ARRAY_KEYS.some((field) => {
+    const nonEmptyOverrideArrayCount = OVERRIDE_ARRAY_KEYS.filter((field) => {
       return Array.isArray(normalizedOverrideArrays[field]) && normalizedOverrideArrays[field].length > 0;
-    });
+    }).length;
+    const hasNonEmptyOverrideDirective = nonEmptyOverrideArrayCount > 0;
     if (!hasNonEmptyOverrideDirective) {
       throw createError(
         'Invalid override payload: at least one non-empty override array is required',
         400,
         'invalid_override_payload',
         {
-          fields: [...OVERRIDE_ARRAY_KEYS].sort()
+          fields: [...OVERRIDE_ARRAY_KEYS].sort(),
+          minimumNonEmptyOverrideArrays: 1,
+          receivedNonEmptyOverrideArrays: nonEmptyOverrideArrayCount
         }
       );
     }
