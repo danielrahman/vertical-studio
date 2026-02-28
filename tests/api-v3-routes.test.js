@@ -1937,7 +1937,8 @@ test('copy select per-item validation failures report invalidField and selection
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: '' }],
       'selection candidateId is required',
-      'selections[0].candidateId'
+      'selections[0].candidateId',
+      (details) => details.expectedType === 'string' && details.receivedType === 'string'
     );
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-1', selectedBy: 'editor' }],
