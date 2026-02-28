@@ -4239,6 +4239,8 @@ test('secret refs endpoint enforces internal_admin ACL, naming policy, and metad
     const conflictPayload = await conflictRes.json();
     assert.equal(conflictPayload.code, 'secret_ref_conflict');
     assert.equal(conflictPayload.details.invalidField, 'tenantId');
+    assert.equal(conflictPayload.details.expectedTenantId, 'tenant-1');
+    assert.equal(conflictPayload.details.receivedTenantId, 'tenant-2');
   } finally {
     await stopServer(server);
   }

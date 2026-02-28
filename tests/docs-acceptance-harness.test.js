@@ -555,7 +555,7 @@ test('WS-G contract: secret refs reject plaintext payload keys with invalidField
   }
 });
 
-test('WS-G contract: secret refs reject tenant reassignment with conflict invalidField metadata', async () => {
+test('WS-G contract: secret refs reject tenant reassignment with deterministic conflict metadata', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -587,6 +587,8 @@ test('WS-G contract: secret refs reject tenant reassignment with conflict invali
     const payload = await conflictRes.json();
     assert.equal(payload.code, 'secret_ref_conflict');
     assert.equal(payload.details.invalidField, 'tenantId');
+    assert.equal(payload.details.expectedTenantId, 'tenant-wsg-secret-conflict-a');
+    assert.equal(payload.details.receivedTenantId, 'tenant-wsg-secret-conflict-b');
   } finally {
     await stopServer(server);
   }

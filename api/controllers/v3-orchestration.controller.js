@@ -2735,7 +2735,9 @@ function postSecretRef(req, res, next) {
     const existingMetadata = state.secretRefs.get(ref);
     if (existingMetadata && existingMetadata.tenantId !== tenantId) {
       throw createError('tenantId cannot change for an existing secret ref', 409, 'secret_ref_conflict', {
-        invalidField: 'tenantId'
+        invalidField: 'tenantId',
+        expectedTenantId: existingMetadata.tenantId,
+        receivedTenantId: tenantId
       });
     }
 
