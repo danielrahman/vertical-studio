@@ -1656,7 +1656,7 @@ test('copy select rejects duplicate slotId/locale selections with deterministic 
   }
 });
 
-test('copy select rejects empty selections array for internal_admin requests', async () => {
+test('copy select rejects empty selections array with deterministic cardinality metadata', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -1680,7 +1680,7 @@ test('copy select rejects empty selections array for internal_admin requests', a
   }
 });
 
-test('copy select requires selections array and reports invalidField details', async () => {
+test('copy select requires selections array and reports deterministic type metadata details', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -1722,7 +1722,7 @@ test('copy select requires selections array and reports invalidField details', a
   }
 });
 
-test('copy select requires draftId and reports invalidField details', async () => {
+test('copy select requires draftId and reports deterministic type metadata details', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -1761,7 +1761,7 @@ test('copy select requires draftId and reports invalidField details', async () =
   }
 });
 
-test('copy select selectedBy mismatch includes deterministic selection-index details', async () => {
+test('copy select selectedBy mismatch includes deterministic selection-index and role-metadata details', async () => {
   const { server, baseUrl } = await startServer();
 
   try {

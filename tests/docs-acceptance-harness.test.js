@@ -2021,7 +2021,7 @@ test('WS-D contract: copy selection enforces unique slot-locale tuples and dupli
   }
 });
 
-test('WS-D contract: copy selection rejects empty selection arrays', async () => {
+test('WS-D contract: copy selection rejects empty selection arrays with deterministic cardinality metadata', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -2045,7 +2045,7 @@ test('WS-D contract: copy selection rejects empty selection arrays', async () =>
   }
 });
 
-test('WS-D contract: copy selection requires selections array with invalidField details', async () => {
+test('WS-D contract: copy selection requires selections array with deterministic type metadata details', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -2084,7 +2084,7 @@ test('WS-D contract: copy selection requires selections array with invalidField 
   }
 });
 
-test('WS-D contract: copy selection requires draftId with invalidField details', async () => {
+test('WS-D contract: copy selection requires draftId with deterministic type metadata details', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -2123,7 +2123,7 @@ test('WS-D contract: copy selection requires draftId with invalidField details',
   }
 });
 
-test('WS-D contract: copy selection selectedBy mismatch exposes deterministic selection-index details', async () => {
+test('WS-D contract: copy selection selectedBy mismatch exposes deterministic selection-index and role-metadata details', async () => {
   const { app, server, baseUrl } = await startServer();
 
   try {

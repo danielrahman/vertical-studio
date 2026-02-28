@@ -150,15 +150,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 129. Copy-select `selections` type metadata hardening implemented (`VS3-IMP-122`): `POST /sites/:siteId/copy/select` `selections` required/type validation errors now include deterministic `expectedType` and `receivedType` details alongside `invalidField`.
 130. Copy-select empty-selections cardinality metadata hardening implemented (`VS3-IMP-123`): `POST /sites/:siteId/copy/select` empty-array validation errors now include deterministic `minimumSelections` and `receivedSelections` details alongside `invalidField`.
 131. Copy-select selectedBy actor-mismatch role-metadata hardening implemented (`VS3-IMP-124`): `POST /sites/:siteId/copy/select` selectedBy actor-mismatch validation errors now include deterministic `expectedSelectedBy` and `receivedSelectedBy` details alongside index metadata.
+132. Copy-select top-level metadata contract label alignment implemented (`VS3-IMP-125`): API and WS-D acceptance labels now explicitly require deterministic top-level type/cardinality/role metadata keys in copy-select validation paths.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. `VS3-IMP-125` is in progress to align copy-select top-level validation metadata contract docs and acceptance labels.
+2. Define the next smallest unblocked deterministic hardening slice.
 
 ## Next
 
-1. Complete `VS3-IMP-125` and define the next smallest unblocked deterministic hardening slice.
+1. Add and start the next highest-priority deterministic hardening backlog item.
 
 ## Known Constraints
 
