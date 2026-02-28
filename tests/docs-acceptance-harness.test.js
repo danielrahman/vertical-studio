@@ -1216,13 +1216,14 @@ test('WS-D contract: compose rejects unknown top-level payload fields', async ()
         rulesVersion: '1.0.0',
         catalogVersion: '1.0.0',
         verticalStandardVersion: '2026.02',
-        promptMode: 'fast'
+        zetaMode: 'fast',
+        alphaMode: 'strict'
       })
     });
     assert.equal(unknownFieldRes.status, 400);
     const unknownFieldPayload = await unknownFieldRes.json();
     assert.equal(unknownFieldPayload.code, 'validation_error');
-    assert.deepEqual(unknownFieldPayload.details.unknownFields, ['promptMode']);
+    assert.deepEqual(unknownFieldPayload.details.unknownFields, ['alphaMode', 'zetaMode']);
   } finally {
     await stopServer(server);
   }
@@ -1266,13 +1267,14 @@ test('WS-D contract: compose select rejects unknown top-level payload fields', a
       body: JSON.stringify({
         draftId,
         proposalId,
-        unknownField: true
+        zetaField: true,
+        alphaField: true
       })
     });
     assert.equal(selectRes.status, 400);
     const selectPayload = await selectRes.json();
     assert.equal(selectPayload.code, 'validation_error');
-    assert.deepEqual(selectPayload.details.unknownFields, ['unknownField']);
+    assert.deepEqual(selectPayload.details.unknownFields, ['alphaField', 'zetaField']);
   } finally {
     await stopServer(server);
   }

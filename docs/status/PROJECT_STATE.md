@@ -165,6 +165,8 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 144. Copy-generate unknown-field sorting hardening implemented (`VS3-IMP-137`): `POST /sites/:siteId/copy/generate` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details alongside sorted `allowedTopLevelFields`, with API/WS-D contract coverage and plan text alignment.
 145. Copy-generate unsupported-locale detail sorting hardening implemented (`VS3-IMP-138`): `POST /sites/:siteId/copy/generate` unsupported locale validation errors now emit lexicographically sorted `unsupportedLocales` and `allowedLocales` details, with API/WS-D contract coverage and plan text alignment.
 146. Copy-generate duplicate-locale detail sorting hardening implemented (`VS3-IMP-139`): `POST /sites/:siteId/copy/generate` duplicate locale validation errors now emit lexicographically sorted `duplicateLocales` details, with API/WS-D contract coverage and plan text alignment.
+147. Compose-propose unknown-field sorting hardening implemented (`VS3-IMP-140`): `POST /sites/:siteId/compose/propose` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-D contract coverage and plan text alignment.
+148. Compose-select unknown-field sorting hardening implemented (`VS3-IMP-141`): `POST /sites/:siteId/compose/select` unknown top-level payload validation errors now emit lexicographically sorted `unknownFields` details, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 

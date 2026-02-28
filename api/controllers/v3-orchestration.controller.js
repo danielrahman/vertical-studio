@@ -1438,9 +1438,11 @@ function postComposePropose(req, res, next) {
     assertString(req.body?.rulesVersion, 'rulesVersion');
     assertString(req.body?.catalogVersion, 'catalogVersion');
     assertString(req.body?.verticalStandardVersion, 'verticalStandardVersion');
-    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
-      return !COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS.has(field);
-    });
+    const unknownTopLevelFields = Object.keys(req.body)
+      .filter((field) => {
+        return !COMPOSE_PROPOSE_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+      })
+      .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('compose propose payload contains unknown top-level fields', 400, 'validation_error', {
         unknownFields: unknownTopLevelFields
@@ -1495,9 +1497,11 @@ function postComposeSelect(req, res, next) {
     assertString(req.params.siteId, 'siteId');
     assertString(req.body?.draftId, 'draftId');
     assertString(req.body?.proposalId, 'proposalId');
-    const unknownTopLevelFields = Object.keys(req.body).filter((field) => {
-      return !COMPOSE_SELECT_ALLOWED_TOP_LEVEL_FIELDS.has(field);
-    });
+    const unknownTopLevelFields = Object.keys(req.body)
+      .filter((field) => {
+        return !COMPOSE_SELECT_ALLOWED_TOP_LEVEL_FIELDS.has(field);
+      })
+      .sort();
     if (unknownTopLevelFields.length > 0) {
       throw createError('compose select payload contains unknown top-level fields', 400, 'validation_error', {
         unknownFields: unknownTopLevelFields

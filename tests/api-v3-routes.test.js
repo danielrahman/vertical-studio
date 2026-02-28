@@ -1182,14 +1182,15 @@ test('compose propose rejects unknown top-level payload fields', async () => {
         rulesVersion: '1.0.0',
         catalogVersion: '1.0.0',
         verticalStandardVersion: '2026.02',
-        promptMode: 'fast'
+        zetaMode: 'fast',
+        alphaMode: 'strict'
       })
     });
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'compose propose payload contains unknown top-level fields');
-    assert.deepEqual(payload.details.unknownFields, ['promptMode']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaMode', 'zetaMode']);
   } finally {
     await stopServer(server);
   }
@@ -1318,14 +1319,15 @@ test('compose select rejects unknown top-level payload fields', async () => {
       body: JSON.stringify({
         draftId,
         proposalId,
-        overrideMode: 'manual'
+        zetaMode: 'manual',
+        alphaMode: 'strict'
       })
     });
     assert.equal(response.status, 400);
     const payload = await response.json();
     assert.equal(payload.code, 'validation_error');
     assert.equal(payload.message, 'compose select payload contains unknown top-level fields');
-    assert.deepEqual(payload.details.unknownFields, ['overrideMode']);
+    assert.deepEqual(payload.details.unknownFields, ['alphaMode', 'zetaMode']);
   } finally {
     await stopServer(server);
   }

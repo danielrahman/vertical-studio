@@ -281,7 +281,7 @@ Hard rules:
 1. Exactly three variants must always be returned.
 2. Deterministic output for identical input payload and versions.
 3. Requested `catalogVersion` must resolve to at least one loaded component contract (`404 component_contract_not_found` otherwise).
-4. Unknown top-level payload fields are rejected with `400 validation_error`.
+4. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
 
 #### `POST /api/v1/sites/:siteId/compose/select`
 Select one proposal as final composition.
@@ -298,7 +298,7 @@ Request:
 ```
 
 Rules:
-1. Unknown top-level payload fields are rejected with `400 validation_error`.
+1. Unknown top-level payload fields are rejected with `400 validation_error` and lexicographically sorted `unknownFields` details.
 
 ### 4.5 Copy Lifecycle
 
