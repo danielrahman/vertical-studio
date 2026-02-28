@@ -1840,6 +1840,12 @@ test('copy select rejects unknown payload fields', async () => {
     assert.equal(unknownSelectionFieldBody.message, 'selection item contains unknown fields');
     assert.equal(unknownSelectionFieldBody.details.invalidField, 'selections[0]');
     assert.deepEqual(unknownSelectionFieldBody.details.unknownFields, ['notes']);
+    assert.deepEqual(unknownSelectionFieldBody.details.allowedSelectionFields, [
+      'slotId',
+      'locale',
+      'candidateId',
+      'selectedBy'
+    ]);
   } finally {
     await stopServer(server);
   }
