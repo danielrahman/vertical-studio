@@ -2688,6 +2688,12 @@ function postSecretRef(req, res, next) {
         }),
         receivedTopLevelFieldCount: receivedTopLevelFields.length,
         receivedTopLevelFields,
+        allowedTopLevelFieldIndexes: receivedTopLevelFields.reduce((indexes, field, index) => {
+          if (SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS.has(field)) {
+            indexes.push(index);
+          }
+          return indexes;
+        }, []),
         allowedTopLevelFieldCount: SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS.size,
         allowedTopLevelFields: Array.from(SECRET_REF_ALLOWED_TOP_LEVEL_FIELDS).sort()
       });
