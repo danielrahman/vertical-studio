@@ -1546,6 +1546,13 @@ test('copy generate rejects unknown top-level payload fields', async () => {
     assert.equal(unknownFieldBody.message, 'copy generate payload contains unknown top-level fields');
     assert.equal(unknownFieldBody.details.invalidField, 'payload');
     assert.deepEqual(unknownFieldBody.details.unknownFields, ['promptMode']);
+    assert.deepEqual(unknownFieldBody.details.allowedTopLevelFields, [
+      'actorRole',
+      'draftId',
+      'highImpactOnlyThreeVariants',
+      'locales',
+      'verticalStandardVersion'
+    ]);
   } finally {
     await stopServer(server);
   }

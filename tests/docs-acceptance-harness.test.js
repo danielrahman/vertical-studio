@@ -1901,6 +1901,13 @@ test('WS-D contract: copy generation rejects unknown top-level payload fields', 
     assert.equal(unknownFieldPayload.code, 'validation_error');
     assert.equal(unknownFieldPayload.details.invalidField, 'payload');
     assert.deepEqual(unknownFieldPayload.details.unknownFields, ['promptMode']);
+    assert.deepEqual(unknownFieldPayload.details.allowedTopLevelFields, [
+      'actorRole',
+      'draftId',
+      'highImpactOnlyThreeVariants',
+      'locales',
+      'verticalStandardVersion'
+    ]);
   } finally {
     await stopServer(server);
   }
