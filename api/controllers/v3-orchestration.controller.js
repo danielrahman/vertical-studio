@@ -2698,9 +2698,11 @@ function postSecretRef(req, res, next) {
       const receivedAllowedTopLevelFieldIndexes = receivedAllowedTopLevelFields.map((field) => {
         return allowedTopLevelFields.indexOf(field);
       });
+      const receivedUnknownTopLevelFields = unknownTopLevelFields;
       throw createError('secret ref payload contains unknown top-level fields', 400, 'validation_error', {
         invalidField: 'payload',
         unknownFields: unknownTopLevelFields,
+        receivedUnknownTopLevelFields,
         unknownTopLevelFieldCount: unknownTopLevelFields.length,
         unknownTopLevelFieldIndexes: unknownTopLevelFields.map((field) => {
           return receivedTopLevelFields.indexOf(field);
