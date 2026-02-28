@@ -1457,6 +1457,7 @@ test('copy generate enforces locale allow-list and rejects duplicate locales', a
     const invalidLocaleBody = await invalidLocaleRes.json();
     assert.equal(invalidLocaleBody.code, 'validation_error');
     assert.equal(invalidLocaleBody.message, 'locales must contain only supported locales');
+    assert.equal(invalidLocaleBody.details.invalidField, 'locales');
     assert.deepEqual(invalidLocaleBody.details.unsupportedLocales, ['de-DE']);
 
     const missingLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-locales/copy/generate`, {

@@ -1813,6 +1813,7 @@ test('WS-D contract: copy generation accepts only supported locales and rejects 
     assert.equal(invalidLocaleRes.status, 400);
     const invalidLocalePayload = await invalidLocaleRes.json();
     assert.equal(invalidLocalePayload.code, 'validation_error');
+    assert.equal(invalidLocalePayload.details.invalidField, 'locales');
     assert.deepEqual(invalidLocalePayload.details.unsupportedLocales, ['de-DE']);
 
     const missingLocaleRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-locales/copy/generate`, {

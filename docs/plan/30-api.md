@@ -341,7 +341,7 @@ Rules:
 5. If `locales` is provided, it must be an array.
 6. If `locales` is provided, every item must be a string.
 7. Duplicate `locales` values are rejected with `400 validation_error`.
-8. `locales` may contain only `cs-CZ` and `en-US`; unsupported locales return `400 validation_error`.
+8. `locales` may contain only `cs-CZ` and `en-US`; unsupported locales return `400 validation_error` with deterministic `invalidField` details.
 9. `locales` must include both required locales (`cs-CZ`, `en-US`); missing values return `400 validation_error` with deterministic `missingLocales` details.
 10. `verticalStandardVersion` is required for versioned prompt/audit reproducibility.
 11. Unknown top-level payload fields are rejected with `400 validation_error`.

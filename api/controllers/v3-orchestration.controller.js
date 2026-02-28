@@ -1577,7 +1577,7 @@ function postCopyGenerate(req, res, next) {
     const unsupportedLocales = locales.filter((locale) => !COPY_LOCALES.has(locale));
     if (unsupportedLocales.length > 0) {
       throw createError('locales must contain only supported locales', 400, 'validation_error', {
-        field: 'locales',
+        invalidField: 'locales',
         unsupportedLocales,
         allowedLocales: Array.from(COPY_LOCALES)
       });
