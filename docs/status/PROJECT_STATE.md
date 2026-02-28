@@ -285,6 +285,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 264. Public-web runtime-client non-not-found error fallback guard coverage implemented (`VS3-IMP-258`): runtime-client unit coverage now verifies that storage-key fetch errors with codes other than `runtime_snapshot_not_found` are propagated unchanged and do not trigger compatibility fallback even when resolve payload includes `siteId+versionId`.
 265. Public-web runtime-client incomplete fallback-identifier retry guard coverage implemented (`VS3-IMP-259`): runtime-client unit coverage now verifies that storage-key `runtime_snapshot_not_found` errors are propagated unchanged and do not trigger compatibility fallback when resolve payload fallback identifiers are incomplete (`siteId` or `versionId` missing/blank).
 266. Public-web runtime-client non-string fallback-identifier retry guard coverage implemented (`VS3-IMP-260`): runtime-client unit coverage now verifies that storage-key `runtime_snapshot_not_found` errors are propagated unchanged and do not trigger compatibility fallback when resolve payload fallback identifiers are non-string (`siteId` or `versionId`).
+267. Public-web runtime-client trim-empty dual fallback-identifier retry guard coverage implemented (`VS3-IMP-261`): runtime-client unit coverage now verifies that storage-key `runtime_snapshot_not_found` errors are propagated unchanged and do not trigger compatibility fallback when both resolve payload fallback identifiers trim to empty strings.
 
 ## In Progress
 
@@ -293,7 +294,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 
 ## Next
 
-1. Select and start the next smallest non-hardening implementation slice after non-string fallback-identifier retry guard coverage (candidate: add runtime-client unit coverage that `runtime_snapshot_not_found` with both fallback identifiers trim-empty propagates original error without compatibility fetch).
+1. Select and start the next smallest non-hardening implementation slice after trim-empty dual fallback-identifier retry guard coverage (candidate: add runtime-client unit coverage that compatibility endpoint errors surfaced during storage-key `runtime_snapshot_not_found` retry preserve API error metadata).
 
 ## Known Constraints
 

@@ -351,6 +351,50 @@ test('renderSiteFromRuntime does not trigger compatibility fallback for not-foun
   }
 });
 
+test('renderSiteFromRuntime does not trigger compatibility fallback for not-found storageKey errors when both fallback identifiers are trim-empty', async () => {
+  const calls = [];
+  const fetchImpl = createMockFetch(
+    [
+      jsonResponse(200, {
+        host: 'runtime-trim-empty-fallback-identifiers.example.test',
+        siteId: '   ',
+        versionId: '   ',
+        storageKey: 'site-versions/site-trim-empty-fallback/version-trim-empty-fallback.json'
+      }),
+      jsonResponse(404, {
+        code: 'runtime_snapshot_not_found',
+        message: 'Runtime snapshot not found',
+        details: {
+          storageKey: 'site-versions/site-trim-empty-fallback/version-trim-empty-fallback.json'
+        }
+      })
+    ],
+    calls
+  );
+
+  await assert.rejects(
+    renderSiteFromRuntime({
+      apiBaseUrl: 'http://localhost:3000',
+      host: 'runtime-trim-empty-fallback-identifiers.example.test',
+      fetchImpl
+    }),
+    (error) => {
+      assert.equal(error.code, 'runtime_snapshot_not_found');
+      assert.equal(error.statusCode, 404);
+      assert.deepEqual(error.details, {
+        storageKey: 'site-versions/site-trim-empty-fallback/version-trim-empty-fallback.json'
+      });
+      return true;
+    }
+  );
+
+  assert.equal(calls.length, 2);
+  assert.equal(
+    calls[1],
+    'http://localhost:3000/api/v1/public/runtime/snapshot/by-storage-key?storageKey=site-versions%2Fsite-trim-empty-fallback%2Fversion-trim-empty-fallback.json'
+  );
+});
+
 test('renderSiteFromRuntime falls back to compatibility snapshot when storage-key fetch returns runtime_snapshot_not_found', async () => {
   const calls = [];
   const fetchImpl = createMockFetch(
