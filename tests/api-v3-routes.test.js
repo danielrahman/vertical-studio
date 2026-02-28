@@ -1818,6 +1818,7 @@ test('copy select rejects unknown payload fields', async () => {
     const unknownTopLevelBody = await unknownTopLevelRes.json();
     assert.equal(unknownTopLevelBody.code, 'validation_error');
     assert.equal(unknownTopLevelBody.message, 'copy select payload contains unknown top-level fields');
+    assert.equal(unknownTopLevelBody.details.invalidField, 'payload');
     assert.deepEqual(unknownTopLevelBody.details.unknownFields, ['unexpectedField']);
 
     const unknownSelectionFieldRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
