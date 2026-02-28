@@ -104,6 +104,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 83. Bootstrap `sitePolicy` nested-shape enforcement implemented (`VS3-IMP-076`): bootstrap-from-extraction now rejects unknown nested `sitePolicy` keys with deterministic `validation_error` details (`invalidField`, `unknownFields`) when provided.
 84. Bootstrap `extractedFields` item-type enforcement implemented (`VS3-IMP-077`): bootstrap-from-extraction now rejects non-object `extractedFields` items with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`) when provided.
 85. Bootstrap `extractedFields` nested-shape enforcement implemented (`VS3-IMP-078`): bootstrap-from-extraction now rejects unknown keys inside `extractedFields` items with deterministic `validation_error` details (`invalidField`, `invalidItemFields`) when provided.
+86. Bootstrap `extractedFields[].fieldPath` type enforcement implemented (`VS3-IMP-079`): bootstrap-from-extraction now rejects non-string or blank `fieldPath` values when explicitly provided in extracted-field items, returning deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
 
 ## In Progress
 

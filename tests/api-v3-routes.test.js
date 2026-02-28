@@ -613,6 +613,35 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
       { index: 0, unknownFields: ['legacyConfidence'] }
     ]);
 
+    const invalidExtractedFieldPathResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          extractedFields: [
+            {
+              fieldPath: '   ',
+              value: 'Premium development team',
+              sourceUrl: 'https://example.test/about',
+              method: 'dom',
+              confidence: 0.91
+            }
+          ]
+        })
+      }
+    );
+    assert.equal(invalidExtractedFieldPathResponse.status, 400);
+    const invalidExtractedFieldPathPayload = await invalidExtractedFieldPathResponse.json();
+    assert.equal(invalidExtractedFieldPathPayload.code, 'validation_error');
+    assert.equal(
+      invalidExtractedFieldPathPayload.message,
+      'extractedFields.fieldPath must be a non-empty string when provided'
+    );
+    assert.equal(invalidExtractedFieldPathPayload.details.invalidField, 'extractedFields.fieldPath');
+    assert.deepEqual(invalidExtractedFieldPathPayload.details.invalidItemIndexes, [0]);
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

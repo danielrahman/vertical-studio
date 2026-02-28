@@ -959,6 +959,21 @@ function postBootstrapFromExtraction(req, res, next) {
         invalidItemFields: invalidExtractedFieldItemFields
       });
     }
+    const invalidExtractedFieldPathItemIndexes = rawExtractedFields.reduce((indexes, field, index) => {
+      if (
+        Object.prototype.hasOwnProperty.call(field, 'fieldPath') &&
+        (typeof field.fieldPath !== 'string' || !field.fieldPath.trim())
+      ) {
+        indexes.push(index);
+      }
+      return indexes;
+    }, []);
+    if (invalidExtractedFieldPathItemIndexes.length > 0) {
+      throw createError('extractedFields.fieldPath must be a non-empty string when provided', 400, 'validation_error', {
+        invalidField: 'extractedFields.fieldPath',
+        invalidItemIndexes: invalidExtractedFieldPathItemIndexes
+      });
+    }
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
     const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;
     const lowConfidenceProvided = Object.prototype.hasOwnProperty.call(req.body || {}, 'lowConfidence');

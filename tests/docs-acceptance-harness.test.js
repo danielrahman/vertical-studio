@@ -523,6 +523,37 @@ test('WS-B contract: bootstrap-from-extraction rejects unknown nested extractedF
   }
 });
 
+test('WS-B contract: bootstrap-from-extraction enforces non-empty fieldPath type when provided', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap-shape/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-shape-7',
+        extractedFields: [
+          {
+            fieldPath: '   ',
+            value: 'Premium development team',
+            sourceUrl: 'https://example.test/about',
+            method: 'dom',
+            confidence: 0.91
+          }
+        ]
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'extractedFields.fieldPath must be a non-empty string when provided');
+    assert.equal(payload.details.invalidField, 'extractedFields.fieldPath');
+    assert.deepEqual(payload.details.invalidItemIndexes, [0]);
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: vertical research build rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 
