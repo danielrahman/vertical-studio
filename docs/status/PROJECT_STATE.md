@@ -183,6 +183,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 162. Vertical-research invalid-source detail sorting hardening implemented (`VS3-IMP-155`): `POST /verticals/:verticalKey/research/build` unsupported `sources` validation errors now emit lexicographically sorted `invalidSources` details, with API/WS-B contract coverage and plan text alignment.
 163. Vertical-research invalid-sourceDomain detail sorting hardening implemented (`VS3-IMP-156`): `POST /verticals/:verticalKey/research/build` invalid `sourceDomains` validation errors now emit deterministically sorted `invalidSourceDomains` details, with API/WS-B contract coverage and plan text alignment.
 164. Override duplicate-value detail sorting hardening implemented (`VS3-IMP-157`): `POST /sites/:siteId/overrides` duplicate array-value validation errors now emit lexicographically sorted `duplicateValues` details, with API/WS-D contract coverage and plan text alignment.
+165. Override unknown-section detail sorting hardening implemented (`VS3-IMP-158`): `POST /sites/:siteId/overrides` unknown section-key validation errors now emit lexicographically sorted `unknownSections` details, with API/WS-D contract coverage and plan text alignment.
 
 ## In Progress
 

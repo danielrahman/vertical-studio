@@ -1928,9 +1928,11 @@ function postOverrides(req, res, next) {
         continue;
       }
 
-      const unknownSections = normalizedOverrideArrays[field].filter((sectionKey) => {
-        return !ALLOWED_OVERRIDE_SECTION_KEYS.has(sectionKey);
-      });
+      const unknownSections = normalizedOverrideArrays[field]
+        .filter((sectionKey) => {
+          return !ALLOWED_OVERRIDE_SECTION_KEYS.has(sectionKey);
+        })
+        .sort();
 
       if (unknownSections.length > 0) {
         throw createError(`Invalid override payload: ${field} contains unknown section values`, 400, 'invalid_override_payload', {

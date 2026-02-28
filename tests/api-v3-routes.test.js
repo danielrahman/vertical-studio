@@ -2409,7 +2409,7 @@ test('overrides rejects unknown section values in section arrays', async () => {
       headers: INTERNAL_ADMIN_HEADERS,
       body: JSON.stringify({
         draftId,
-        requiredSections: ['hero', 'unknown-section']
+        requiredSections: ['hero', 'zeta-section', 'alpha-section']
       })
     });
     assert.equal(invalidOverrideRes.status, 400);
@@ -2419,7 +2419,7 @@ test('overrides rejects unknown section values in section arrays', async () => {
       invalidOverrideBody.message,
       'Invalid override payload: requiredSections contains unknown section values'
     );
-    assert.deepEqual(invalidOverrideBody.details.unknownSections, ['unknown-section']);
+    assert.deepEqual(invalidOverrideBody.details.unknownSections, ['alpha-section', 'zeta-section']);
 
     const validOverrideRes = await fetch(`${baseUrl}/api/v1/sites/site-override-sections/overrides`, {
       method: 'POST',
