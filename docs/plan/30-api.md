@@ -464,7 +464,8 @@ Blocking rules:
 2. Block on any unresolved security `critical/high` finding.
 
 Validation:
-1. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
+1. Required request fields `draftId` and `proposalId` must be non-empty strings; missing or non-string values return `400 validation_error` with deterministic metadata (`invalidField`, `expectedType`, `receivedType`).
+2. Unknown top-level payload fields are rejected with `400 validation_error`, deterministic `invalidField: payload`, and lexicographically sorted `unknownFields` details.
 
 Response `200`:
 ```json

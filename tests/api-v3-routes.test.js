@@ -3695,6 +3695,45 @@ test('publish is blocked with low_confidence_review_required when required extra
   }
 });
 
+test('publish required fields return deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-publish-required/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        proposalId: 'proposal-publish-required-1'
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdBody = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdBody.code, 'validation_error');
+    assert.equal(missingDraftIdBody.message, 'draftId is required');
+    assert.equal(missingDraftIdBody.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdBody.details.expectedType, 'string');
+    assert.equal(missingDraftIdBody.details.receivedType, 'undefined');
+
+    const nonStringProposalIdRes = await fetch(`${baseUrl}/api/v1/sites/site-publish-required/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-publish-required-1',
+        proposalId: 123
+      })
+    });
+    assert.equal(nonStringProposalIdRes.status, 400);
+    const nonStringProposalIdBody = await nonStringProposalIdRes.json();
+    assert.equal(nonStringProposalIdBody.code, 'validation_error');
+    assert.equal(nonStringProposalIdBody.message, 'proposalId is required');
+    assert.equal(nonStringProposalIdBody.details.invalidField, 'proposalId');
+    assert.equal(nonStringProposalIdBody.details.expectedType, 'string');
+    assert.equal(nonStringProposalIdBody.details.receivedType, 'number');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('publish rejects unknown top-level payload fields', async () => {
   const { server, baseUrl } = await startServer();
 

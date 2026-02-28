@@ -216,6 +216,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 195. Required-string helper metadata hardening implemented (`VS3-IMP-188`): shared required-string validation failures now return deterministic `invalidField`, `expectedType`, and `receivedType` metadata, with compose-propose required-field API/WS-D contract coverage and plan text alignment.
 196. Compose-select required-field metadata contract alignment implemented (`VS3-IMP-189`): `POST /sites/:siteId/compose/select` required `draftId` and `proposalId` validation now has deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-D tests and API contract text.
 197. Review-transition required-field metadata contract alignment implemented (`VS3-IMP-190`): `POST /sites/:siteId/review/transition` required `draftId`, `fromState`, `toState`, and `event` validation now has deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-D tests and API contract text.
+198. Publish required-field metadata contract alignment implemented (`VS3-IMP-191`): `POST /sites/:siteId/publish` required `draftId` and `proposalId` validation now has deterministic `invalidField`, `expectedType`, and `receivedType` coverage in API/WS-F tests and API contract text.
 
 ## In Progress
 

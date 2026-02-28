@@ -1331,6 +1331,45 @@ test('WS-F contract: publish rejects unknown top-level payload fields', async ()
   }
 });
 
+test('WS-F contract: publish required fields return deterministic invalidField type metadata', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const missingDraftIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-publish-required/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        proposalId: 'proposal-wsf-publish-required-1'
+      })
+    });
+    assert.equal(missingDraftIdRes.status, 400);
+    const missingDraftIdPayload = await missingDraftIdRes.json();
+    assert.equal(missingDraftIdPayload.code, 'validation_error');
+    assert.equal(missingDraftIdPayload.message, 'draftId is required');
+    assert.equal(missingDraftIdPayload.details.invalidField, 'draftId');
+    assert.equal(missingDraftIdPayload.details.expectedType, 'string');
+    assert.equal(missingDraftIdPayload.details.receivedType, 'undefined');
+
+    const nonStringProposalIdRes = await fetch(`${baseUrl}/api/v1/sites/site-wsf-publish-required/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsf-publish-required-1',
+        proposalId: 123
+      })
+    });
+    assert.equal(nonStringProposalIdRes.status, 400);
+    const nonStringProposalIdPayload = await nonStringProposalIdRes.json();
+    assert.equal(nonStringProposalIdPayload.code, 'validation_error');
+    assert.equal(nonStringProposalIdPayload.message, 'proposalId is required');
+    assert.equal(nonStringProposalIdPayload.details.invalidField, 'proposalId');
+    assert.equal(nonStringProposalIdPayload.details.expectedType, 'string');
+    assert.equal(nonStringProposalIdPayload.details.receivedType, 'number');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-D contract: compose requires loaded component contracts for requested catalogVersion', async () => {
   const { server, baseUrl } = await startServer();
 
