@@ -110,6 +110,7 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 89. Bootstrap `extractedFields[].required` type enforcement implemented (`VS3-IMP-082`): bootstrap-from-extraction now rejects non-boolean provided `required` values in extracted-field items with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
 90. Bootstrap `extractedFields[].confidence` numeric-type enforcement implemented (`VS3-IMP-083`): bootstrap-from-extraction now rejects non-numeric provided `confidence` values in extracted-field items with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
 91. Bootstrap `extractedFields[].confidence` range enforcement implemented (`VS3-IMP-084`): bootstrap-from-extraction now rejects provided `confidence` values outside `[0,1]` in extracted-field items and returns deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`, `allowedRange`) instead of silently clamping.
+92. Bootstrap `extractedFields[].extractedAt` non-empty-string enforcement implemented (`VS3-IMP-085`): bootstrap-from-extraction now rejects non-string or blank provided `extractedAt` values in extracted-field items with deterministic `validation_error` details (`invalidField`, `invalidItemIndexes`).
 
 ## In Progress
 

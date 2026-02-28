@@ -792,6 +792,37 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.deepEqual(outOfRangeExtractedFieldConfidencePayload.details.invalidItemIndexes, [0]);
     assert.deepEqual(outOfRangeExtractedFieldConfidencePayload.details.allowedRange, [0, 1]);
 
+    const invalidExtractedFieldExtractedAtResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          extractedFields: [
+            {
+              fieldPath: 'brand.tagline',
+              value: 'Premium development team',
+              sourceUrl: 'https://example.test/about',
+              method: 'dom',
+              confidence: 0.91,
+              required: true,
+              extractedAt: '   '
+            }
+          ]
+        })
+      }
+    );
+    assert.equal(invalidExtractedFieldExtractedAtResponse.status, 400);
+    const invalidExtractedFieldExtractedAtPayload = await invalidExtractedFieldExtractedAtResponse.json();
+    assert.equal(invalidExtractedFieldExtractedAtPayload.code, 'validation_error');
+    assert.equal(
+      invalidExtractedFieldExtractedAtPayload.message,
+      'extractedFields.extractedAt must be a non-empty string when provided'
+    );
+    assert.equal(invalidExtractedFieldExtractedAtPayload.details.invalidField, 'extractedFields.extractedAt');
+    assert.deepEqual(invalidExtractedFieldExtractedAtPayload.details.invalidItemIndexes, [0]);
+
     const response = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

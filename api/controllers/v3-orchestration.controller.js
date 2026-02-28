@@ -1059,6 +1059,21 @@ function postBootstrapFromExtraction(req, res, next) {
         allowedRange: [0, 1]
       });
     }
+    const invalidExtractedFieldExtractedAtItemIndexes = rawExtractedFields.reduce((indexes, field, index) => {
+      if (!Object.prototype.hasOwnProperty.call(field, 'extractedAt')) {
+        return indexes;
+      }
+      if (typeof field.extractedAt !== 'string' || !field.extractedAt.trim()) {
+        indexes.push(index);
+      }
+      return indexes;
+    }, []);
+    if (invalidExtractedFieldExtractedAtItemIndexes.length > 0) {
+      throw createError('extractedFields.extractedAt must be a non-empty string when provided', 400, 'validation_error', {
+        invalidField: 'extractedFields.extractedAt',
+        invalidItemIndexes: invalidExtractedFieldExtractedAtItemIndexes
+      });
+    }
     const extractedFields = rawExtractedFields.map((field, index) => normalizeExtractedField(field, index));
     const requiredTodoCount = extractedFields.filter((field) => field.required && field.todo).length;
     const lowConfidenceProvided = Object.prototype.hasOwnProperty.call(req.body || {}, 'lowConfidence');
