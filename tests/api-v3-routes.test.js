@@ -3694,6 +3694,42 @@ test('public runtime snapshot compatibility endpoint returns immutable payload f
   }
 });
 
+test('public runtime snapshot compatibility endpoint returns runtime_version_not_found for unknown site/version', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const publishRes = await fetch(`${baseUrl}/api/v1/sites/site-runtime-compat-not-found/publish`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-runtime-compat-not-found-v1',
+        proposalId: 'proposal-runtime-compat-not-found-v1',
+        host: 'runtime-compat-not-found.example.test'
+      })
+    });
+    assert.equal(publishRes.status, 200);
+    const publishBody = await publishRes.json();
+
+    const missingVersionRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=${encodeURIComponent(publishBody.siteId)}&versionId=version-missing`
+    );
+    assert.equal(missingVersionRes.status, 404);
+    const missingVersionBody = await missingVersionRes.json();
+    assert.equal(missingVersionBody.code, 'runtime_version_not_found');
+    assert.equal(missingVersionBody.message, 'Runtime version not found');
+
+    const missingSiteRes = await fetch(
+      `${baseUrl}/api/v1/public/runtime/snapshot?siteId=site-missing-compat&versionId=${encodeURIComponent(publishBody.versionId)}`
+    );
+    assert.equal(missingSiteRes.status, 404);
+    const missingSiteBody = await missingSiteRes.json();
+    assert.equal(missingSiteBody.code, 'runtime_version_not_found');
+    assert.equal(missingSiteBody.message, 'Runtime version not found');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('public runtime snapshot by storage key requires storageKey query with deterministic invalidField type metadata', async () => {
   const { server, baseUrl } = await startServer();
 
