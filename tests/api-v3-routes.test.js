@@ -557,6 +557,28 @@ test('bootstrap-from-extraction normalizes low-confidence fields into TODO entri
     assert.equal(unknownSitePolicyFieldPayload.details.invalidField, 'sitePolicy');
     assert.deepEqual(unknownSitePolicyFieldPayload.details.unknownFields, ['alphaPolicyMode', 'zetaPolicyVersion']);
 
+    const invalidSitePolicyFlagTypeResponse = await fetch(
+      `${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`,
+      {
+        method: 'POST',
+        headers: INTERNAL_ADMIN_HEADERS,
+        body: JSON.stringify({
+          draftId: 'draft-bootstrap-model',
+          sitePolicy: {
+            allowOwnerDraftCopyEdits: 'true'
+          }
+        })
+      }
+    );
+    assert.equal(invalidSitePolicyFlagTypeResponse.status, 400);
+    const invalidSitePolicyFlagTypePayload = await invalidSitePolicyFlagTypeResponse.json();
+    assert.equal(invalidSitePolicyFlagTypePayload.code, 'validation_error');
+    assert.equal(
+      invalidSitePolicyFlagTypePayload.message,
+      'sitePolicy.allowOwnerDraftCopyEdits must be a boolean'
+    );
+    assert.equal(invalidSitePolicyFlagTypePayload.details.invalidField, 'sitePolicy.allowOwnerDraftCopyEdits');
+
     const nonArrayFieldsResponse = await fetch(`${baseUrl}/api/v1/sites/site-bootstrap-model/bootstrap-from-extraction`, {
       method: 'POST',
       headers: INTERNAL_ADMIN_HEADERS,

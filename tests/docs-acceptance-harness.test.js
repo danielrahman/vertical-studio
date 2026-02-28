@@ -563,6 +563,30 @@ test('WS-B contract: bootstrap-from-extraction rejects unknown nested sitePolicy
   }
 });
 
+test('WS-B contract: bootstrap-from-extraction enforces sitePolicy.allowOwnerDraftCopyEdits boolean type', async () => {
+  const { server, baseUrl } = await startServer();
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/sites/site-wsb-bootstrap-shape/bootstrap-from-extraction`, {
+      method: 'POST',
+      headers: INTERNAL_ADMIN_HEADERS,
+      body: JSON.stringify({
+        draftId: 'draft-wsb-bootstrap-shape-4b',
+        sitePolicy: {
+          allowOwnerDraftCopyEdits: 'true'
+        }
+      })
+    });
+    assert.equal(response.status, 400);
+    const payload = await response.json();
+    assert.equal(payload.code, 'validation_error');
+    assert.equal(payload.message, 'sitePolicy.allowOwnerDraftCopyEdits must be a boolean');
+    assert.equal(payload.details.invalidField, 'sitePolicy.allowOwnerDraftCopyEdits');
+  } finally {
+    await stopServer(server);
+  }
+});
+
 test('WS-B contract: bootstrap-from-extraction requires object items inside extractedFields array', async () => {
   const { server, baseUrl } = await startServer();
 

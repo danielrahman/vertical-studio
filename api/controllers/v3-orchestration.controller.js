@@ -1187,7 +1187,7 @@ function postBootstrapFromExtraction(req, res, next) {
     const hasSitePolicyValue = typeof req.body?.sitePolicy?.allowOwnerDraftCopyEdits !== 'undefined';
     if (hasSitePolicyValue && typeof req.body?.sitePolicy?.allowOwnerDraftCopyEdits !== 'boolean') {
       throw createError('sitePolicy.allowOwnerDraftCopyEdits must be a boolean', 400, 'validation_error', {
-        field: 'sitePolicy.allowOwnerDraftCopyEdits'
+        invalidField: 'sitePolicy.allowOwnerDraftCopyEdits'
       });
     }
     const now = new Date().toISOString();
