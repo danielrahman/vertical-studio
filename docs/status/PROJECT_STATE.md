@@ -145,15 +145,16 @@ Move from decision-complete documentation to incremental v3 implementation, pres
 124. Copy-select per-item unknown-field selection-index details implemented (`VS3-IMP-117`): `POST /sites/:siteId/copy/select` per-item unknown-field validation errors now include deterministic `selectionIndex` alongside sorted unknown/allowed field details.
 125. Copy-select per-item required-field selection-index details implemented (`VS3-IMP-118`): `POST /sites/:siteId/copy/select` per-item `slotId`/`locale`/`candidateId` validation errors now include deterministic `selectionIndex` alongside index-aware `invalidField`.
 126. Copy-select per-item invalid-selectedBy selection-index details implemented (`VS3-IMP-119`): `POST /sites/:siteId/copy/select` per-item invalid `selectedBy` allow-list validation errors now include deterministic `selectionIndex` alongside allowed-role details.
+127. Copy-select per-item selection-index contract-doc alignment implemented (`VS3-IMP-120`): `docs/plan/30-api.md` Rule 12 and WS-D/API test labels now explicitly require deterministic per-item `selectionIndex` metadata for item-level validation failures.
 
 ## In Progress
 
 1. Runtime implementation is in early scaffold phase; v3 domain features are not implemented yet.
-2. `VS3-IMP-120` is in progress to align copy-select per-item selection-index metadata requirements across API contract docs and WS-D acceptance labels.
+2. Define and start the next deterministic copy-select hardening slice.
 
 ## Next
 
-1. Complete `VS3-IMP-120` and then define the next deterministic copy-select hardening slice.
+1. Add the next highest-priority deterministic copy-select validation hardening item to backlog and execute it end-to-end.
 
 ## Known Constraints
 

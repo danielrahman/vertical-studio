@@ -1874,7 +1874,7 @@ test('copy select rejects unknown payload fields', async () => {
   }
 });
 
-test('copy select per-item validation failures report invalidField details', async () => {
+test('copy select per-item validation failures report invalidField and selection-index details', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
@@ -1894,29 +1894,23 @@ test('copy select per-item validation failures report invalidField details', asy
       assert.equal(payload.code, 'validation_error');
       assert.equal(payload.message, message);
       assert.equal(payload.details.invalidField, invalidField);
+      assert.equal(payload.details.selectionIndex, 0);
       if (extraDetails) {
         assert.deepEqual(extraDetails(payload.details), true);
       }
     };
 
-    await assertInvalidSelectionField(
-      [null],
-      'selection item must be an object',
-      'selections[0]',
-      (details) => details.selectionIndex === 0
-    );
+    await assertInvalidSelectionField([null], 'selection item must be an object', 'selections[0]');
     await assertInvalidSelectionField(
       [{ slotId: '', locale: 'cs-CZ', candidateId: 'candidate-1' }],
       'selection slotId is required',
-      'selections[0].slotId',
-      (details) => details.selectionIndex === 0
+      'selections[0].slotId'
     );
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'de-DE', candidateId: 'candidate-1' }],
       'selection locale must be one of cs-CZ or en-US',
       'selections[0].locale',
       (details) =>
-        details.selectionIndex === 0 &&
         Array.isArray(details.allowedLocales) &&
         details.allowedLocales.length === 2 &&
         details.allowedLocales[0] === 'cs-CZ' &&
@@ -1925,15 +1919,13 @@ test('copy select per-item validation failures report invalidField details', asy
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: '' }],
       'selection candidateId is required',
-      'selections[0].candidateId',
-      (details) => details.selectionIndex === 0
+      'selections[0].candidateId'
     );
     await assertInvalidSelectionField(
       [{ slotId: 'hero.h1', locale: 'cs-CZ', candidateId: 'candidate-1', selectedBy: 'editor' }],
       'selection selectedBy must be one of internal_admin or owner',
       'selections[0].selectedBy',
       (details) =>
-        details.selectionIndex === 0 &&
         Array.isArray(details.allowedSelectedByRoles) &&
         details.allowedSelectedByRoles.length === 2 &&
         details.allowedSelectedByRoles[0] === 'internal_admin' &&
