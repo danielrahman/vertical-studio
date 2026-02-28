@@ -1793,6 +1793,8 @@ test('copy select selectedBy mismatch includes deterministic selection-index det
     assert.equal(mismatchBody.message, 'selection selectedBy must match authenticated actor role');
     assert.equal(mismatchBody.details.invalidField, 'selections');
     assert.equal(mismatchBody.details.selectionIndex, 0);
+    assert.equal(mismatchBody.details.expectedSelectedBy, 'internal_admin');
+    assert.equal(mismatchBody.details.receivedSelectedBy, 'owner');
 
     const matchingRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
       method: 'POST',

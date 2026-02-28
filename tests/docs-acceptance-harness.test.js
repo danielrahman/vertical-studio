@@ -2155,6 +2155,8 @@ test('WS-D contract: copy selection selectedBy mismatch exposes deterministic se
     assert.equal(mismatchPayload.message, 'selection selectedBy must match authenticated actor role');
     assert.equal(mismatchPayload.details.invalidField, 'selections');
     assert.equal(mismatchPayload.details.selectionIndex, 0);
+    assert.equal(mismatchPayload.details.expectedSelectedBy, 'internal_admin');
+    assert.equal(mismatchPayload.details.receivedSelectedBy, 'owner');
 
     const matchingRes = await fetch(`${baseUrl}/api/v1/sites/${siteId}/copy/select`, {
       method: 'POST',

@@ -1800,6 +1800,8 @@ function postCopySelect(req, res, next) {
         selectionIndex: selectedByMismatchIndex,
         slotId: selectedByMismatch.slotId,
         locale: selectedByMismatch.locale,
+        expectedSelectedBy: selectedByRole,
+        receivedSelectedBy: selectedByMismatch.selectedBy,
         selectedBy: selectedByMismatch.selectedBy,
         actorRole: selectedByRole
       });
