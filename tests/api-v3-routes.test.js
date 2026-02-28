@@ -1427,6 +1427,8 @@ test('copy generate enforces locale allow-list and rejects duplicate locales', a
     assert.equal(nonArrayLocalesBody.code, 'validation_error');
     assert.equal(nonArrayLocalesBody.message, 'locales must be an array when provided');
     assert.equal(nonArrayLocalesBody.details.invalidField, 'locales');
+    assert.equal(nonArrayLocalesBody.details.expectedType, 'array');
+    assert.equal(nonArrayLocalesBody.details.receivedType, 'string');
 
     const nonStringLocalesRes = await fetch(`${baseUrl}/api/v1/sites/site-copy-locales/copy/generate`, {
       method: 'POST',

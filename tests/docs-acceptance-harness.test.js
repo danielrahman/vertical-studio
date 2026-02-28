@@ -1784,6 +1784,8 @@ test('WS-D contract: copy generation accepts only supported locales and rejects 
     assert.equal(nonArrayLocalesPayload.code, 'validation_error');
     assert.equal(nonArrayLocalesPayload.message, 'locales must be an array when provided');
     assert.equal(nonArrayLocalesPayload.details.invalidField, 'locales');
+    assert.equal(nonArrayLocalesPayload.details.expectedType, 'array');
+    assert.equal(nonArrayLocalesPayload.details.receivedType, 'string');
 
     const nonStringLocalesRes = await fetch(`${baseUrl}/api/v1/sites/site-wsd-locales/copy/generate`, {
       method: 'POST',

@@ -1588,7 +1588,9 @@ function postCopyGenerate(req, res, next) {
     const localesProvided = Object.prototype.hasOwnProperty.call(req.body || {}, 'locales');
     if (localesProvided && !Array.isArray(req.body?.locales)) {
       throw createError('locales must be an array when provided', 400, 'validation_error', {
-        invalidField: 'locales'
+        invalidField: 'locales',
+        expectedType: 'array',
+        receivedType: getValueType(req.body?.locales)
       });
     }
     const requestedLocales = Array.isArray(req.body?.locales) ? req.body.locales : [];
