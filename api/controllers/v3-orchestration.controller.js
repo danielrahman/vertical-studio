@@ -2542,10 +2542,17 @@ function getAuditEvents(req, res, next) {
 
 function getPublicRuntimeResolve(req, res, next) {
   try {
-    const host = normalizeHost(req.query.host) || normalizeHost(req.headers.host);
+    const queryHost = req.query.host;
+    const normalizedQueryHost = normalizeHost(queryHost);
+    const headerHost = req.headers.host;
+    const normalizedHeaderHost = normalizeHost(headerHost);
+    const host = normalizedQueryHost || normalizedHeaderHost;
     if (!host) {
+      const receivedHostValue = typeof queryHost !== 'undefined' ? queryHost : headerHost;
       throw createError('host is required', 400, 'validation_error', {
-        invalidField: 'host'
+        invalidField: 'host',
+        expectedType: 'string',
+        receivedType: getValueType(receivedHostValue)
       });
     }
 

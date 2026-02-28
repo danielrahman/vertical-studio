@@ -3210,15 +3210,28 @@ test('WS-E invariant: post-publish draft edits do not alter live immutable runti
   }
 });
 
-test('WS-E contract: runtime resolve requires host and reports invalidField metadata when missing', async () => {
+test('WS-E contract: runtime resolve requires host and reports deterministic type metadata', async () => {
   const { server, baseUrl } = await startServer();
 
   try {
-    const response = await getJsonWithoutHostHeader(baseUrl, '/api/v1/public/runtime/resolve');
-    assert.equal(response.status, 400);
-    assert.equal(response.body.code, 'validation_error');
-    assert.equal(response.body.message, 'host is required');
-    assert.equal(response.body.details.invalidField, 'host');
+    const missingHostResponse = await getJsonWithoutHostHeader(baseUrl, '/api/v1/public/runtime/resolve');
+    assert.equal(missingHostResponse.status, 400);
+    assert.equal(missingHostResponse.body.code, 'validation_error');
+    assert.equal(missingHostResponse.body.message, 'host is required');
+    assert.equal(missingHostResponse.body.details.invalidField, 'host');
+    assert.equal(missingHostResponse.body.details.expectedType, 'string');
+    assert.equal(missingHostResponse.body.details.receivedType, 'string');
+
+    const repeatedHostResponse = await getJsonWithoutHostHeader(
+      baseUrl,
+      '/api/v1/public/runtime/resolve?host=wse-live.example.test&host=duplicate.example.test'
+    );
+    assert.equal(repeatedHostResponse.status, 400);
+    assert.equal(repeatedHostResponse.body.code, 'validation_error');
+    assert.equal(repeatedHostResponse.body.message, 'host is required');
+    assert.equal(repeatedHostResponse.body.details.invalidField, 'host');
+    assert.equal(repeatedHostResponse.body.details.expectedType, 'string');
+    assert.equal(repeatedHostResponse.body.details.receivedType, 'array');
   } finally {
     await stopServer(server);
   }
